@@ -81,7 +81,7 @@ class tile:
 tile_size = 600  # size of a tile
 
 # tile structure
-tilestrucure = [
+tilestructure = [
     [0, 0, 0],
     [0, 0, 0],
     [0, 0, 0]
@@ -149,9 +149,11 @@ for row_idx, row in enumerate(tile_grid):
                 x += w
             tile_decorations[(row_idx, col_idx)] = images_for_tile
 
-# movement variables
+# some variables
 moving_up = moving_down = moving_left = moving_right = False
 game_stage = "in dungeon"
+font = pygame.font.SysFont(None, 48)
+is_paused = False
 
 # loop setup
 clock = pygame.time.Clock()
@@ -171,6 +173,9 @@ while running:
             if event.key == pygame.K_s: moving_down = True
             if event.key == pygame.K_a: moving_left = True
             if event.key == pygame.K_d: moving_right = True
+            if event.key == pygame.K_ESCAPE: 
+                if is_paused == False: is_paused = True
+                else: is_paused = False
 
         # key released
         if event.type == pygame.KEYUP: 
@@ -179,25 +184,14 @@ while running:
             if event.key == pygame.K_a: moving_left = False
             if event.key == pygame.K_d: moving_right = False
 
-    # movement
-    dx = dy = 0
-    if moving_up: dy -= 1
-    if moving_down: dy += 1
-    if moving_left: dx -= 1
-    if moving_right: dx += 1
-
-    player.move(dx, dy, tile_grid, tile_size)
-
     # drawing
     screen.fill((0, 0, 0))  # background
 
     if game_stage == "in dungeon":
-
     # tile camera transition
         target_x, target_y = get_camera_offset(player, tile_size)
         camera_x += (target_x - camera_x) * camera_speed
         camera_y += (target_y - camera_y) * camera_speed
-
         for row_idx, row in enumerate(tile_grid):
             for col_idx, tile_type in enumerate(row):
                 if tile_type != 0:
@@ -206,11 +200,25 @@ while running:
                     pygame.draw.rect(screen, (0, 255, 0), (tile_x - camera_x, tile_y - camera_y, tile_size, tile_size))
                     for img, img_x, img_y in tile_decorations[(row_idx, col_idx)]:
                         screen.blit(img, (tile_x + img_x - camera_x, tile_y + img_y - camera_y))
-
         pygame.draw.rect(screen, (255, 0, 0), (player.x - camera_x,player.y - camera_y, player_size, player_size))
 
+        # while not paused
+        if is_paused != True:
+            dx = dy = 0
+            if moving_up: dy -= 1
+            if moving_down: dy += 1
+            if moving_left: dx -= 1
+            if moving_right: dx += 1
+
+            player.move(dx, dy, tile_grid, tile_size)
+
+        # while paused
+        elif is_paused == True:
+            pygame.draw.rect(screen, (20, 20, 20), (screen_w // 2 - 250, screen_h // 2 - 200, screen_w // 2 - 50, screen_h // 2 -24), 0)     # hej real tish batish please center this block 😛
+            screen.blit(font.render("paused", True, (255, 255, 255)), (screen_w // 2 - 50, screen_h //2 - 24)) # and this one maybe too idk
+
     elif game_stage == "in menu":
-        pass
+        screen.blit(font.render("menu", True, (255, 255, 255)), (20, 20))
 
     clock.tick(240)
     pygame.display.update()
