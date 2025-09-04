@@ -4,13 +4,22 @@ pygame.init()
 screen_h, screen_w = 750, 1080
 screen = pygame.display.set_mode((screen_w, screen_h))
 
+# images
+tile_images = [
+    pygame.image.load("pixilart-drawing (1).png").convert_alpha(),
+    pygame.image.load("pixilart-drawing (2).png").convert_alpha(),
+    pygame.image.load("pixilart-drawing (3).png").convert_alpha(),
+    pygame.image.load("pixilart-drawing (4).png").convert_alpha(),
+    pygame.image.load("pixilart-drawing (5).png").convert_alpha()
+]
+
 # classes and functions
 
 class player:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.speed = 5  #  speed
+        self.speed = 2  #  speed
         self.health = 100
 
     def move(self, dx, dy, tile_grid, tile_size):
@@ -121,9 +130,28 @@ def get_camera_offset(player, tile_size):
 
     return offset_x, offset_y
 
+# tile decor
+tile_decorations = {}
+for row_idx, row in enumerate(tile_grid):
+    for col_idx, tile_type in enumerate(row):
+        if tile_type != 0:
+            images_for_tile = []
+            x = 0
+            while x < tile_size:
+                y = 0
+                while y < tile_size:
+                    img = random.choice(tile_images)
+                    rotation = random.choice([0, 90, 180, 270])
+                    img_rotated = pygame.transform.rotate(img, rotation)
+                    w, h = img_rotated.get_size()
+                    images_for_tile.append((img_rotated, x, y))
+                    y += h
+                x += w
+            tile_decorations[(row_idx, col_idx)] = images_for_tile
+
 # movement variables
 moving_up = moving_down = moving_left = moving_right = False
-game_stage = ""
+game_stage = "in dungeon"
 
 # loop setup
 clock = pygame.time.Clock()
@@ -160,20 +188,29 @@ while running:
 
     player.move(dx, dy, tile_grid, tile_size)
 
-    # tile camera transition
-    target_x, target_y = get_camera_offset(player, tile_size)
-    camera_x += (target_x - camera_x) * camera_speed
-    camera_y += (target_y - camera_y) * camera_speed
-
     # drawing
     screen.fill((0, 0, 0))  # background
 
-    for row_idx, row in enumerate(tile_grid):
-        for col_idx, tile_type in enumerate(row):
-            if tile_type != 0:
-                pygame.draw.rect(screen, (0, 255, 0), (col_idx*tile_size - camera_x, row_idx*tile_size - camera_y, tile_size, tile_size))
+    if game_stage == "in dungeon":
 
-    pygame.draw.rect(screen, (255, 0, 0), (player.x - camera_x,player.y - camera_y, player_size, player_size))
+    # tile camera transition
+        target_x, target_y = get_camera_offset(player, tile_size)
+        camera_x += (target_x - camera_x) * camera_speed
+        camera_y += (target_y - camera_y) * camera_speed
+
+        for row_idx, row in enumerate(tile_grid):
+            for col_idx, tile_type in enumerate(row):
+                if tile_type != 0:
+                    tile_x = col_idx * tile_size
+                    tile_y = row_idx * tile_size
+                    pygame.draw.rect(screen, (0, 255, 0), (tile_x - camera_x, tile_y - camera_y, tile_size, tile_size))
+                    for img, img_x, img_y in tile_decorations[(row_idx, col_idx)]:
+                        screen.blit(img, (tile_x + img_x - camera_x, tile_y + img_y - camera_y))
+
+        pygame.draw.rect(screen, (255, 0, 0), (player.x - camera_x,player.y - camera_y, player_size, player_size))
+
+    elif game_stage == "in menu":
+        pass
 
     clock.tick(240)
     pygame.display.update()
