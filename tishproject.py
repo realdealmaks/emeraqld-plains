@@ -69,7 +69,6 @@ class tile:
     def __init__(self):
         self.sprite = pygame.draw.rect(screen, (0, 255, 0), (self.x, self.y, 50, 50))
 tile_size = 600  # size of a tile
-tile_gap = 10  # gap between tiles
 
 # tile structure
 tilestructure = [
@@ -82,8 +81,8 @@ tilestructure = [
 tile_grid = [ 
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 99, 2, 1, 0, 0, 0, 0],
-    [0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 99, 1, 1, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -94,8 +93,6 @@ tile_grid = [
 # dictionary:
 # 0 = empty
 # 1 = wall
-# 2 = corridor left-right
-# 3 = corridor up-down
 # 99 = spawn
 
 # find tile 99 to set player there
@@ -160,7 +157,7 @@ while running:
             pygame.quit()
             quit()
 
-        # Key pressed
+        # key pressed
         if event.type == pygame.KEYDOWN: 
             if event.key == pygame.K_w: moving_up = True
             if event.key == pygame.K_s: moving_down = True
@@ -192,8 +189,8 @@ while running:
                     tile_x = col_idx * tile_size
                     tile_y = row_idx * tile_size
                     pygame.draw.rect(screen, (0, 0, 0), (tile_x - camera_x, tile_y - camera_y, tile_size, tile_size))
-                    for img, img_x, img_y in tile_decorations[(row_idx, col_idx)]:           # to use when we have the texture... you heard me rahabudim
-                        screen.blit(img, (tile_x + img_x - camera_x, tile_y + img_y - camera_y))                        # temporary disable decor since its ass
+                    for img, img_x, img_y in tile_decorations[(row_idx, col_idx)]:
+                        screen.blit(img, (tile_x + img_x - camera_x, tile_y + img_y - camera_y))
 
         pygame.draw.rect(screen, (255, 0, 0), (player.x - camera_x,player.y - camera_y, player_size, player_size))
 
