@@ -1,4 +1,5 @@
-import math, random, pygame, PIL, pydub, pytweening, scipy, dearpygui
+import math, random, pygame, pydub, pytweening, scipy, dearpygui
+from PIL import Image
 
 pygame.init()
 screen_h, screen_w = 750, 1080
@@ -8,6 +9,23 @@ screen = pygame.display.set_mode((screen_w, screen_h))
 tile_images = [
     pygame.image.load("image (1).png").convert_alpha(),
 ]
+player_gif = Image.open("playergif.gif")
+frames = []
+try:
+    while True:
+        frame = player_gif.convert("RGBA")
+        mode = frame.mode
+        size = frame.size
+        data = frame.tobytes()
+        py_image = pygame.image.fromstring(data, size, mode).convert_alpha()            # this was from google 
+        frames.append(py_image)
+        player_gif.seek(player_gif.tell() + 1)
+except EOFError:
+    pass
+current_frame = 0
+frame_timer = 0
+frame_delay = 50
+facing_left = False
 
 # classes and functions
 
@@ -192,15 +210,30 @@ while running:
                     for img, img_x, img_y in tile_decorations[(row_idx, col_idx)]:
                         screen.blit(img, (tile_x + img_x - camera_x, tile_y + img_y - camera_y))
 
-        pygame.draw.rect(screen, (255, 0, 0), (player.x - camera_x,player.y - camera_y, player_size, player_size))
+        # animate player
+        frame_timer += 1
+        if frame_timer >= frame_delay:
+            frame_timer = 0
+            current_frame = (current_frame + 1) % len(frames)
+
+        player_frame = pygame.transform.scale(frames[current_frame], (player_size * 3, player_size * 3))
+
+        if facing_left:
+            player_frame = pygame.transform.flip(player_frame, True, False)
+
+        screen.blit(player_frame, (player.x - camera_x, player.y - camera_y))
 
         # while not paused
         if is_paused != True:
             dx = dy = 0
             if moving_up: dy -= 1
             if moving_down: dy += 1
-            if moving_left: dx -= 1
-            if moving_right: dx += 1
+            if moving_left:
+                dx -= 1
+                facing_left = True
+            if moving_right:
+                dx += 1
+                facing_left = False
 
             player.move(dx, dy, tile_grid, tile_size)
 
