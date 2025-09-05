@@ -6,11 +6,7 @@ screen = pygame.display.set_mode((screen_w, screen_h))
 
 # images
 tile_images = [
-    pygame.image.load("pixilart-drawing (1).png").convert_alpha(),
-    pygame.image.load("pixilart-drawing (2).png").convert_alpha(),
-    pygame.image.load("pixilart-drawing (3).png").convert_alpha(),
-    pygame.image.load("pixilart-drawing (4).png").convert_alpha(),
-    pygame.image.load("pixilart-drawing (5).png").convert_alpha()
+    pygame.image.load("image (1).png").convert_alpha(),
 ]
 
 # classes and functions
@@ -70,15 +66,10 @@ class player:
 player_size = 50
 
 class tile:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+    def __init__(self):
         self.sprite = pygame.draw.rect(screen, (0, 255, 0), (self.x, self.y, 50, 50))
-    
-    def destroy(self):
-        pass
-
 tile_size = 600  # size of a tile
+tile_gap = 10  # gap between tiles
 
 # tile structure
 tilestructure = [
@@ -91,9 +82,9 @@ tilestructure = [
 tile_grid = [ 
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 99, 1, 1, 0, 0, 0, 0],
+    [0, 0, 0, 99, 2, 1, 0, 0, 0, 0],
+    [0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -103,6 +94,8 @@ tile_grid = [
 # dictionary:
 # 0 = empty
 # 1 = wall
+# 2 = corridor left-right
+# 3 = corridor up-down
 # 99 = spawn
 
 # find tile 99 to set player there
@@ -141,7 +134,7 @@ for row_idx, row in enumerate(tile_grid):
                 y = 0
                 while y < tile_size:
                     img = random.choice(tile_images)
-                    rotation = random.choice([0, 90, 180, 270])
+                    rotation = random.choice([0, 90])
                     img_rotated = pygame.transform.rotate(img, rotation)
                     w, h = img_rotated.get_size()
                     images_for_tile.append((img_rotated, x, y))
@@ -194,12 +187,14 @@ while running:
         camera_y += (target_y - camera_y) * camera_speed
         for row_idx, row in enumerate(tile_grid):
             for col_idx, tile_type in enumerate(row):
+
                 if tile_type != 0:
                     tile_x = col_idx * tile_size
                     tile_y = row_idx * tile_size
-                    pygame.draw.rect(screen, (0, 255, 0), (tile_x - camera_x, tile_y - camera_y, tile_size, tile_size))
-                    for img, img_x, img_y in tile_decorations[(row_idx, col_idx)]:
-                        screen.blit(img, (tile_x + img_x - camera_x, tile_y + img_y - camera_y))
+                    pygame.draw.rect(screen, (0, 0, 0), (tile_x - camera_x, tile_y - camera_y, tile_size, tile_size))
+                    for img, img_x, img_y in tile_decorations[(row_idx, col_idx)]:           # to use when we have the texture... you heard me rahabudim
+                        screen.blit(img, (tile_x + img_x - camera_x, tile_y + img_y - camera_y))                        # temporary disable decor since its ass
+
         pygame.draw.rect(screen, (255, 0, 0), (player.x - camera_x,player.y - camera_y, player_size, player_size))
 
         # while not paused
