@@ -5,22 +5,19 @@
         <picture>
             <img src="download.jpg" alt="" height="500" width="900">
         </picture>
-        <p> hi </p>
+        <p><b>hi</b></p>
     </div>
     <hr>
-    <p><b>a BANANERS BASHUBERS production</b></p>
+    <p><b>A BANANERS BASHUBERS production</b></p>
     <hr>
-    <p> this is a game developed by <b>Adrijan Rossi Jelušič</b> in <b>Maks Štefanič Hadjur</b> for a school grade</p>
-    
+<p>Presented to you by <a href="https://github.com/shmubster" target="_blank">Adrijan Rossi Jelušič</a> and <a href="https://github.com/realdealmaks" target="_blank">Maks Štefanič Hadjur</a> </p>
 <hr>
-</body>
-</html>
 
-# in game screenshots
+# In game screenshots
 ...........................
 
-# content
+# Content
 ............................
 
-## stats
+## Stats
 [![Download](https://img.shields.io/github/v/release/realdealmaks/emeraqld-plains?label=Download&style=for-the-badge)](https://github.com/realdealmaks/emeraqld-plains/releases/latest/download/tishproject.py) [![Download](https://img.shields.io/github/v/release/realdealmaks/emeraqld-plains?label=Commits&style=for-the-badge)](https://github.com/realdealmaks/emeraqld-plains/releases/latest/commit/tishproject.py) [![Download](https://img.shields.io/github/v/release/realdealmaks/emeraqld-plains?label=Stars&style=for-the-badge)](https://github.com/realdealmaks/emeraqld-plains/releases/latest/star/tishproject.py)
