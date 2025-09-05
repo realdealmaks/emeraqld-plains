@@ -214,8 +214,8 @@ while running:
 
         # while paused
         elif is_paused == True:
-            pygame.draw.rect(screen, (20, 20, 20), (screen_w - (screen_w // 2 - 50) // 2, screen_h - (screen_h // 2 - 24) // 2, screen_w // 2 - 50, screen_h // 2 - 24), 0)     # hej real tish batish please center this block 😛
-            screen.blit(font.render("paused", True, (255, 255, 255)), (screen_w // 2 - 50, screen_h //2 - 24)) # and this one maybe too idk     dont worry shmuby i will do it! this repo needs a hero!! 💨💨
+            pygame.draw.rect(screen, (20, 20, 20), (screen_w // 2 - screen_w // 4, screen_h // 2 - screen_h // 4, screen_w // 2, screen_h // 2), 0)
+            screen.blit(font.render("paused", True, (255, 255, 255)), (screen_w // 2 - 60, screen_h //2 - 22))
 
     elif game_stage == "in menu":
         screen.blit(font.render("menu", True, (255, 255, 255)), (20, 20))
@@ -224,4 +224,3 @@ while running:
     pygame.display.update()
 
 pygame.quit()
-
