@@ -220,8 +220,16 @@ while running:
 
         if facing_left:
             player_frame = pygame.transform.flip(player_frame, True, False)
+        offset_x = (player_size * 3 - player_size) // 2
+        offset_y = (player_size * 3 - player_size) // 2
+        draw_x = player.x - camera_x - offset_x
+        draw_y = player.y - camera_y - offset_y
+        if facing_left:
+            draw_x +=30 # offset because i didnt center the gif
+        if facing_left == False:
+            draw_x -=30
 
-        screen.blit(player_frame, (player.x - camera_x, player.y - camera_y))
+        screen.blit(player_frame, (draw_x, draw_y))
 
         # while not paused
         if is_paused != True:
