@@ -1,12 +1,14 @@
 import math, random, pygame, PIL, pydub, pytweening, scipy, dearpygui
 
+from pygame import mixer as mx
+
 pygame.init()
 screen_h, screen_w = 750, 1080
 screen = pygame.display.set_mode((screen_w, screen_h))
 
 # images
 tile_images = [
-    pygame.image.load("image (1).png").convert_alpha(),
+    pygame.image.load("assets/tiles/image (1).png").convert_alpha(),
 ]
 
 # classes and functions
@@ -17,6 +19,7 @@ class player:
         self.y = y
         self.speed = 2  #  speed
         self.health = 100
+        self.tishtishTishtishTishBatish = 10000000000000
 
     def move(self, dx, dy, tile_grid, tile_size):
         grid_height = len(tile_grid)
@@ -104,6 +107,12 @@ for row_idx, row in enumerate(tile_grid):
             player = player(start_x, start_y)
             break
 
+# initialise audio and whatnot
+
+mx.init()
+mx.music.load("sound/testdroga.mp3")
+mx.music.play()
+
 # camera variables
 camera_x, camera_y = 0, 0
 camera_speed = 0.1  # lower = slower
@@ -164,8 +173,12 @@ while running:
             if event.key == pygame.K_a: moving_left = True
             if event.key == pygame.K_d: moving_right = True
             if event.key == pygame.K_ESCAPE: 
-                if is_paused == False: is_paused = True
-                else: is_paused = False
+                if is_paused == False:
+                    is_paused = True
+                    mx.music.pause()
+                else: 
+                    is_paused = False
+                    mx.music.unpause()
 
         # key released
         if event.type == pygame.KEYUP: 
