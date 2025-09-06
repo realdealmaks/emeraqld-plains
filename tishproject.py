@@ -11,6 +11,7 @@ screen = pygame.display.set_mode((screen_w, screen_h))
 mx.init()
 mx.music.load("testdroga.mp3")
 mx.music.play(-1) # this makes it play forever, apparently
+mx.music.pause()
 
 # images
 tile_images = [
@@ -115,6 +116,9 @@ class player:
 
 player_size = 50
 
+def draw_with_id(draw, id):
+    draw
+
 class tile:
     def __init__(self):
         self.sprite = pygame.draw.rect(screen, (0, 255, 0), (self.x, self.y, 50, 50))
@@ -216,6 +220,13 @@ while running:
             if event.key == pygame.K_ESCAPE: 
                 if is_paused == False: is_paused = True
                 else: is_paused = False
+            if event.key == pygame.K_m:
+                if game_stage == "in menu":
+                    mx.music.unpause()
+                    game_stage = "in dungeon"
+                else:
+                    game_stage = "in menu"
+                    mx.music.pause()
             if event.key == pygame.K_h:
                 player.damaged(10)
 
@@ -225,6 +236,15 @@ while running:
             if event.key == pygame.K_s: moving_down = False
             if event.key == pygame.K_a: moving_left = False
             if event.key == pygame.K_d: moving_right = False
+
+        # bouse muttons
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                mouse_pos = pygame.mouse.get_pos()
+                if game_stage == "in menu":
+                    if play_button.collidepoint(mouse_pos):
+                        game_stage = "in dungeon"
+                        mx.music.unpause()
 
     # drawing
     screen.fill((0, 0, 0))  # background
@@ -260,7 +280,7 @@ while running:
         draw_x = player.x - camera_x - offset_x + shake_x
         draw_y = player.y - camera_y - offset_y + shake_y
         if facing_left:
-            draw_x +=30 # offset because i didnt center the gif
+            draw_x +=30 # offset because i didnt center the gif 😁
         else:
             draw_x -=30
 
@@ -297,7 +317,17 @@ while running:
             mx.music.pause()
 
     elif game_stage == "in menu":
-        screen.blit(font.render("menu", True, (255, 255, 255)), (20, 20))
+        screen.blit(font.render("game title", True, (255, 255, 255)), (20, 20))
+        play_button = pygame.Rect(screen_w - 250, screen_h - 150, 200, 100)
+        mouse_pos = pygame.mouse.get_pos()
+        if play_button.collidepoint(mouse_pos):
+            color = (70, 70, 70)   # lighter when hovered over
+        else:
+            color = (40, 40, 40)
+        pygame.draw.rect(screen, (color), play_button)
+        text_surf = font.render("Play", True, (255, 255, 255))
+        text_rect = text_surf.get_rect(center=play_button.center)
+        screen.blit(text_surf, text_rect)
 
     clock.tick(240)
     pygame.display.update()
