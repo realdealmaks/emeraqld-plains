@@ -1,5 +1,6 @@
 import math, random, pygame, pydub, pytweening, scipy, dearpygui
 from PIL import Image
+from pygame import mixer as mx
 
 pygame.init()
 screen_h, screen_w = 750, 1080
@@ -26,6 +27,12 @@ current_frame = 0
 frame_timer = 0
 frame_delay = 50
 facing_left = False
+
+# audio and whatnot
+
+mx.init()
+mx.music.load("testdroga.mp3")
+mx.music.play(-1) # this makes it play forever, apparently
 
 # classes and functions
 
@@ -182,8 +189,12 @@ while running:
             if event.key == pygame.K_a: moving_left = True
             if event.key == pygame.K_d: moving_right = True
             if event.key == pygame.K_ESCAPE: 
-                if is_paused == False: is_paused = True
-                else: is_paused = False
+                if is_paused == False: 
+                    is_paused = True
+                    mx.music.pause()
+                else: 
+                    is_paused = False
+                    mx.music.unpause()
 
         # key released
         if event.type == pygame.KEYUP: 
