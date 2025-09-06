@@ -46,10 +46,12 @@ facing_left = False
 
 class player:
     def __init__(self, x, y):
-        self.x = x
-        self.y = y
-        self.speed = 2  #  speed
-        self.health = 100 # health
+            self.x = x
+            self.y = y
+            self.speed = 2  #  speed
+            self.health = 100 # health
+            self.alive = True # not dead yet
+            self.shake_timer = 0
 
     def move(self, dx, dy, tile_grid, tile_size):
         grid_height = len(tile_grid)
@@ -93,8 +95,23 @@ class player:
             if can_move_y:
                 self.y = new_y
 
+    def shake(self):
+        if self.shake_timer > 0:
+            self.shake_timer -= 1
+            return random.randint(-5, 5), random.randint(-5, 5)
+        return 0, 0
+
+    def damaged(self, amount):
+        global die
+        self.health -= amount
+        self.shake_timer = 10  # frames of shake
+        if self.health <= 0:
+            self.die()
+
     def die(self):
-        pass
+        global game_stage
+        game_stage = "in menu"
+        print("player died")
 
 player_size = 50
 
@@ -199,6 +216,8 @@ while running:
             if event.key == pygame.K_ESCAPE: 
                 if is_paused == False: is_paused = True
                 else: is_paused = False
+            if event.key == pygame.K_h:
+                player.damaged(10)
 
         # key released
         if event.type == pygame.KEYUP: 
@@ -237,11 +256,12 @@ while running:
             player_frame = pygame.transform.flip(player_frame, True, False)
         offset_x = (player_size * 3 - player_size) // 2
         offset_y = (player_size * 3 - player_size) // 2
-        draw_x = player.x - camera_x - offset_x
-        draw_y = player.y - camera_y - offset_y
+        shake_x, shake_y = player.shake()
+        draw_x = player.x - camera_x - offset_x + shake_x
+        draw_y = player.y - camera_y - offset_y + shake_y
         if facing_left:
             draw_x +=30 # offset because i didnt center the gif
-        if facing_left == False:
+        else:
             draw_x -=30
 
         screen.blit(player_frame, (draw_x, draw_y))
