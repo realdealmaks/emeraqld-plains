@@ -1,4 +1,4 @@
-import math, random, pygame, pydub, pytweening, scipy, dearpygui, pymunk, pathfinding
+import math, random, pygame, pydub, pytweening, scipy, pymunk, pathfinding
 from PIL import Image
 from pygame import mixer as mx
 from pymunk import shapes
@@ -13,6 +13,7 @@ mx.init()
 mx.music.load("testdroga.mp3")
 mx.music.play(-1) # this makes it play forever, apparently
 mx.music.pause()
+mx.music.set_volume(1)
 
 # images
 tile_images = [
@@ -196,6 +197,12 @@ moving_up = moving_down = moving_left = moving_right = False
 game_stage = "in dungeon"
 font = pygame.font.SysFont(None, 48)
 is_paused = False
+dragging_music_slider = False
+
+# button variables
+music_slider = pygame.Rect(screen_w - 400, 110, 300, 20)
+play_button = pygame.Rect(screen_w - 250, screen_h - 150, 200, 100)
+settings_button = pygame.Rect(screen_w - 250, screen_h - 300, 200, 100)
 
 # loop setup
 clock = pygame.time.Clock()
@@ -235,7 +242,7 @@ while running:
             if event.key == pygame.K_a: moving_left = False
             if event.key == pygame.K_d: moving_right = False
 
-        # bouse muttons
+        # bouse mutton own
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 mouse_pos = pygame.mouse.get_pos()
@@ -245,6 +252,17 @@ while running:
                         mx.music.unpause()
                     if settings_button.collidepoint(mouse_pos):
                         game_stage="in settings"
+                if game_stage == "in settings":
+                    if music_slider.collidepoint(mouse_pos):
+                        dragging_music_slider = True
+
+        # bouse mutton op
+        if event.type == pygame.MOUSEBUTTONUP:
+            if event.button == 1:
+                dragging_music_slider = False
+
+        mouse_pos = pygame.mouse.get_pos()
+        mouse_pressed = pygame.mouse.get_pressed()[0]
 
     # drawing
     screen.fill((0, 0, 0))  # background
@@ -318,10 +336,7 @@ while running:
 
     elif game_stage == "in menu":
         screen.blit(font.render("game title", True, (255, 255, 255)), (20, 20))
-        play_button = pygame.Rect(screen_w - 250, screen_h - 150, 200, 100)
-
-        mouse_pos = pygame.mouse.get_pos()
-
+        # play button
         if play_button.collidepoint(mouse_pos):
             play_button_color = (70, 70, 70)   # lighter when hovered over
         else:
@@ -330,8 +345,7 @@ while running:
         text_surf = font.render("Play", True, (255, 255, 255))
         text_rect = text_surf.get_rect(center=play_button.center)
         screen.blit(text_surf, text_rect)
-
-        settings_button = pygame.Rect(screen_w - 250, screen_h - 300, 200, 100)
+        # settings button
         if settings_button.collidepoint(mouse_pos):
             settings_button_color = (70, 70, 70)   # lighter when hovered over
         else:
@@ -342,7 +356,24 @@ while running:
         screen.blit(text_surf, text_rect)
 
     elif game_stage == "in settings":
+        setting_font = pygame.font.SysFont(None, 34) # new font for settings cause small
         screen.blit(font.render("settings", True, (255, 255, 255)), (20, 20))
+        # music slider
+        pygame.draw.rect(screen, (120, 120, 120), music_slider)
+        volume = mx.music.get_volume()
+        filled_width = int(music_slider.width * volume)
+        filled_rect = pygame.Rect(music_slider.x, music_slider.y, filled_width, music_slider.height)
+        pygame.draw.rect(screen, (180, 180, 180), filled_rect)
+        mouse_pos = pygame.mouse.get_pos()
+        mouse_pressed = pygame.mouse.get_pressed()
+        if mouse_pressed[0]:
+            # set volume
+            if dragging_music_slider == True:
+                relative_x = mouse_pos[0] - music_slider.x
+                volume = max(0.0, min(1.0, relative_x / music_slider.width))
+                mx.music.set_volume(volume)
+        screen.blit(setting_font.render("music volume", True, (255, 255, 255)), (100, 100))
+        screen.blit(setting_font.render(f"{int(volume * 100)}%", True, (255, 255, 255)), (screen_w // 2 + 20, 110))
 
     clock.tick(240)
     pygame.display.update()
