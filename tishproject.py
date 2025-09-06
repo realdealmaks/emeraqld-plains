@@ -6,10 +6,24 @@ pygame.init()
 screen_h, screen_w = 750, 1080
 screen = pygame.display.set_mode((screen_w, screen_h))
 
+# audio and whatnot
+
+mx.init()
+mx.music.load("testdroga.mp3")
+mx.music.play(-1) # this makes it play forever, apparently
+
 # images
 tile_images = [
     pygame.image.load("image (1).png").convert_alpha(),
 ]
+
+player_health_images = []
+for i in range(1, 4):
+    img = pygame.image.load(f"playerhealth{i}.png").convert_alpha()
+    w, h = img.get_size()
+    img = pygame.transform.scale(img, (w * 4, h * 4))
+    player_health_images.append(img)
+
 player_gif = Image.open("playergif.gif")
 frames = []
 try:
@@ -28,12 +42,6 @@ frame_timer = 0
 frame_delay = 50
 facing_left = False
 
-# audio and whatnot
-
-mx.init()
-mx.music.load("testdroga.mp3")
-mx.music.play(-1) # this makes it play forever, apparently
-
 # classes and functions
 
 class player:
@@ -41,7 +49,7 @@ class player:
         self.x = x
         self.y = y
         self.speed = 2  #  speed
-        self.health = 100
+        self.health = 100 # health
 
     def move(self, dx, dy, tile_grid, tile_size):
         grid_height = len(tile_grid)
@@ -189,12 +197,8 @@ while running:
             if event.key == pygame.K_a: moving_left = True
             if event.key == pygame.K_d: moving_right = True
             if event.key == pygame.K_ESCAPE: 
-                if is_paused == False: 
-                    is_paused = True
-                    mx.music.pause()
-                else: 
-                    is_paused = False
-                    mx.music.unpause()
+                if is_paused == False: is_paused = True
+                else: is_paused = False
 
         # key released
         if event.type == pygame.KEYUP: 
@@ -244,6 +248,7 @@ while running:
 
         # while not paused
         if is_paused != True:
+            mx.music.unpause()
             dx = dy = 0
             if moving_up: dy -= 1
             if moving_down: dy += 1
@@ -258,11 +263,18 @@ while running:
 
             pygame.draw.circle(screen, (20, 20, 20), (100, screen_h - 100), 80)
             screen.blit(font.render(str(player.health), True, (255, 255, 255)), (120, screen_h - 220))
+            if player.health > 66:
+                screen.blit(player_health_images[0], (-50, screen_h - 260))
+            elif player.health > 33:
+                screen.blit(player_health_images[1], (-50, screen_h - 260))
+            else:
+                screen.blit(player_health_images[2], (-50, screen_h - 260))
 
         # while paused
         elif is_paused == True:
             pygame.draw.rect(screen, (20, 20, 20), (screen_w // 2 - screen_w // 4, screen_h // 2 - screen_h // 4, screen_w // 2, screen_h // 2), 0)
             screen.blit(font.render("paused", True, (255, 255, 255)), (screen_w // 2 - 60, screen_h //2 - 22))
+            mx.music.pause()
 
     elif game_stage == "in menu":
         screen.blit(font.render("menu", True, (255, 255, 255)), (20, 20))
