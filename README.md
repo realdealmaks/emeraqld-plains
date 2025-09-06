@@ -17,7 +17,8 @@
 ...........................
 
 # Content
-............................
+<img src="https://github.com/realdealmaks/emeraqld-plains/raw/main/playergif.gif" alt="" width="200"/>
+
 
 ## Stats
 [![Download](https://img.shields.io/github/v/release/realdealmaks/emeraqld-plains?label=Download&style=for-the-badge)](https://github.com/realdealmaks/emeraqld-plains/releases/latest/download/tishproject.py) [![Download](https://img.shields.io/github/v/release/realdealmaks/emeraqld-plains?label=Commits&style=for-the-badge)](https://github.com/realdealmaks/emeraqld-plains/releases/latest/commit/tishproject.py) [![Download](https://img.shields.io/github/v/release/realdealmaks/emeraqld-plains?label=Stars&style=for-the-badge)](https://github.com/realdealmaks/emeraqld-plains/releases/latest/star/tishproject.py)
