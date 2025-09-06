@@ -4,6 +4,8 @@ from pygame import mixer as mx
 from pymunk import shapes
 from time import sleep
 
+developert_tools = True
+
 pygame.init()
 screen_h, screen_w = 750, 1080
 screen = pygame.display.set_mode((screen_w, screen_h))
@@ -128,8 +130,9 @@ class player:
 
     def die(self):
         global game_stage
-        game_stage = "in menu"
+        game_stage = "dead"
         print("player died")
+        self.health = 100
 
 player_size = 50
 
@@ -246,16 +249,17 @@ while running:
             if event.key == pygame.K_ESCAPE: 
                 if is_paused == False: is_paused = True
                 else: is_paused = False
-            if event.key == pygame.K_m:
-                if game_stage == "in menu":
-                    mx.music.unpause()
-                    game_stage = "in dungeon"
-                else:
-                    game_stage = "in menu"
-                    mx.music.pause()
-            if event.key == pygame.K_h:
-                player.damaged(10)
-            if event.key == pygame.K_p: game_stage = "dead"
+            if developert_tools == True:
+                if event.key == pygame.K_m:
+                    if game_stage == "in menu":
+                        mx.music.unpause()
+                        game_stage = "in dungeon"
+                    else:
+                        game_stage = "in menu"
+                        mx.music.pause()
+                if event.key == pygame.K_h:
+                    player.damaged(10)
+                if event.key == pygame.K_p: game_stage = "dead"
 
         # key released
         if event.type == pygame.KEYUP: 
