@@ -245,6 +245,9 @@ while running:
 
             player.move(dx, dy, tile_grid, tile_size)
 
+            pygame.draw.circle(screen, (20, 20, 20), (100, screen_h - 100), 80)
+            screen.blit(font.render(str(player.health), True, (255, 255, 255)), (120, screen_h - 220))
+
         # while paused
         elif is_paused == True:
             pygame.draw.rect(screen, (20, 20, 20), (screen_w // 2 - screen_w // 4, screen_h // 2 - screen_h // 4, screen_w // 2, screen_h // 2), 0)
