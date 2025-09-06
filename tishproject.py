@@ -2,7 +2,6 @@ import math, random, pygame, pydub, pytweening, scipy, pymunk, pathfinding
 from PIL import Image
 from pygame import mixer as mx
 from pymunk import shapes
-from time import sleep
 
 pygame.init()
 screen_h, screen_w = 750, 1080
@@ -11,27 +10,18 @@ screen = pygame.display.set_mode((screen_w, screen_h))
 # audio and whatnot
 
 mx.init()
-
-musics = ["testdroga.mp3", "game_over_loop.mp3"]
-currently_playing_index = 0 # 0 being the first track so it's insta loaded
-
-def musicswitcher(indexhere):
-    global currently_playing_index
-    if currently_playing_index != indexhere:
-        mx.music.load(musics[indexhere])
-        mx.music.play(-1) # -1 to loop forever, important because the game over theme is like 40 seconds long
-        currently_playing_index = indexhere
-    else:
-        pass
-
-mx.music.load(musics[currently_playing_index])
-mx.music.play(-1)
-mx.music.set_volume(1)
+mx.music.load("testdroga.mp3")
+mx.music.play(-1) # this makes it play forever, apparently
+mx.music.pause() # also me btw
+mx.music.set_volume(1) # me btw
 
 # images
 tile_images = [
-    pygame.image.load("image (1).png").convert_alpha(),
+    pygame.image.load("image (1).png").convert_alpha(), # if we want to spice it up add more
 ]
+
+menu_background = pygame.image.load("aimenubg.png").convert_alpha()
+menu_background = pygame.transform.scale(menu_background, (750, 750))
 
 player_health_images = []
 for i in range(1, 4):
@@ -126,7 +116,7 @@ class player:
 
     def die(self):
         global game_stage
-        game_stage = "dead"
+        game_stage = "in menu"
         print("player died")
 
 player_size = 50
@@ -207,16 +197,20 @@ for row_idx, row in enumerate(tile_grid):
 
 # some variables
 moving_up = moving_down = moving_left = moving_right = False
-game_stage = "in dungeon"
+game_stage = "in menu"
 font = pygame.font.SysFont(None, 48)
 is_paused = False
 dragging_music_slider = False
+menu_bg_can_animate = True
+menu_bg_x = screen_w
+flash_alpha = 0
+flash_active = False
+flash_speed = 1
 
 # button variables
 music_slider = pygame.Rect(screen_w - 400, 110, 300, 20)
-play_button = pygame.Rect(screen_w - 250, screen_h - 150, 200, 100)
-settings_button = pygame.Rect(screen_w - 250, screen_h - 300, 200, 100)
-to_menu = pygame.Rect(screen_w - 250, screen_h - 150, 200, 100)
+play_button = pygame.Rect(50, screen_h - 150, 200, 100)
+settings_button = pygame.Rect(50, screen_h - 300, 200, 100)
 
 # loop setup
 clock = pygame.time.Clock()
@@ -248,7 +242,6 @@ while running:
                     mx.music.pause()
             if event.key == pygame.K_h:
                 player.damaged(10)
-            if event.key == pygame.K_p: game_stage = "dead"
 
         # key released
         if event.type == pygame.KEYUP: 
@@ -264,18 +257,12 @@ while running:
                 if game_stage == "in menu":
                     if play_button.collidepoint(mouse_pos):
                         game_stage = "in dungeon"
-                        player.health = 100
-                        musicswitcher(0)
                         mx.music.unpause()
                     if settings_button.collidepoint(mouse_pos):
                         game_stage="in settings"
                 if game_stage == "in settings":
                     if music_slider.collidepoint(mouse_pos):
                         dragging_music_slider = True
-                if game_stage == "dead":
-                    if to_menu.collidepoint(mouse_pos):
-                        game_stage = "in menu"
-                        mx.music.pause()
 
         # bouse mutton op
         if event.type == pygame.MOUSEBUTTONUP:
@@ -356,6 +343,28 @@ while running:
             mx.music.pause()
 
     elif game_stage == "in menu":
+        if menu_bg_can_animate:
+            target_x = screen_w - menu_background.get_width() # stop at right edge
+            if menu_bg_x > target_x:
+                menu_bg_x -= 10
+                
+            else:
+                menu_bg_x = target_x
+                menu_bg_can_animate = False
+                flash_active = True
+        screen.blit(menu_background, (menu_bg_x, 0))
+        if flash_active and flash_alpha < 255:
+            flash_alpha += flash_speed
+            if flash_alpha > 255:
+                flash_alpha = 255
+
+            flash_surface = pygame.Surface((screen_w, screen_h))
+            flash_surface.fill((255, 255, 255))
+            flash_surface.set_alpha(255 - flash_alpha)  # fade out effect
+            screen.blit(flash_surface, (0, 0))
+        else:
+            flash_active = False
+
         screen.blit(font.render("game title", True, (255, 255, 255)), (20, 20))
         # play button
         if play_button.collidepoint(mouse_pos):
@@ -395,18 +404,6 @@ while running:
                 mx.music.set_volume(volume)
         screen.blit(setting_font.render("music volume", True, (255, 255, 255)), (100, 100))
         screen.blit(setting_font.render(f"{int(volume * 100)}%", True, (255, 255, 255)), (screen_w // 2 + 20, 110))
-
-    elif game_stage == "dead":
-        screen.blit(font.render("ded", True, (255, 255, 255)), (20, 20))
-        musicswitcher(1) # it worked because i'm a fucking genius from mars
-        if to_menu.collidepoint(mouse_pos):
-            to_menu_color = (70, 70, 70)
-        else:
-            to_menu_color = (40, 40, 40)
-        pygame.draw.rect(screen, (to_menu_color), to_menu)
-        text_surf = font.render("To menu", True, (255, 255, 255))
-        text_rect = text_surf.get_rect(center=to_menu.center)
-        screen.blit(text_surf, text_rect)
 
     clock.tick(240)
     pygame.display.update()
