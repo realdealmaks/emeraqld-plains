@@ -116,9 +116,6 @@ class player:
 
 player_size = 50
 
-def draw_with_id(draw, id):
-    draw
-
 class tile:
     def __init__(self):
         self.sprite = pygame.draw.rect(screen, (0, 255, 0), (self.x, self.y, 50, 50))
