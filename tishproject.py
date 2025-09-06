@@ -1,6 +1,7 @@
-import math, random, pygame, pydub, pytweening, scipy, dearpygui
+import math, random, pygame, pydub, pytweening, scipy, dearpygui, pymunk, pathfinding
 from PIL import Image
 from pygame import mixer as mx
+from pymunk import shapes
 
 pygame.init()
 screen_h, screen_w = 750, 1080
@@ -242,6 +243,8 @@ while running:
                     if play_button.collidepoint(mouse_pos):
                         game_stage = "in dungeon"
                         mx.music.unpause()
+                    if settings_button.collidepoint(mouse_pos):
+                        game_stage="in settings"
 
     # drawing
     screen.fill((0, 0, 0))  # background
@@ -316,15 +319,30 @@ while running:
     elif game_stage == "in menu":
         screen.blit(font.render("game title", True, (255, 255, 255)), (20, 20))
         play_button = pygame.Rect(screen_w - 250, screen_h - 150, 200, 100)
+
         mouse_pos = pygame.mouse.get_pos()
+
         if play_button.collidepoint(mouse_pos):
-            color = (70, 70, 70)   # lighter when hovered over
+            play_button_color = (70, 70, 70)   # lighter when hovered over
         else:
-            color = (40, 40, 40)
-        pygame.draw.rect(screen, (color), play_button)
+            play_button_color = (40, 40, 40)
+        pygame.draw.rect(screen, (play_button_color), play_button)
         text_surf = font.render("Play", True, (255, 255, 255))
         text_rect = text_surf.get_rect(center=play_button.center)
         screen.blit(text_surf, text_rect)
+
+        settings_button = pygame.Rect(screen_w - 250, screen_h - 300, 200, 100)
+        if settings_button.collidepoint(mouse_pos):
+            settings_button_color = (70, 70, 70)   # lighter when hovered over
+        else:
+            settings_button_color = (40, 40, 40)
+        pygame.draw.rect(screen, (settings_button_color), settings_button)
+        text_surf = font.render("Settings", True, (255, 255, 255))
+        text_rect = text_surf.get_rect(center=settings_button.center)
+        screen.blit(text_surf, text_rect)
+
+    elif game_stage == "in settings":
+        screen.blit(font.render("settings", True, (255, 255, 255)), (20, 20))
 
     clock.tick(240)
     pygame.display.update()
