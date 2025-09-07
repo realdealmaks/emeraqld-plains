@@ -30,6 +30,12 @@ mx.music.pause() # also me btw
 mx.music.set_volume(1) # me btw
 # sybau
 
+death_sound = mx.Sound("vineboom.mp3")
+hurt_sound = mx.Sound("hurt.mp3")
+
+def deathsound():
+    pass # ignore this
+
 # images
 tile_images = [
     pygame.image.load("image (1).png").convert_alpha(), # if we want to spice it up add more
@@ -37,6 +43,8 @@ tile_images = [
 
 menu_background = pygame.image.load("aimenubg.png").convert_alpha()
 menu_background = pygame.transform.scale(menu_background, (750, 750))
+blood_vignette = pygame.image.load("redvignette.png").convert_alpha()
+player_ded = pygame.image.load("ded.png").convert_alpha()
 
 player_health_images = []
 for i in range(1, 4):
@@ -128,12 +136,15 @@ class player:
         self.shake_timer = 10  # frames of shake
         if self.health <= 0:
             self.die()
+        else:
+            hurt_sound.play()
 
     def die(self):
         global game_stage
         game_stage = "dead"
         print("player died")
         self.health = 100
+        death_sound.play()
 
 player_size = 50
 
@@ -438,7 +449,9 @@ while running:
         text_rect = text_surf.get_rect(center=to_menu.center)
         screen.blit(text_surf, text_rect)
 
-    elif game_stage == "dead":
+    elif game_stage == "dead": # don't touch this i have to fix the scaling
+        screen.blit(player_ded, (screen_w // 2 - screen_w // 4, screen_h // 2 - screen_h // 4, screen_w // 2, screen_h // 2))
+
         screen.blit(font.render("ded", True, (255, 255, 255)), (20, 20))
         musicswitcher(1) # it worked because i'm a fucking genius from mars
         if to_menu.collidepoint(mouse_pos):
@@ -450,7 +463,7 @@ while running:
         text_rect = text_surf.get_rect(center=to_menu.center)
         screen.blit(text_surf, text_rect)
 
-    clock.tick(240)
+    clock.tick(240) 
     pygame.display.update()
 
 pygame.quit()
