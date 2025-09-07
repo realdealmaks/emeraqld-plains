@@ -3,7 +3,7 @@
         <h1><b>Bannaners bashubers inc.</b></h1>
         <hr>
         <picture>
-            <img src="download.jpg" alt="" height="500" width="900">
+            <img src="assets/random images/download.jpg" alt="" height="500" width="900">
         </picture>
         <p><b>hi</b></p>
     </div>
@@ -17,7 +17,7 @@
 ...........................
 
 # Content
-<img src="https://github.com/realdealmaks/emeraqld-plains/raw/main/playergif.gif" alt="" width="200"/>
+<img src="https://github.com/realdealmaks/emeraqld-plains/raw/main/assets/models/player/playergif.gif" alt="" width="200"/>
 
 
 ## Stats
