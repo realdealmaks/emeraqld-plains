@@ -135,6 +135,12 @@ class player:
         game_stage = "dead"
         print("player died")
 
+    def respawn(self):
+        self.health = 100
+        self.alive = True
+        self.x = start_x
+        self.y = start_y
+
 player_size = 50
 
 class tile:
@@ -180,7 +186,7 @@ for row_idx, row in enumerate(tile_grid):
 camera_x, camera_y = 0, 0
 camera_speed = 0.1  # lower = slower
 
-def get_camera_offset(player, tile_size):
+def get_camera_offset(Player, tile_size):
     center_x = player.x + player_size // 2
     center_y = player.y + player_size // 2
 
@@ -275,7 +281,7 @@ while running:
                 mouse_pos = pygame.mouse.get_pos()
                 if game_stage == "in menu":
                     if play_button.collidepoint(mouse_pos):
-                        player.health = 100
+                        player.respawn()
                         musicswitcher(0) # ni problema maks tihur
                         game_stage = "in dungeon"
                         mx.music.unpause()
