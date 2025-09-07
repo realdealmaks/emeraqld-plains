@@ -147,6 +147,7 @@ class player:
         if self.health <= 0:
             self.die()
         else:
+            hurt_sound.stop()
             hurt_sound.play()
 
     def die(self):
@@ -281,9 +282,10 @@ while running:
                     if game_stage == "in dungeon":
                         mx.music.pause()
                         game_stage = "in menu"
-                if event.key == pygame.K_h:
-                    player.damaged(10)
-                if event.key == pygame.K_p: game_stage = "dead"
+                if game_stage == "in dungeon":
+                    if event.key == pygame.K_h:
+                        player.damaged(10)
+                    if event.key == pygame.K_p: game_stage = "dead"
 
         # key released
         if event.type == pygame.KEYUP: 
