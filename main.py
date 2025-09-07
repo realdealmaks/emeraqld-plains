@@ -309,6 +309,8 @@ while running:
                 if game_stage == "in settings":
                     if music_slider.collidepoint(mouse_pos):
                         dragging_music_slider = True
+                    if to_menu.collidepoint(mouse_pos):
+                        game_stage = "in menu"
                 if game_stage == "dead":
                     if to_menu.collidepoint(mouse_pos):
                         game_stage = "in menu"
@@ -466,6 +468,15 @@ while running:
                 mx.music.set_volume(volume)
         screen.blit(setting_font.render("music volume", True, (255, 255, 255)), (100, 100))
         screen.blit(setting_font.render(f"{int(volume * 100)}%", True, (255, 255, 255)), (screen_w // 2 + 20, 110))
+
+        if to_menu.collidepoint(mouse_pos):
+            to_menu_color = (70, 70, 70)
+        else:
+            to_menu_color = (40, 40, 40)
+        pygame.draw.rect(screen, (to_menu_color), to_menu)
+        text_surf = font.render("To menu", True, (255, 255, 255))
+        text_rect = text_surf.get_rect(center=to_menu.center)
+        screen.blit(text_surf, text_rect)
 
     elif game_stage == "dead":
         screen.blit(font.render("ded", True, (255, 255, 255)), (20, 20))
