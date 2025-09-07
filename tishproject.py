@@ -11,6 +11,8 @@ screen_h, screen_w = 750, 1080
 screen = pygame.display.set_mode((screen_w, screen_h))
 
 # audio and whatnot
+death_sound = mx.Sound("vineboom.mp3")
+hurt_sound = mx.Sound("hurt.mp3")
 
 mx.init()
 musics = ["testdroga.mp3", "game_over_loop.mp3"]
@@ -31,6 +33,8 @@ mx.music.set_volume(1) # me btw
 # sybau
 
 # images
+player_ded = pygame.image.load("ded.png").convert_alpha()
+
 tile_images = [
     pygame.image.load("image (1).png").convert_alpha(), # if we want to spice it up add more
 ]
@@ -67,6 +71,9 @@ frame_delay = 50
 facing_left = False
 
 # classes and functions
+
+def deathsound():
+    pass # DONT ignore this
 
 class player:
     def __init__(self, x, y):
@@ -139,6 +146,8 @@ class player:
         self.shake_timer = 10  # frames of shake
         if self.health <= 0:
             self.die()
+        else:
+            hurt_sound.play()
 
     def die(self):
         global game_stage
