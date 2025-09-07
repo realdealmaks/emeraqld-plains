@@ -30,21 +30,16 @@ mx.music.pause() # also me btw
 mx.music.set_volume(1) # me btw
 # sybau
 
-death_sound = mx.Sound("vineboom.mp3")
-hurt_sound = mx.Sound("hurt.mp3")
-
-def deathsound():
-    pass # ignore this
-
 # images
 tile_images = [
     pygame.image.load("image (1).png").convert_alpha(), # if we want to spice it up add more
 ]
 
+vignette = pygame.image.load("redvignette.png").convert_alpha()
+vignette = pygame.transform.scale(vignette, (screen_w, screen_h))
+
 menu_background = pygame.image.load("aimenubg.png").convert_alpha()
 menu_background = pygame.transform.scale(menu_background, (750, 750))
-blood_vignette = pygame.image.load("redvignette.png").convert_alpha()
-player_ded = pygame.image.load("ded.png").convert_alpha()
 
 player_health_images = []
 for i in range(1, 4):
@@ -86,14 +81,22 @@ class player:
         grid_height = len(tile_grid)
         grid_width = len(tile_grid[0])
 
-    # horizontal
+        # adjust collision box: how far from sprite edges to check
+        padding_left = 10
+        padding_top = 25
+        padding_right = 10
+        padding_bottom = -30
+        box_width = player_size - padding_left - padding_right
+        box_height = player_size - padding_top - padding_bottom
+
+        # horizontal movement
         if dx != 0:
             new_x = self.x + dx * self.speed
             corners_x = [
-                (new_x, self.y),
-                (new_x + player_size - 1, self.y),
-                (new_x, self.y + player_size - 1),
-                (new_x + player_size - 1, self.y + player_size - 1)
+                (new_x + padding_left, self.y + padding_top),
+                (new_x + padding_left + box_width, self.y + padding_top),
+                (new_x + padding_left, self.y + padding_top + box_height),
+                (new_x + padding_left + box_width, self.y + padding_top + box_height)
             ]
             can_move_x = True
             for cx, cy in corners_x:
@@ -105,14 +108,14 @@ class player:
             if can_move_x:
                 self.x = new_x
 
-        # vertical
+        # vertical movement
         if dy != 0:
             new_y = self.y + dy * self.speed
             corners_y = [
-                (self.x, new_y),
-                (self.x + player_size - 1, new_y),
-                (self.x, new_y + player_size - 1),
-                (self.x + player_size - 1, new_y + player_size - 1)
+                (self.x + padding_left, new_y + padding_top),
+                (self.x + padding_left + box_width, new_y + padding_top),
+                (self.x + padding_left, new_y + padding_top + box_height),
+                (self.x + padding_left + box_width, new_y + padding_top + box_height)
             ]
             can_move_y = True
             for cx, cy in corners_y:
@@ -136,8 +139,6 @@ class player:
         self.shake_timer = 10  # frames of shake
         if self.health <= 0:
             self.die()
-        else:
-            hurt_sound.play()
 
     def die(self):
         global game_stage
@@ -289,7 +290,7 @@ while running:
                 if game_stage == "in menu":
                     if play_button.collidepoint(mouse_pos):
                         player.respawn()
-                        musicswitcher(0) # ni problema maks tihur # ?????????
+                        musicswitcher(0) # ni problema maks tihur
                         game_stage = "in dungeon"
                         mx.music.unpause()
                     if settings_button.collidepoint(mouse_pos):
@@ -324,7 +325,7 @@ while running:
                 if tile_type != 0:
                     tile_x = col_idx * tile_size
                     tile_y = row_idx * tile_size
-                    pygame.draw.rect(screen, (0, 255, 0), (tile_x - camera_x, tile_y - camera_y, tile_size, tile_size))
+                    pygame.draw.rect(screen, (0, 0, 0), (tile_x - camera_x, tile_y - camera_y, tile_size, tile_size))
                     for img, img_x, img_y in tile_decorations[(row_idx, col_idx)]:
                         screen.blit(img, (tile_x + img_x - camera_x, tile_y + img_y - camera_y))
 
@@ -352,6 +353,13 @@ while running:
 
         # while not paused
         if is_paused != True:
+            # vignette
+            if player.alive:
+                max_alpha = 180
+                vignette_alpha = max_alpha * (1 - player.health / 100)
+                vignette.set_alpha(vignette_alpha)
+                screen.blit(vignette, (0, 0))
+
             mx.music.unpause()
             dx = dy = 0
             if moving_up: dy -= 1
@@ -450,18 +458,17 @@ while running:
 
     elif game_stage == "dead":
         screen.blit(font.render("ded", True, (255, 255, 255)), (20, 20))
-        musicswitcher(1) # it worked because i'm a fucking genius from mars # but it doesnt switch back genious # SYFM
+        musicswitcher(1) # it worked because i'm a fucking genius from mars # but it doesnt switch back genious
         if to_menu.collidepoint(mouse_pos):
             to_menu_color = (70, 70, 70)
         else:
             to_menu_color = (40, 40, 40)
-        screen.blit(font.render("ded", True, (255, 255, 255)), (20, 20))
         pygame.draw.rect(screen, (to_menu_color), to_menu)
         text_surf = font.render("To menu", True, (255, 255, 255))
         text_rect = text_surf.get_rect(center=to_menu.center)
         screen.blit(text_surf, text_rect)
 
-    clock.tick(240) 
+    clock.tick(240)
     pygame.display.update()
 
 pygame.quit()
