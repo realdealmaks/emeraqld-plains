@@ -28,6 +28,7 @@ mx.music.load("testdroga.mp3")
 mx.music.play(-1) # this makes it play forever, apparently
 mx.music.pause() # also me btw
 mx.music.set_volume(1) # me btw
+# sybau
 
 # images
 tile_images = [
@@ -72,8 +73,6 @@ class player:
         self.health = 100 # health
         self.alive = True # not dead yet
         self.shake_timer = 0
-        character_image_shake_amount = (0, 0)
-        character_image_shake_timer = 0
 
     def move(self, dx, dy, tile_grid, tile_size):
         grid_height = len(tile_grid)
@@ -140,6 +139,7 @@ class player:
         self.alive = True
         self.x = start_x
         self.y = start_y
+        mx.music.rewind()
 
 player_size = 50
 
@@ -186,7 +186,7 @@ for row_idx, row in enumerate(tile_grid):
 camera_x, camera_y = 0, 0
 camera_speed = 0.1  # lower = slower
 
-def get_camera_offset(Player, tile_size):
+def get_camera_offset(player, tile_size):
     center_x = player.x + player_size // 2
     center_y = player.y + player_size // 2
 
@@ -362,7 +362,7 @@ while running:
             hud_shake_x, hud_shake_y = player.shake()
 
             pygame.draw.circle(screen, (20, 20, 20), (100, screen_h - 100), 80)
-            screen.blit(font.render(str(player.health), True, (255, 255, 255)), (120, screen_h - 220 ))
+            screen.blit(font.render(str(player.health), True, (255, 255, 255)), (120, screen_h - 220))
 
             if player.health > 66:
                 screen.blit(player_health_images[0], (-50 + hud_shake_x, screen_h - 260 + hud_shake_y))
