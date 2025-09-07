@@ -292,7 +292,7 @@ while running:
                 if game_stage == "in menu":
                     if play_button.collidepoint(mouse_pos):
                         player.respawn()
-                        musicswitcher(0) # ni problema maks tihur
+                        musicswitcher(0) # ni problema maks tihur # ?????????
                         game_stage = "in dungeon"
                         mx.music.unpause()
                     if settings_button.collidepoint(mouse_pos):
@@ -453,7 +453,7 @@ while running:
 
     elif game_stage == "dead":
         screen.blit(font.render("ded", True, (255, 255, 255)), (20, 20))
-        musicswitcher(1) # it worked because i'm a fucking genius from mars # but it doesnt switch back genious
+        musicswitcher(1) # it worked because i'm a fucking genius from mars # but it doesnt switch back genious # SYFM
         if to_menu.collidepoint(mouse_pos):
             to_menu_color = (70, 70, 70)
         else:
