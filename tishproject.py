@@ -143,8 +143,10 @@ class player:
         global game_stage
         game_stage = "dead"
         print("player died")
+        mx.music.pause()
         self.health = 100
         death_sound.play()
+        sleep(death_sound.get_length())
 
 player_size = 50
 
@@ -451,13 +453,17 @@ while running:
 
     elif game_stage == "dead": # don't touch this i have to fix the scaling
         screen.blit(player_ded, (screen_w // 2 - screen_w // 4, screen_h // 2 - screen_h // 4, screen_w // 2, screen_h // 2))
+        screen.fill((0, 0, 0))
 
-        screen.blit(font.render("ded", True, (255, 255, 255)), (20, 20))
+        # other stuff i was planning on adding goes here
+
         musicswitcher(1) # it worked because i'm a fucking genius from mars
+        mx.music.unpause()
         if to_menu.collidepoint(mouse_pos):
             to_menu_color = (70, 70, 70)
         else:
             to_menu_color = (40, 40, 40)
+        screen.blit(font.render("ded", True, (255, 255, 255)), (20, 20))
         pygame.draw.rect(screen, (to_menu_color), to_menu)
         text_surf = font.render("To menu", True, (255, 255, 255))
         text_rect = text_surf.get_rect(center=to_menu.center)
