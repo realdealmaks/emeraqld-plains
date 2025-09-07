@@ -268,12 +268,9 @@ while running:
                 else: is_paused = False
             if developert_tools == True:
                 if event.key == pygame.K_m:
-                    if game_stage == "in menu":
-                        mx.music.unpause()
-                        game_stage = "in dungeon"
-                    else:
-                        game_stage = "in menu"
+                    if game_stage == "in dungeon":
                         mx.music.pause()
+                        game_stage = "in menu"
                 if event.key == pygame.K_h:
                     player.damaged(10)
                 if event.key == pygame.K_p: game_stage = "dead"
@@ -327,7 +324,7 @@ while running:
                 if tile_type != 0:
                     tile_x = col_idx * tile_size
                     tile_y = row_idx * tile_size
-                    pygame.draw.rect(screen, (0, 0, 0), (tile_x - camera_x, tile_y - camera_y, tile_size, tile_size))
+                    pygame.draw.rect(screen, (0, 255, 0), (tile_x - camera_x, tile_y - camera_y, tile_size, tile_size))
                     for img, img_x, img_y in tile_decorations[(row_idx, col_idx)]:
                         screen.blit(img, (tile_x + img_x - camera_x, tile_y + img_y - camera_y))
 
