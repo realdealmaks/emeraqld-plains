@@ -11,10 +11,11 @@ screen_h, screen_w = 750, 1080
 screen = pygame.display.set_mode((screen_w, screen_h))
 
 # audio and whatnot
+mx.init(frequency=44100, size=-16, channels=2, buffer=512)
+
 death_sound = mx.Sound("assets/audio/sfx/vineboom.mp3")
 hurt_sound = mx.Sound("assets/audio/sfx/hurt.mp3")
 
-mx.init()
 musics = ["assets/audio/music/testdroga.mp3", "assets/audio/music/game_over_loop.mp3"]
 currently_playing_index = 0 # 0 being the first track so it's insta loaded
 
@@ -147,7 +148,6 @@ class player:
         if self.health <= 0:
             self.die()
         else:
-            hurt_sound.stop()
             hurt_sound.play()
 
     def die(self):
