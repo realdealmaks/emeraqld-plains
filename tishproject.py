@@ -75,12 +75,12 @@ facing_left = False
 
 class player:
     def __init__(self, x, y):
-            self.x = x
-            self.y = y
-            self.speed = 2  #  speed
-            self.health = 100 # health
-            self.alive = True # not dead yet
-            self.shake_timer = 0
+        self.x = x
+        self.y = y
+        self.speed = 2  #  speed
+        self.health = 100 # health
+        self.alive = True # not dead yet
+        self.shake_timer = 0
 
     def move(self, dx, dy, tile_grid, tile_size):
         grid_height = len(tile_grid)
@@ -143,10 +143,13 @@ class player:
         global game_stage
         game_stage = "dead"
         print("player died")
-        mx.music.pause()
+
+    def respawn(self):
         self.health = 100
-        death_sound.play()
-        sleep(death_sound.get_length())
+        self.alive = True
+        self.x = start_x
+        self.y = start_y
+        mx.music.rewind()
 
 player_size = 50
 
@@ -288,6 +291,8 @@ while running:
                 mouse_pos = pygame.mouse.get_pos()
                 if game_stage == "in menu":
                     if play_button.collidepoint(mouse_pos):
+                        player.respawn()
+                        musicswitcher(0) # ni problema maks tihur
                         game_stage = "in dungeon"
                         mx.music.unpause()
                     if settings_button.collidepoint(mouse_pos):
@@ -295,8 +300,6 @@ while running:
                 if game_stage == "in settings":
                     if music_slider.collidepoint(mouse_pos):
                         dragging_music_slider = True
-                    if to_menu.collidepoint(mouse_pos):
-                        game_stage = "in menu"
                 if game_stage == "dead":
                     if to_menu.collidepoint(mouse_pos):
                         game_stage = "in menu"
@@ -365,14 +368,19 @@ while running:
 
             player.move(dx, dy, tile_grid, tile_size)
 
+            # character image
+            hud_shake_x, hud_shake_y = player.shake()
+
             pygame.draw.circle(screen, (20, 20, 20), (100, screen_h - 100), 80)
             screen.blit(font.render(str(player.health), True, (255, 255, 255)), (120, screen_h - 220))
+
             if player.health > 66:
-                screen.blit(player_health_images[0], (-50, screen_h - 260))
+                screen.blit(player_health_images[0], (-50 + hud_shake_x, screen_h - 260 + hud_shake_y))
             elif player.health > 33:
-                screen.blit(player_health_images[1], (-50, screen_h - 260))
+                screen.blit(player_health_images[1], (-50 + hud_shake_x, screen_h - 260 + hud_shake_y))
             else:
-                screen.blit(player_health_images[2], (-50, screen_h - 260))
+                screen.blit(player_health_images[2], (-50 + hud_shake_x, screen_h - 260 + hud_shake_y))
+
 
         # while paused
         elif is_paused == True:
@@ -442,23 +450,10 @@ while running:
                 mx.music.set_volume(volume)
         screen.blit(setting_font.render("music volume", True, (255, 255, 255)), (100, 100))
         screen.blit(setting_font.render(f"{int(volume * 100)}%", True, (255, 255, 255)), (screen_w // 2 + 20, 110))
-        if to_menu.collidepoint(mouse_pos):
-            to_menu_color = (70, 70, 70)
-        else:
-            to_menu_color = (40, 40, 40)
-        pygame.draw.rect(screen, (to_menu_color), to_menu)
-        text_surf = font.render("To menu", True, (255, 255, 255))
-        text_rect = text_surf.get_rect(center=to_menu.center)
-        screen.blit(text_surf, text_rect)
 
-    elif game_stage == "dead": # don't touch this i have to fix the scaling
-        screen.blit(player_ded, (screen_w // 2 - screen_w // 4, screen_h // 2 - screen_h // 4, screen_w // 2, screen_h // 2))
-        screen.fill((0, 0, 0))
-
-        # other stuff i was planning on adding goes here
-
-        musicswitcher(1) # it worked because i'm a fucking genius from mars
-        mx.music.unpause()
+    elif game_stage == "dead":
+        screen.blit(font.render("ded", True, (255, 255, 255)), (20, 20))
+        musicswitcher(1) # it worked because i'm a fucking genius from mars # but it doesnt switch back genious
         if to_menu.collidepoint(mouse_pos):
             to_menu_color = (70, 70, 70)
         else:
