@@ -490,6 +490,9 @@ while running:
         text_rect = text_surf.get_rect(center=to_menu.center)
         screen.blit(text_surf, text_rect)
 
+    fps = int(clock.get_fps())
+    pygame.display.set_caption(f"FPS: {fps}")
+
     clock.tick(240)
     pygame.display.update()
 
