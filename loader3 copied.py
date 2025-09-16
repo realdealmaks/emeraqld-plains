@@ -273,15 +273,6 @@ def loader3(main_globals):
         else:
             draw_pause_menu(main_globals)
 
-    class Enemy():
-        def __init__(self, main_globals, x, y):
-            self.main_globals = main_globals
-            self.x = x
-            self.y = y
-        
-
-    enemy = Enemy(main_globals, 0, 0)
-
 
     main_globals['draw_menu'] = draw_menu
     main_globals['draw_dungeon'] = draw_dungeon
@@ -296,7 +287,6 @@ def loader3(main_globals):
     main_globals['player'] = player
     main_globals['Player'] = Player
     main_globals['tile'] = tile
-    main_globals['enemy'] = enemy
 
 
     print("loader3 file loaded")
