@@ -72,4 +72,6 @@ def loader1(main_globals):
     main_globals['spawn_x'] = 0
     main_globals['spawn_y'] = 0
 
+    main_globals['tile_offset'] = 10
+
     print("loader1 file loaded")

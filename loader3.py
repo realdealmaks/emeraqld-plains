@@ -114,16 +114,6 @@ def loader3(main_globals):
             self.y = y
             self.tile_offset = 15
 
-        def draw_tile(self, main_globals, x, y):
-            tile = main_globals['tile']
-            pygame.draw.rect(main_globals['screen'], self.color, (x, y, self.size, self.size))
-            for row_idx, row in enumerate(main_globals['tilemap']):
-                for col_idx, tile in enumerate(row):
-                    if tile == 1:
-                        main_globals['screen'].blit(main_globals['tile_images'][0], (col_idx * self.size + self.tile_offset, row_idx * self.size + self.tile_offset))
-                    elif tile == 99:
-                        main_globals['screen'].blit(main_globals['tile_images'][0], (col_idx * self.size + self.tile_offset, row_idx * self.size + self.tile_offset))
-
         def tile_images(self):
             self.main_globals['screen'].blit(self.main_globals['tile_images'][0], (self.x, self.y))
 
@@ -261,10 +251,12 @@ def loader3(main_globals):
         for row_idx, row in enumerate(main_globals['tilemap']):
             for col_idx, tile_type in enumerate(row):
                 if tile_type == 99:
+                    main_globals['screen'].blit(main_globals['tile_images'], (col_idx * main_globals['tile_size'] + main_globals['tile_offset'], row_idx * main_globals['tile_size'] + main_globals['tile_offset']))
                     main_globals['spawn_x'] = col_idx * main_globals['tile_size'] + (main_globals['tile_size'] - player_size) // 2
                     main_globals['spawn_y'] = row_idx * main_globals['tile_size'] + (main_globals['tile_size'] - player_size) // 2
                     main_globals['Player'] = Player(main_globals, main_globals['spawn_x'], main_globals['spawn_y'])
-                    break
+                elif tile_type == 1:
+                        main_globals['screen'].blit(main_globals['tile_images'], (col_idx * main_globals['tile_size'] + main_globals['tile_offset'], row_idx * main_globals['tile_size'] + main_globals['tile_offset']))
 
         # animate player
         frame_timer += 1

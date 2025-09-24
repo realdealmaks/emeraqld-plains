@@ -17,4 +17,4 @@ actual blitting of the tiles in draw_dungeon() function in loader3.py (as of rig
 tile size var and test tilemap in loader1.py under their respective comments at the end of the function (as of right now line 62 onwards)
 
 # you can write this man
-prosim nehaj koristiti desktop aplikacijo github, saj je vnicilo par ur dela, par filov, in zajebal par directorijev.
+prosim nehaj koristiti desktop aplikacijo github, saj je unicilo par filov, in zajebal par directorijev.
