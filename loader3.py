@@ -262,6 +262,15 @@ def loader3(main_globals):
         main_globals['camera_x'] = camera_x
         main_globals['camera_y'] = camera_y
 
+        for row_i, row in enumerate(main_globals['tilemap']):
+            for col_i, tile in enumerate(row):
+                x = col_i * main_globals['tile_size']
+                y = row_i * main_globals['tile_size']
+                if tile == 0:
+                    screen.blit(main_globals['floorboard'], (x, y))
+                else:
+                    pass # for now
+
         # animate player
         frame_timer += 1
         if frame_timer >= frame_delay:

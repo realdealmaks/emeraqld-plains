@@ -59,4 +59,16 @@ def loader1(main_globals):
 
     main_globals['developert_tools'] = True
 
+    # tiles and the maps that go with them
+    main_globals['tile_size'] = 50
+
+    # test map to see if this shit even works
+    main_globals['tilemap'] = [
+        [1, 0, 1, 0, 1,],
+        [0, 1, 0, 1, 0,],
+        [1, 0, 1, 0, 1,],
+        [0, 1, 0, 1, 0,],
+        [1, 0, 1, 0, 1,],
+    ]
+
     print("loader1 file loaded")

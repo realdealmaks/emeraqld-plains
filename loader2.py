@@ -15,6 +15,10 @@ def loader2(main_globals):
     main_globals['vignette'] = pygame.transform.scale(main_globals['vignette'], (main_globals['screen_w'], main_globals['screen_h']))
     main_globals['menu_background'] = pygame.image.load("assets/useful images/aimenubg.png").convert_alpha()
     main_globals['menu_background'] = pygame.transform.scale(main_globals['menu_background'], (750, 750))
+
+    # tiles
+    main_globals['floorboard'] = pygame.image.load('assets/useful images/tiles/image.png')
+
     player_health_images = []
     for i in range(1, 4):
         img = pygame.image.load(f"assets/models/player/playerhealth{i}.png").convert_alpha()
