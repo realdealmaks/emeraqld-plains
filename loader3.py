@@ -98,8 +98,8 @@ def loader3(main_globals):
             print("player respawned")
             self.health = 100
             self.alive = True
-            self.x = main_globals['spawn_x']
-            self.y = main_globals['spawn_y']
+            self.x = self.main_globals['spawn_x']
+            self.y = self.main_globals['spawn_y']
             mx.music.rewind()
 
     player = Player(main_globals, 0, 0)
@@ -203,7 +203,7 @@ def loader3(main_globals):
         pygame.draw.rect(screen, (180, 180, 180), filled_rect)
 
         mouse_pressed = pygame.mouse.get_pressed()
-        if mouse_pressed[0] and dragging_music_slider:
+        if mouse_pressed[0] and main_globals['dragging_music_slider']:
             relative_x = mouse_pos[0] - music_slider.x
             volume = max(0.0, min(1.0, relative_x / music_slider.width))
             mx.music.set_volume(volume)

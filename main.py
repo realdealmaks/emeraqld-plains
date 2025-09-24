@@ -136,7 +136,7 @@ try:
         mode = frame.mode
         size = frame.size
         data = frame.tobytes()
-        py_image = pygame.image.fromstring(data, size, mode).convert_alpha()            # this entire block was from google 
+        py_image = pygame.image.fromstring(data, size, mode).convert_alpha()
         main.frames.append(py_image)
         player_gif.seek(player_gif.tell() + 1)
 except EOFError:
