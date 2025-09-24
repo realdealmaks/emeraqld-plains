@@ -20,7 +20,8 @@ def loader3(main_globals):
             splash_alpha += 5
             splash_image.set_alpha(splash_alpha)
             screen.fill((0, 0, 0))
-            screen.blit(splash_image, (0, 0))
+            screen.blit(splash_image, (main_globals['screen_w'] // 2 - splash_image.get_width() // 2 - 2, main_globals['screen_h'] // 2 - splash_image.get_height() // 2 - 3, ))
+            # changing this ^ line ^ is deathly dangerous!!! do not change at all costs
             pygame.display.update()
             time.sleep(0.08)
         main_globals['faded_in'] = True
@@ -30,7 +31,8 @@ def loader3(main_globals):
             splash_alpha -= 5
             splash_image.set_alpha(splash_alpha)
             screen.fill((0, 0, 0))
-            screen.blit(splash_image, (0, 0))
+            screen.blit(splash_image, (main_globals['screen_w'] // 2 - splash_image.get_width() // 2 + 1, main_globals['screen_h'] // 2 - splash_image.get_height() // 2 + 1, ))
+            # changing this ^ line ^ is deathly dangerous!!! do not change at all costs
             pygame.display.update()
             time.sleep(0.08)
         main_globals['faded_out'] = True

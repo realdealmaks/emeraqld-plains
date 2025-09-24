@@ -19,7 +19,6 @@ def loader1(main_globals):
     main_globals['menu_background'] = pygame.image.load("assets/useful images/aimenubg.png").convert_alpha()
     main_globals['menu_background'] = pygame.transform.scale(main_globals['menu_background'], (main_globals['screen_w'], main_globals['screen_h']))
     main_globals['splash_image'] = pygame.image.load("assets/useful images/splashimage.jpg").convert_alpha()
-    main_globals['splash_image'] = pygame.transform.scale(main_globals['splash_image'], (main_globals['screen_w'], main_globals['screen_h']))
     main_globals['faded_in'] = False
     main_globals['faded_out'] = False
     main_globals['splash_alpha'] = 0
