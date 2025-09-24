@@ -59,16 +59,17 @@ def loader1(main_globals):
 
     main_globals['developert_tools'] = True
 
-    # tiles and the maps that go with them
-    main_globals['tile_size'] = 50
+    main_globals['tile_images'] = [pygame.image.load("assets/useful images/tiles/tile600x600.png").convert_alpha()]
 
-    # test map to see if this shit even works
     main_globals['tilemap'] = [
-        [1, 0, 1, 0, 1,],
-        [0, 1, 0, 1, 0,],
-        [1, 0, 1, 0, 1,],
-        [0, 1, 0, 1, 0,],
-        [1, 0, 1, 0, 1,],
+        [0, 0, 0, 0, 0,],
+        [0, 99, 1, 1, 0,],
+        [0, 1, 0, 0, 0,],
+        [0, 0, 0, 0, 0,],
+        [0, 0, 0, 0, 0,],
     ]
+
+    main_globals['spawn_x'] = 0
+    main_globals['spawn_y'] = 0
 
     print("loader1 file loaded")

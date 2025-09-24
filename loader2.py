@@ -8,15 +8,12 @@ from pymunk import shapes
 
 def loader2(main_globals):
     main_globals['player_ded'] = pygame.image.load("assets/models/player/ded.png").convert_alpha()
-    main_globals['tile_images'] = [
-        pygame.image.load("assets/useful images/tiles/tile600x600.png").convert_alpha()
-    ]
+    main_globals['tile_images'] = pygame.image.load("assets/useful images/tiles/tile600x600.png").convert_alpha()
     main_globals['vignette'] = pygame.image.load("assets/useful images/redvignette.png").convert_alpha()
     main_globals['vignette'] = pygame.transform.scale(main_globals['vignette'], (main_globals['screen_w'], main_globals['screen_h']))
     main_globals['menu_background'] = pygame.image.load("assets/useful images/aimenubg.png").convert_alpha()
     main_globals['menu_background'] = pygame.transform.scale(main_globals['menu_background'], (750, 750))
 
-    # tiles
     main_globals['floorboard'] = pygame.image.load('assets/useful images/tiles/image.png')
 
     player_health_images = []

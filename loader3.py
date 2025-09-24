@@ -95,10 +95,11 @@ def loader3(main_globals):
             print("player died")
 
         def respawn(self):
+            print("player respawned")
             self.health = 100
             self.alive = True
-            self.x = main_globals['screen_w'] // 2
-            self.y = main_globals['screen_h'] // 2
+            self.x = main_globals['spawn_x']
+            self.y = main_globals['spawn_y']
             mx.music.rewind()
 
     player = Player(main_globals, 0, 0)
@@ -112,24 +113,19 @@ def loader3(main_globals):
             self.x = x
             self.y = y
             self.tile_offset = 15
-            self.old_x = x
-            self.old_y = y
-            self.layout = [False, False, False]
 
-        def draw_tile(self):
-            pygame.draw.rect(self.main_globals['screen'], self.color, (self.x, self.y, self.size, self.size))
+        def draw_tile(self, main_globals, x, y):
+            tile = main_globals['tile']
+            pygame.draw.rect(main_globals['screen'], self.color, (x, y, self.size, self.size))
+            for row_idx, row in enumerate(main_globals['tilemap']):
+                for col_idx, tile in enumerate(row):
+                    if tile == 1:
+                        main_globals['screen'].blit(main_globals['tile_images'][0], (col_idx * self.size + self.tile_offset, row_idx * self.size + self.tile_offset))
+                    elif tile == 99:
+                        main_globals['screen'].blit(main_globals['tile_images'][0], (col_idx * self.size + self.tile_offset, row_idx * self.size + self.tile_offset))
 
         def tile_images(self):
             self.main_globals['screen'].blit(self.main_globals['tile_images'][0], (self.x, self.y))
-
-        def connect_tile(self):
-            screen = self.main_globals['screen']
-            if self.layout[0]:
-                pygame.draw.rect(screen, self.color, (self.old_x + self.tile_offset + self.size, self.old_y, self.size, self.size))
-            if self.layout[1]:
-                pygame.draw.rect(screen, self.color, (self.old_x, self.old_y + self.tile_offset + self.size, self.size, self.size))
-            if self.layout[2]:
-                pygame.draw.rect(screen, self.color, (self.old_x - self.tile_offset - self.size, self.old_y, self.size, self.size))
 
     tile = Tile(main_globals, 0, 0)
 
@@ -245,7 +241,7 @@ def loader3(main_globals):
         text_surf = font.render("To menu", True, (255, 255, 255))
         screen.blit(text_surf, to_menu.topleft)
 
-    def draw_dungeon(main_globals, player, moving_up, moving_down, moving_left, moving_right, is_paused, mouse_pos, facing_left):
+    def draw_dungeon(main_globals, player, is_paused, facing_left):
         screen = main_globals['screen']
         camera_x = main_globals['camera_x']
         camera_y = main_globals['camera_y']
@@ -256,20 +252,19 @@ def loader3(main_globals):
         frames = main_globals['frames']
         player_size = main_globals['player_size']
 
-        target_x, target_y = get_camera_offset(main_globals, player, main_globals['tile'].size)
+        target_x, target_y = get_camera_offset(main_globals, player, main_globals['tile_size'])
         camera_x += (target_x - camera_x) * camera_speed
         camera_y += (target_y - camera_y) * camera_speed
         main_globals['camera_x'] = camera_x
         main_globals['camera_y'] = camera_y
 
-        for row_i, row in enumerate(main_globals['tilemap']):
-            for col_i, tile in enumerate(row):
-                x = col_i * main_globals['tile_size']
-                y = row_i * main_globals['tile_size']
-                if tile == 0:
-                    screen.blit(main_globals['floorboard'], (x, y))
-                else:
-                    pass # for now
+        for row_idx, row in enumerate(main_globals['tilemap']):
+            for col_idx, tile_type in enumerate(row):
+                if tile_type == 99:
+                    main_globals['spawn_x'] = col_idx * main_globals['tile_size'] + (main_globals['tile_size'] - player_size) // 2
+                    main_globals['spawn_y'] = row_idx * main_globals['tile_size'] + (main_globals['tile_size'] - player_size) // 2
+                    main_globals['Player'] = Player(main_globals, main_globals['spawn_x'], main_globals['spawn_y'])
+                    break
 
         # animate player
         frame_timer += 1
@@ -317,7 +312,6 @@ def loader3(main_globals):
             self.main_globals = main_globals
             self.x = x
             self.y = y
-        
 
     enemy = Enemy(main_globals, 0, 0)
 
