@@ -17,13 +17,18 @@ def loader1(main_globals):
 
     main_globals['menu_bg_x'] = main_globals['screen_w']
     main_globals['menu_background'] = pygame.image.load("assets/useful images/aimenubg.png").convert_alpha()
-    main_globals['menu_background'] = pygame.transform.scale(main_globals['menu_background'], (750, 750))
+    main_globals['menu_background'] = pygame.transform.scale(main_globals['menu_background'], (main_globals['screen_w'], main_globals['screen_h']))
+    main_globals['splash_image'] = pygame.image.load("assets/useful images/splashimage.jpg").convert_alpha()
+    main_globals['splash_image'] = pygame.transform.scale(main_globals['splash_image'], (main_globals['screen_w'], main_globals['screen_h']))
+    main_globals['faded_in'] = False
+    main_globals['faded_out'] = False
+    main_globals['splash_alpha'] = 0
 
     main_globals['moving_up'] = False
     main_globals['moving_down'] = False
     main_globals['moving_left'] = False
     main_globals['moving_right'] = False
-    main_globals['game_stage'] = "in menu"
+    main_globals['game_stage'] = ""
 
     main_globals['font'] = pygame.font.SysFont(None, 48)
     main_globals['is_paused'] = False

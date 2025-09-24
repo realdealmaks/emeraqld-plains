@@ -5,9 +5,37 @@ import math, random, pygame, pydub, pytweening, scipy, pymunk, pathfinding
 from PIL import Image
 from pygame import mixer as mx
 from pymunk import shapes
+import time
 
 def loader3(main_globals):
-    # screen = None
+    def draw_splash(main_globals):
+        screen = main_globals['screen']
+        splash_image = main_globals['splash_image']
+        splash_alpha = main_globals['splash_alpha']
+
+        # fade in
+        time.sleep(1)
+        splash_alpha = 0
+        while splash_alpha < 255:
+            splash_alpha += 5
+            splash_image.set_alpha(splash_alpha)
+            screen.fill((0, 0, 0))
+            screen.blit(splash_image, (0, 0))
+            pygame.display.update()
+            time.sleep(0.08)
+        main_globals['faded_in'] = True
+
+        # fade out
+        while splash_alpha > 0:
+            splash_alpha -= 5
+            splash_image.set_alpha(splash_alpha)
+            screen.fill((0, 0, 0))
+            screen.blit(splash_image, (0, 0))
+            pygame.display.update()
+            time.sleep(0.08)
+        main_globals['faded_out'] = True
+        print("set game stage to menu")
+
     def musicswitcher(main_globals, indexhere):
         if main_globals['currently_playing_index'] != indexhere:
             mx.music.load(main_globals['musics'][indexhere])
@@ -292,6 +320,7 @@ def loader3(main_globals):
     main_globals['musicswitcher'] = musicswitcher
     main_globals['get_camera_offset'] = get_camera_offset
     main_globals['draw_vignette'] = draw_vignette
+    main_globals['draw_splash'] = draw_splash
     main_globals['Tile'] = Tile
     main_globals['player'] = player
     main_globals['Player'] = Player
