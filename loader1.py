@@ -16,9 +16,6 @@ def loader1(main_globals):
     main_globals['screen_w'] = 1080
 
     main_globals['menu_bg_x'] = main_globals['screen_w']
-    main_globals['menu_background'] = pygame.image.load("assets/useful images/aimenubg.png").convert_alpha()
-    main_globals['menu_background'] = pygame.transform.scale(main_globals['menu_background'], (main_globals['screen_w'], main_globals['screen_h']))
-    main_globals['splash_image'] = pygame.image.load("assets/useful images/splashimage.jpg").convert_alpha()
     main_globals['faded_in'] = False
     main_globals['faded_out'] = False
     main_globals['splash_alpha'] = 0
@@ -57,9 +54,7 @@ def loader1(main_globals):
     main_globals['facing_left'] = False
     main_globals['frames'] = []
 
-    main_globals['developert_tools'] = True
-
-    main_globals['tile_images'] = [pygame.image.load("assets/useful images/tiles/tile600x600.png").convert_alpha()]
+    main_globals['developer_tools'] = True
 
     main_globals['tilemap'] = [
         [0, 0, 0, 0, 0,],

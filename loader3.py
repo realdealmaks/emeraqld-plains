@@ -248,15 +248,21 @@ def loader3(main_globals):
         main_globals['camera_x'] = camera_x
         main_globals['camera_y'] = camera_y
 
+        tile_surface = main_globals['tile_images']
+
         for row_idx, row in enumerate(main_globals['tilemap']):
             for col_idx, tile_type in enumerate(row):
+                tx = col_idx * main_globals['tile_size'] + main_globals['tile_offset']
+                ty = row_idx * main_globals['tile_size'] + main_globals['tile_offset']
                 if tile_type == 99:
-                    main_globals['screen'].blit(main_globals['tile_images'], (col_idx * main_globals['tile_size'] + main_globals['tile_offset'], row_idx * main_globals['tile_size'] + main_globals['tile_offset']))
-                    main_globals['spawn_x'] = col_idx * main_globals['tile_size'] + (main_globals['tile_size'] - player_size) // 2
-                    main_globals['spawn_y'] = row_idx * main_globals['tile_size'] + (main_globals['tile_size'] - player_size) // 2
-                    main_globals['Player'] = Player(main_globals, main_globals['spawn_x'], main_globals['spawn_y'])
+                    screen.blit(tile_surface, (tx - camera_x, ty - camera_y))
+                    if main_globals.get('player') is None:
+                        main_globals['spawn_x'] = col_idx * main_globals['tile_size'] + (main_globals['tile_size'] - player_size) // 2
+                        main_globals['spawn_y'] = row_idx * main_globals['tile_size'] + (main_globals['tile_size'] - player_size) // 2
+                        if main_globals.get('Player') is not None:
+                            main_globals['player'] = main_globals['Player'](main_globals, main_globals['spawn_x'], main_globals['spawn_y'])
                 elif tile_type == 1:
-                        main_globals['screen'].blit(main_globals['tile_images'], (col_idx * main_globals['tile_size'] + main_globals['tile_offset'], row_idx * main_globals['tile_size'] + main_globals['tile_offset']))
+                    screen.blit(tile_surface, (tx - camera_x, ty - camera_y))
 
         # animate player
         frame_timer += 1
