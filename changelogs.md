@@ -9,6 +9,7 @@ friggan hurt sfx /r
 friggan rage over tiles sestem and bnran it /s
 friggan segment the code to 4 files /s
 friggan make all the images until 24th sep 2025 /s
+all in all: friggan awesome
 
 # 24-09-2025 / add tile system 2.0 / realdealmaks
 
