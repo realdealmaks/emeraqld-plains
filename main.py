@@ -127,6 +127,8 @@ main.screen = screen # regalishes it to the main globas zalish
 print("started some displayzers")
 main.game_stage = "splash" # starts at splash screen
 
+main.walkable_mask = main.make_initial_walkable_surface(main.tilemap, main_globals) # makes the initial walkable surface
+
 # i should probably burn this somewhere in loader 3 some time soon
 # animates player with the gif
 player_gif = Image.open("assets/models/player/playergif.gif")
@@ -158,7 +160,7 @@ while running:
         if event.type == pygame.KEYDOWN: 
             if event.key == pygame.K_w: main.moving_up = True
             if event.key == pygame.K_s: main.moving_down = True
-            if event.key == pygame.K_a: 
+            if event.key == pygame.K_a:
                 main.moving_left = True
                 main.facing_left = True
             if event.key == pygame.K_d: 
@@ -167,6 +169,7 @@ while running:
             if event.key == pygame.K_ESCAPE:
                 if main.is_paused == False: main.is_paused = True
                 else: main.is_paused = False
+
             if main.developer_tools == True:
                 if event.key == pygame.K_m:
                     if main.game_stage == "in dungeon":
@@ -175,10 +178,16 @@ while running:
                 if main.game_stage == "in dungeon":
                     if event.key == pygame.K_h:
                         main.player.damaged(10)
-                    if event.key == pygame.K_p: main.game_stage = "dead"
+                    if event.key == pygame.K_p:
+                        main.game_stage = "dead"
+                    if event.key == pygame.K_y:
+                        rand1 = random.randint(0, 9)
+                        rand2 = random.randint(0, 9)
+                        main.update_tile(main_globals, rand1, rand2, 99)
+                        main.camera_x, main.camera_y = main.get_camera_offset(main_globals, main.player, main.tile_size)
 
         # key released
-        if event.type == pygame.KEYUP: 
+        if event.type == pygame.KEYUP:
             if event.key == pygame.K_w: main.moving_up = False
             if event.key == pygame.K_s: main.moving_down = False
             if event.key == pygame.K_a: main.moving_left = False
@@ -221,7 +230,7 @@ while running:
         time.sleep(2)
         main.game_stage = "in menu"
 
-    if main.game_stage == "in dungeon": 
+    if main.game_stage == "in dungeon":
         main.draw_dungeon(main_globals, main.player, main.is_paused, main.facing_left)
         # to je prevec za 1 linijo prosim ne sprement 💖
 

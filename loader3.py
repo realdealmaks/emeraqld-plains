@@ -46,16 +46,71 @@ def loader3(main_globals):
 
 
     def get_camera_offset(main_globals, player, tile_size):
-        center_x = player.x + main_globals['player_size'] // 2
-        center_y = player.y + main_globals['player_size'] // 2
+        player_center_x = player.x + main_globals['player_size'] // 2
+        player_center_y = player.y + main_globals['player_size'] // 2
 
-        tile_x = int(center_x // tile_size)
-        tile_y = int(center_y // tile_size)
-
-        offset_x = tile_x * tile_size - (main_globals['screen_w'] - tile_size) // 2
-        offset_y = tile_y * tile_size - (main_globals['screen_h'] - tile_size) // 2
-
+        tile_x = player_center_x // (tile_size + main_globals['tile_offset'])
+        tile_y = player_center_y // (tile_size + main_globals['tile_offset'])
+        # camera snaps to the center
+        offset_x = tile_x * (tile_size + main_globals['tile_offset']) + tile_size // 2 - main_globals['screen_w'] // 2
+        offset_y = tile_y * (tile_size + main_globals['tile_offset']) + tile_size // 2 - main_globals['screen_h'] // 2
         return offset_x, offset_y
+
+    def make_initial_walkable_surface(tilemap, main_globals):
+        ts = main_globals['tile_size'] + main_globals['tile_offset']
+        tile_size = main_globals['tile_size']
+        mask = pygame.Surface((len(tilemap[0]) * ts, len(tilemap) * ts))
+        mask.fill((0, 0, 0))  # black is not walkable
+
+        bridge_fraction = 0.25
+        bridge_size = int(tile_size * bridge_fraction)
+
+        for row_idx, row in enumerate(tilemap):
+            for col_idx, tile_type in enumerate(row):
+                if tile_type in (1, 99):
+                    tx = col_idx * ts
+                    ty = row_idx * ts
+                    # draw main tile
+                    pygame.draw.rect(mask, (0, 255, 0), (tx, ty, tile_size, tile_size))
+
+                    # horizontal bridge
+                    if col_idx + 1 < len(row) and tilemap[row_idx][col_idx + 1] in (1, 99):
+                        pygame.draw.rect(mask, (0, 255, 0), (tx + tile_size, ty + tile_size//2 - bridge_size//2,bridge_size, bridge_size))
+
+                    # vertical bridge
+                    if row_idx + 1 < len(tilemap) and tilemap[row_idx + 1][col_idx] in (1, 99):
+                        pygame.draw.rect(mask, (0, 255, 0), (tx + tile_size//2 - bridge_size//2, ty + tile_size, bridge_size, bridge_size))
+        return mask
+
+    def rebuild_walkable_mask(main_globals):
+        print("rebuilding walkable mask")
+        tilemap = main_globals['tilemap']
+        ts = main_globals['tile_size'] + main_globals['tile_offset']
+        mask_width = len(tilemap[0]) * ts
+        mask_height = len(tilemap) * ts
+
+        new_mask = pygame.Surface((mask_width, mask_height))
+        new_mask.fill((0, 0, 0))
+
+        main_globals['walkable_mask'] = new_mask
+
+        main_globals['walkable_mask'] = main_globals['make_initial_walkable_surface'](tilemap, main_globals)
+
+    def update_tile(main_globals, col_idx, row_idx, new_tile_type):
+        # ex. update_tilemap(main_globals, 0, 0, 99)
+
+        # clear old tiles if new tile is a spawn tile
+        if new_tile_type == 99:
+            print("clearing tiles")
+            for i in range(len(main_globals['tilemap'])):
+                for j in range(len(main_globals['tilemap'][0])):
+                    main_globals['tilemap'][i][j] = 0
+            player.respawn()
+
+        print(f"updating tilemap with {col_idx, row_idx, new_tile_type}")
+        main_globals['tilemap'][row_idx][col_idx] = new_tile_type
+        main_globals['rebuild_walkable_mask'](main_globals)
+        print(f"new tilemap: {main_globals['tilemap']}")
 
     class Player:
         def __init__(self, main_globals, x, y):
@@ -68,13 +123,34 @@ def loader3(main_globals):
             self.main_globals = main_globals
 
         def move(self, dx, dy):
-            new_x, new_y = self.x, self.y
-            if dx != 0:
-                new_x = self.x + dx * self.speed
-            if dy != 0:
-                new_y = self.y + dy * self.speed
+            new_x = self.x + dx * self.speed
+            new_y = self.y + dy * self.speed
+            mask = self.main_globals.get('walkable_mask')
 
-            self.x, self.y = new_x, new_y
+            # horizontal
+            new_x = self.x + dx * self.speed
+            can_move_x = True
+            for cy_offset in (25, self.main_globals['player_size'] + 25):
+                cx = new_x + 6 if dx < 0 else new_x + self.main_globals['player_size'] - 6
+                cy = self.y + cy_offset
+                if cx < 0 or cy < 0 or cx >= mask.get_width() or cy >= mask.get_height() or mask.get_at((int(cx), int(cy)))[:3] != (0, 255, 0):
+                    can_move_x = False
+                    break
+                
+            # vertical
+            new_y = self.y + dy * self.speed
+            can_move_y = True
+            for cx_offset in (6, self.main_globals['player_size'] - 6):
+                cx = self.x + cx_offset
+                cy = new_y + 25 if dy < 0 else new_y + self.main_globals['player_size'] + 25
+                if cx < 0 or cy < 0 or cx >= mask.get_width() or cy >= mask.get_height() or mask.get_at((int(cx), int(cy)))[:3] != (0, 255, 0):
+                    can_move_y = False
+                    break
+                
+            if can_move_x:
+                self.x = new_x
+            if can_move_y:
+                self.y = new_y
 
         def shake(self):
             if self.shake_timer > 0:
@@ -95,29 +171,20 @@ def loader3(main_globals):
             print("player died")
 
         def respawn(self):
-            print("player respawned")
+            print("player respawning")
+            main_globals['spawn_set'] = False
             self.health = 100
             self.alive = True
             self.x = self.main_globals['spawn_x']
             self.y = self.main_globals['spawn_y']
             mx.music.rewind()
 
-    player = Player(main_globals, 0, 0)
-
-
     class Tile:
         def __init__(self, main_globals, x, y):
             self.main_globals = main_globals
             self.size = main_globals['tile_size']
-            self.color = (0, 255, 0)
             self.x = x
             self.y = y
-            self.tile_offset = 15
-
-        def tile_images(self):
-            self.main_globals['screen'].blit(self.main_globals['tile_images'][0], (self.x, self.y))
-
-    tile = Tile(main_globals, 0, 0)
 
     def draw_hud(main_globals, player):
         if player.alive:
@@ -187,7 +254,6 @@ def loader3(main_globals):
 
     def draw_settings(main_globals, mouse_pos):
         screen = main_globals['screen']
-        dragging_music_slider = main_globals['dragging_music_slider']
         music_slider = main_globals['music_slider']
         to_menu = main_globals['to_menu']
         font = main_globals['font']
@@ -232,6 +298,7 @@ def loader3(main_globals):
         screen.blit(text_surf, to_menu.topleft)
 
     def draw_dungeon(main_globals, player, is_paused, facing_left):
+        player = main_globals.get('player')
         screen = main_globals['screen']
         camera_x = main_globals['camera_x']
         camera_y = main_globals['camera_y']
@@ -247,28 +314,37 @@ def loader3(main_globals):
         camera_y += (target_y - camera_y) * camera_speed
         main_globals['camera_x'] = camera_x
         main_globals['camera_y'] = camera_y
+        ts = main_globals['tile_size'] + main_globals['tile_offset']
 
+        mask_width, mask_height = main_globals['walkable_mask'].get_size()
         tile_surface = main_globals['tile_images']
+        for y in range(0, mask_height, ts):
+            for x in range(0, mask_width, ts):
+                if main_globals['walkable_mask'].get_at((x, y))[:3] == (0, 255, 0):
+                    screen.blit(tile_surface, (x - camera_x, y - camera_y))
 
         for row_idx, row in enumerate(main_globals['tilemap']):
             for col_idx, tile_type in enumerate(row):
-                tx = col_idx * main_globals['tile_size'] + main_globals['tile_offset']
-                ty = row_idx * main_globals['tile_size'] + main_globals['tile_offset']
-                if tile_type == 99:
-                    screen.blit(tile_surface, (tx - camera_x, ty - camera_y))
-                    if main_globals.get('player') is None:
-                        main_globals['spawn_x'] = col_idx * main_globals['tile_size'] + (main_globals['tile_size'] - player_size) // 2
-                        main_globals['spawn_y'] = row_idx * main_globals['tile_size'] + (main_globals['tile_size'] - player_size) // 2
-                        if main_globals.get('Player') is not None:
+                if tile_type == 99: # makes player spawn here 
+                    if main_globals['spawn_set'] == False:
+                        ts = main_globals['tile_size'] + main_globals['tile_offset']
+                        main_globals['spawn_x'] = col_idx * ts + (main_globals['tile_size'] - player_size) // 2
+                        main_globals['spawn_y'] = row_idx * ts + (main_globals['tile_size'] - player_size) // 2
+                        if main_globals.get('player') is None:
                             main_globals['player'] = main_globals['Player'](main_globals, main_globals['spawn_x'], main_globals['spawn_y'])
-                elif tile_type == 1:
-                    screen.blit(tile_surface, (tx - camera_x, ty - camera_y))
+                        else:
+                            main_globals['player'].x = main_globals['spawn_x']
+                            main_globals['player'].y = main_globals['spawn_y']
+                        main_globals['spawn_set'] = True
 
         # animate player
         frame_timer += 1
         if frame_timer >= frame_delay:
             frame_timer = 0
-            current_frame = (current_frame + 1) % len(frames)
+            if main_globals['moving_up'] or main_globals['moving_down'] or main_globals['moving_left'] or main_globals['moving_right']:
+                current_frame = (current_frame + 1) % len(frames)
+            else:
+                current_frame = 1
         main_globals['frame_timer'] = frame_timer
         main_globals['current_frame'] = current_frame
 
@@ -288,7 +364,7 @@ def loader3(main_globals):
 
         screen.blit(player_frame, (draw_x, draw_y))
 
-        if not is_paused:
+        if is_paused == False:
             draw_vignette(main_globals, player)
             mx.music.unpause()
             dx = dy = 0
@@ -311,8 +387,9 @@ def loader3(main_globals):
             self.x = x
             self.y = y
 
+    tile = Tile(main_globals, 0, 0)
     enemy = Enemy(main_globals, 0, 0)
-
+    player = Player(main_globals, main_globals['spawn_x'], main_globals['spawn_y'])
 
     main_globals['draw_menu'] = draw_menu
     main_globals['draw_dungeon'] = draw_dungeon
@@ -324,6 +401,9 @@ def loader3(main_globals):
     main_globals['get_camera_offset'] = get_camera_offset
     main_globals['draw_vignette'] = draw_vignette
     main_globals['draw_splash'] = draw_splash
+    main_globals['make_initial_walkable_surface'] = make_initial_walkable_surface
+    main_globals['update_tile'] = update_tile
+    main_globals['rebuild_walkable_mask'] = rebuild_walkable_mask
     main_globals['Tile'] = Tile
     main_globals['player'] = player
     main_globals['Player'] = Player

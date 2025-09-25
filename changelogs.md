@@ -9,7 +9,6 @@ friggan hurt sfx /r
 friggan rage over tiles sestem and bnran it /s
 friggan segment the code to 4 files /s
 friggan make all the images until 24th sep 2025 /s
-all in all: friggan awesome
 
 # 24-09-2025 / add tile system 2.0 / realdealmaks
 
@@ -19,3 +18,4 @@ tile size var and test tilemap in loader1.py under their respective comments at 
 
 # you can write this man
 prosim nehaj koristiti desktop aplikacijo github, saj je unicilo par filov, in zajebal par directorijev.
+

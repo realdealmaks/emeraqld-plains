@@ -25,6 +25,9 @@ def loader1(main_globals):
     main_globals['moving_left'] = False
     main_globals['moving_right'] = False
     main_globals['game_stage'] = ""
+    main_globals['spawn_set'] = False
+    main_globals['can_move_x'] = True
+    main_globals['can_move_y'] = True
 
     main_globals['font'] = pygame.font.SysFont(None, 48)
     main_globals['is_paused'] = False
@@ -57,16 +60,21 @@ def loader1(main_globals):
     main_globals['developer_tools'] = True
 
     main_globals['tilemap'] = [
-        [0, 0, 0, 0, 0,],
-        [0, 99, 1, 1, 0,],
-        [0, 1, 0, 0, 0,],
-        [0, 0, 0, 0, 0,],
-        [0, 0, 0, 0, 0,],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+        [0, 99, 1, 1, 0, 0, 0, 0, 0, 0,],
+        [0, 1, 0, 0, 0, 0, 0, 0, 0, 0,],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
     ]
 
     main_globals['spawn_x'] = 0
     main_globals['spawn_y'] = 0
 
-    main_globals['tile_offset'] = 10
+    main_globals['tile_offset'] = 50
 
     print("loader1 file loaded")
