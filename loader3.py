@@ -8,6 +8,22 @@ from pymunk import shapes
 import time
 
 def loader3(main_globals):
+    def player_gif(main_globals):
+        frames = []
+        player_gif = main_globals['playergif']
+        try:
+            while True:
+                frame = player_gif.convert("RGBA")
+                mode = frame.mode
+                size = frame.size
+                data = frame.tobytes()
+                py_image = pygame.image.fromstring(data, size, mode).convert_alpha()
+                frames.append(py_image)
+                player_gif.seek(player_gif.tell() + 1)
+        except EOFError:
+            pass
+        main_globals['frames'] = frames
+
     def draw_splash(main_globals):
         screen = main_globals['screen']
         splash_image = main_globals['splash_image']
@@ -298,7 +314,6 @@ def loader3(main_globals):
         screen.blit(text_surf, to_menu.topleft)
 
     def draw_dungeon(main_globals, player, is_paused, facing_left):
-        player = main_globals.get('player')
         screen = main_globals['screen']
         camera_x = main_globals['camera_x']
         camera_y = main_globals['camera_y']
@@ -391,6 +406,7 @@ def loader3(main_globals):
     enemy = Enemy(main_globals, 0, 0)
     player = Player(main_globals, main_globals['spawn_x'], main_globals['spawn_y'])
 
+    main_globals['player_gif'] = player_gif
     main_globals['draw_menu'] = draw_menu
     main_globals['draw_dungeon'] = draw_dungeon
     main_globals['draw_hud'] = draw_hud

@@ -129,24 +129,11 @@ main.game_stage = "splash" # starts at splash screen
 
 main.walkable_mask = main.make_initial_walkable_surface(main.tilemap, main_globals) # makes the initial walkable surface
 
-# i should probably burn this somewhere in loader 3 some time soon
-# animates player with the gif
-player_gif = Image.open("assets/models/player/playergif.gif")
-try:
-    while True:
-        frame = player_gif.convert("RGBA")
-        mode = frame.mode
-        size = frame.size
-        data = frame.tobytes()
-        py_image = pygame.image.fromstring(data, size, mode).convert_alpha()
-        main.frames.append(py_image)
-        player_gif.seek(player_gif.tell() + 1)
-except EOFError:
-    pass
-
 # loop setup
 clock = pygame.time.Clock() # makes some clocks and sets the titles
 pygame.display.set_caption('Game')
+
+main.player_gif(main_globals) # loads the player gif
 
 # makes some game loops
 running = True

@@ -77,4 +77,6 @@ def loader1(main_globals):
 
     main_globals['tile_offset'] = 50
 
+    main_globals['playergif'] = Image.open("assets/models/player/playergif.gif")
+
     print("loader1 file loaded")
