@@ -48,6 +48,22 @@ main_globals = {
     'musicswitcher': None, 'faded_in': False
 }
 
+def match_state(state):
+    match state:
+        case "splash":
+            main.draw_splash(main_globals) # makes shit look cool! 🤖
+            time.sleep(2)
+            main.game_stage = "in menu"
+        case "in menu":
+            main.draw_menu(main_globals, main.mouse_pos)
+        case "in dungeon":
+            main.draw_dungeon(main_globals, main.player, main.is_paused, main.facing_left)
+            # to je prevec za 1 linijo prosim ne sprement 💖
+        case "in settings":
+            main.draw_settings(main_globals, main.mouse_pos)
+        case "dead":
+            main.draw_dead(main_globals, main.mouse_pos)
+
 def draw_loading_screen(step, total):
     screen.fill((20, 20, 20))
     text = ""
@@ -213,23 +229,9 @@ while running:
 
     screen.fill((0, 0, 0))  # background
 
-    if main.game_stage == "splash":
-        main.draw_splash(main_globals) # makes shit look cool! 🤖
-        time.sleep(2)
-        main.game_stage = "in menu"
+    # game state is?
 
-    if main.game_stage == "in dungeon":
-        main.draw_dungeon(main_globals, main.player, main.is_paused, main.facing_left)
-        # to je prevec za 1 linijo prosim ne sprement 💖
-
-    elif main.game_stage == "in menu":
-        main.draw_menu(main_globals, main.mouse_pos)
-
-    elif main.game_stage == "in settings":
-        main.draw_settings(main_globals, main.mouse_pos)
-
-    elif main.game_stage == "dead":
-        main.draw_dead(main_globals, main.mouse_pos)
+    match_state(main.game_stage)
 
     if main.developer_tools == True:
         fps = int(clock.get_fps())

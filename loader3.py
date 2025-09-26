@@ -408,7 +408,7 @@ def loader3(main_globals):
             self.main_globals = main_globals
             self.x = x
             self.y = y
-
+            
     tile = Tile(main_globals, 0, 0)
     enemy = Enemy(main_globals, 0, 0)
     player = Player(main_globals, main_globals['spawn_x'], main_globals['spawn_y'])
