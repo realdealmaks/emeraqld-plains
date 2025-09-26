@@ -189,11 +189,18 @@ def loader3(main_globals):
         def respawn(self):
             print("player respawning")
             main_globals['spawn_set'] = False
-            self.health = 100
             self.alive = True
             self.x = self.main_globals['spawn_x']
             self.y = self.main_globals['spawn_y']
             mx.music.rewind()
+
+        def effect(self, effect_type, number):
+            if effect_type == "heal":
+                player.health += number
+                if player.health > 100:
+                    player.health = 100
+            elif effect_type == "healfull":
+                player.health = 100
 
     class Tile:
         def __init__(self, main_globals, x, y):
@@ -253,7 +260,7 @@ def loader3(main_globals):
         else:
             main_globals['flash_active'] = False
 
-        if not main_globals['menu_bg_can_animate'] and not main_globals['flash_active']:
+        if main_globals['menu_bg_can_animate']== False and main_globals['flash_active'] == False:
             # play button
             play_color = (70, 70, 70) if main_globals['play_button'].collidepoint(mouse_pos) else (40, 40, 40)
             pygame.draw.rect(screen, play_color, main_globals['play_button'])
@@ -424,6 +431,7 @@ def loader3(main_globals):
     main_globals['player'] = player
     main_globals['Player'] = Player
     main_globals['tile'] = tile
+    main_globals['Enemy'] = Enemy
     main_globals['enemy'] = enemy
 
 

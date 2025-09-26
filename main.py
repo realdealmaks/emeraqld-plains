@@ -187,6 +187,7 @@ while running:
                 if main.game_stage == "in menu":
                     if main.play_button.collidepoint(main.mouse_pos):
                         main.player.respawn()
+                        main.player.effect("healfull", 0) # resets player health
                         main.musicswitcher(main_globals, 0)
                         main.game_stage = "in dungeon"
                         mx.music.unpause()
