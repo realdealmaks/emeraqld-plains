@@ -26,5 +26,6 @@ keep in main.py for friggan ez access
 # some frameborks / 27.09.2025
 by yours truly
 make some better loadings
+added some __repr__ because i looked up on leddit why i am getting memory locations
 
 # 

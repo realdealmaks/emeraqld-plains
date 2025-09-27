@@ -39,6 +39,8 @@ def loader3(main_globals):
             self.x = main_globals['tile_size'] // 2
             self.y = main_globals['tile_size'] // 2
             self.last_attack_time = 0
+        def __repr__(self):
+            return f"Weapon('{self.name}')"
         def can_attack(self):
             current_time = time.time()
             return (current_time - self.last_attack_time) >= self.cooldown
@@ -431,7 +433,7 @@ def loader3(main_globals):
                     # spawn weapon if not already spawned here
                     existing = [w for w in main_globals['weapons_on_map'] if w.x == center_x and w.y == center_y]
                     if not existing:
-                        new_weapon = main_globals['Weapon']("sword", 10, 50, 1)  # pick type dynamically if needed
+                        new_weapon = main_globals['Weapon']("sword")
                         new_weapon.x = center_x
                         new_weapon.y = center_y
                         main_globals['weapons_on_map'].append(new_weapon)
