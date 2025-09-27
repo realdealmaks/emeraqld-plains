@@ -16,9 +16,6 @@ def loader1(main_globals):
     main_globals['screen_w'] = 1080
 
     main_globals['menu_bg_x'] = main_globals['screen_w']
-    main_globals['faded_in'] = False
-    main_globals['faded_out'] = False
-    main_globals['splash_alpha'] = 0
 
     main_globals['moving_up'] = False
     main_globals['moving_down'] = False

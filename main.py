@@ -40,7 +40,7 @@ class DictNamespace:
 main_globals = {
     'screen_w': 1080, 'screen_h': 750, 'screen': pygame.display.set_mode((1080, 750)), 'player_size': 32, 'tile_size': 600, 'musics': ["track1.mp3", "track2.mp3"],
     'currently_playing_index': -1, 'hurt_sound': mx.Sound("assets/audio/sfx/hurt.mp3"), 'font': pygame.font.SysFont(None, 36), 
-    'player_health_images': [pygame.Surface((50, 50)) for _ in range(3)], 'vignette': pygame.Surface((1080, 750), pygame.SRCALPHA), 'menu_background': pygame.Surface((200, 200)),
+    'player_health_images': [pygame.Surface((50, 50)) for i in range(3)], 'vignette': pygame.Surface((1080, 750), pygame.SRCALPHA), 'menu_background': pygame.Surface((200, 200)),
     'menu_bg_x': 0, 'menu_bg_can_animate': True, 'flash_active': False, 'flash_alpha': 0, 'flash_speed': 10, 'play_button': pygame.Rect(100, 100, 100, 50), 'settings_button': pygame.Rect(100, 200, 100, 50),
     'dragging_music_slider': False, 'music_slider': pygame.Rect(100, 300, 200, 20), 'to_menu': pygame.Rect(50, 50, 100, 50), 'camera_x': 0, 'camera_y': 0, 'camera_speed': 0.1,
     'current_frame': 0, 'frame_timer': 0, 'frame_delay': 5, 'frames': [pygame.Surface((32, 32))], 'game_stage': "", 'facing_left': False, 'mouse_pos': pygame.mouse.get_pos(),
@@ -48,70 +48,152 @@ main_globals = {
     'musicswitcher': None, 'faded_in': False
 }
 
-def draw_loading_screen(step, total):
-    screen.fill((20, 20, 20))
-    text = ""
+def draw_loading_screen(step, total, loading_phase):
+    global bar_risen, bar_h, splash_alpha, bar_color
+    splash_image = pygame.image.load("assets/useful images/splashimage.jpg").convert_alpha()
 
-    for i in range(step):
-        if i%3 == 0:
-            text = "."
-        elif i%3 == 1:
-            text = ".."
-        elif i%3 == 2:
-            text = "..."
+    # fade in
+    if loading_phase == "fade_in":
+        print("fading in")
+        time.sleep(1)
+        splash_alpha = 0
+        while splash_alpha < 255:
+            splash_alpha += 5
+            splash_image.set_alpha(splash_alpha)
+            screen.fill((0, 0, 0))
+            screen.blit(splash_image, (screen_w // 2 - splash_image.get_width() // 2, screen_h // 2 - splash_image.get_height() // 2, ))
+            pygame.display.update()
+            time.sleep(0.08)
+        print("loading")
 
-    font = pygame.font.SysFont(None, 50)
-    if step != total:
-        label = font.render(f"Loading {text}", True, (200, 200, 200))
-    else:
-        label = font.render("Loading complete!", True, (200, 200, 200))
-    rect = label.get_rect(center=(screen_w // 2, screen_h // 2 - 50))
-    screen.blit(label, rect)
-    label = font.render(f"{int((step / total) * 100)}%", True, (200, 200, 200))
-    rect = label.get_rect(center=(screen_w // 2, screen_h // 2 + 80))
-    screen.blit(label, rect)
-    font = pygame.font.SysFont(None, 20)
-    label = font.render("dont touch until in menu", True, (200, 20, 20))
-    rect = label.get_rect(center=(screen_w // 2, screen_h - 80))
-    screen.blit(label, rect)
+    elif loading_phase == "loading":
+        screen.fill((0, 0, 0))
+        screen.blit(splash_image, (screen_w // 2 - splash_image.get_width() // 2, screen_h // 2 - splash_image.get_height() // 2, ))
 
-    # Progress bar
-    bar_w, bar_h = 400, 40
-    bar_x = (screen_w - bar_w) // 2
-    bar_y = (screen_h - bar_h) // 2 + 20
-    pygame.draw.rect(screen, (80, 80, 80), (bar_x, bar_y, bar_w, bar_h))
-    pygame.draw.rect(screen, (0, 200, 0), (bar_x, bar_y, int(bar_w * (step / total)), bar_h))
+        # progress bar
+        bar_w = screen_w
+        target_bar_h = 20
+        bar_x = (screen_w - bar_w)
+        bar_y = (screen_h - bar_h)
+        if not bar_risen:
+            while bar_h < target_bar_h:
+                bar_h += 2 # speed
+                bar_y = screen_h - bar_h
+                screen.fill((0, 0, 0))
+                screen.blit(splash_image, (screen_w // 2 - splash_image.get_width() // 2 - 2, screen_h // 2 - splash_image.get_height() // 2 - 3))
+                pygame.draw.rect(screen, (80, 80, 80), (bar_x, bar_y, bar_w, target_bar_h))  # background bar
+                pygame.display.update()
+                time.sleep(0.02)
+                if bar_h == target_bar_h:
+                    bar_risen = True
+                    time.sleep(3)
+                    break
+        else:
+            pygame.draw.rect(screen, (80, 80, 80), (bar_x, bar_y, bar_w, target_bar_h))  # background bar
+            pygame.draw.rect(screen, bar_color, (bar_x, bar_y, (bar_w / total) * step, target_bar_h)) # progress bar
+            pygame.display.update()
+            time.sleep(0.02)
+
+    # fade out
+    elif loading_phase == "fade_out":
+        time.sleep(1)
+        bar_w = screen_w
+        target_bar_h = 20
+        bar_x = 0
+        bar_y = screen_h - target_bar_h
+        screen.fill((0, 0, 0))
+        screen.blit(splash_image, (screen_w // 2 - splash_image.get_width() // 2, screen_h // 2 - splash_image.get_height() // 2))
+        pygame.draw.rect(screen, bar_color, (bar_x, bar_y, bar_w, target_bar_h)) # 100% bar
+        pygame.display.update()
+        loading_bar_flicker(0.5, 10, force_full = True)
+
+        time.sleep(3)
+        print("fading out")
+        while splash_alpha > 0:
+            splash_alpha -= 5
+            splash_image.set_alpha(splash_alpha)
+            screen.fill((0, 0, 0))
+            screen.blit(splash_image, (screen_w // 2 - splash_image.get_width() // 2 + 1, screen_h // 2 - splash_image.get_height() // 2 + 1, ))
+            pygame.display.update()
+            time.sleep(0.08)
 
     pygame.display.flip()
 
-loading_step = 0
-loading_steps = 1
+def loading_bar_flicker(duration=0.5, steps=10, force_full=False):
+    global bar_color
+    normal = (0, 170, 0)
+    bright = (0, 255, 0)
+    white = (255, 255, 255)
 
-draw_loading_screen(loading_step, loading_steps)
+    for i in range(steps):
+        t = i / steps
+        bar_color = (
+            int(white[0] + t*(bright[0]-white[0])),
+            int(white[1] + t*(bright[1]-white[1])),
+            int(white[2] + t*(bright[2]-white[2]))
+        )
+        draw_loading_screen(
+            loading_steps if force_full else loading_step, 
+            loading_steps, 
+            "loading"
+        )
+        time.sleep(duration / (2*steps))
+
+    for i in range(steps):
+        t = i / steps
+        bar_color = (
+            int(bright[0] + t*(normal[0]-bright[0])),
+            int(bright[1] + t*(normal[1]-bright[1])),
+            int(bright[2] + t*(normal[2]-bright[2]))
+        )
+        draw_loading_screen(
+            loading_steps if force_full else loading_step, 
+            loading_steps, 
+            "loading"
+        )
+        time.sleep(duration / (2*steps))
+
+    bar_color = normal
+
+loading_step = 0
+loading_steps = 2
+bar_risen = False
+bar_h = 0
+splash_alpha = 0
+bar_color = (0, 170, 0)
+
+draw_loading_screen(loading_step, loading_steps, "fade_in")
+
+draw_loading_screen(1, 100, "loading")
+
+draw_loading_screen(loading_step, loading_steps, "loading")
 loading_step += 1
 loading_steps += 1
 loading1 = load_into_globals("loader1.py")
+loading_bar_flicker()
 loading1.loader1(main_globals)
-time.sleep(0.2)
+time.sleep(1)
 
-draw_loading_screen(loading_step, loading_steps)
+draw_loading_screen(loading_step, loading_steps, "loading")
 loading_step += 1
 loading_steps += 1
+loading_bar_flicker()
 loading2 = load_into_globals("loader2.py")
 loading2.loader2(main_globals)
-time.sleep(0.2)
+time.sleep(1.2)
 
-draw_loading_screen(loading_step, loading_steps)
+draw_loading_screen(loading_step, loading_steps, "loading")
 loading_step += 1
-loading_steps += 1
+loading_bar_flicker()
 loading3 = load_into_globals("loader3.py")
 loading3.loader3(main_globals)
-time.sleep(0.2)
+time.sleep(2)
 
-draw_loading_screen(loading_step, loading_steps)
-draw_loading_screen(loading_steps, loading_steps)
+draw_loading_screen(loading_step, loading_steps, "loading")
+draw_loading_screen(loading_steps, loading_steps, "fade_out")
 time.sleep(3)
 
+main_globals['game_stage'] = "in menu"
 pygame.display.quit()
 print("restarting displayzers")
 
@@ -125,15 +207,12 @@ pygame.init()
 screen = pygame.display.set_mode((main.screen_w, main.screen_h)) # retish the balish
 main.screen = screen # regalishes it to the main globas zalish
 print("started some displayzers")
-main.game_stage = "splash" # starts at splash screen
-print("splashing you... with 1 single tear")
-
-main.walkable_mask = main.make_initial_walkable_surface(main.tilemap, main_globals) # makes the initial walkable surface
 
 # loop setup
 clock = pygame.time.Clock() # makes some clocks and sets the titles
 pygame.display.set_caption('Game')
 
+main.walkable_mask = main.make_initial_walkable_surface(main.tilemap, main_globals) # makes the initial walkable surface
 main.player_gif(main_globals) # loads the player gif
 
 # makes some game loops

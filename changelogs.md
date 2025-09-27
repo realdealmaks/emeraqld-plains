@@ -25,5 +25,6 @@ keep in main.py for friggan ez access
 
 # some frameborks / 27.09.2025
 by yours truly
+make some better loadings
 
 # 

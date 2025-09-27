@@ -27,6 +27,7 @@ def loader3(main_globals):
                     new_weapon.y = center_y
                     main_globals['weapons_on_map'].append(new_weapon)
                     print(f"spawned weapon '{weapon_name}' on tile ({row_idx}, {col_idx})")
+                    print(f"weapons on map: {main_globals['weapons_on_map']}")
 
     class Weapon():
         def __init__(self, name):
@@ -86,10 +87,6 @@ def loader3(main_globals):
 
     def match_state(main_globals, state): # useless indian naganou function for stages
         match state:
-            case "splash":
-                main_globals['draw_splash'](main_globals) # makes shit look cool! 🤖
-                time.sleep(2)
-                main_globals['game_stage'] = "in menu"
             case "in menu":
                 main_globals['draw_menu'](main_globals, main_globals['mouse_pos'])
             case "in dungeon":
@@ -114,36 +111,6 @@ def loader3(main_globals):
         except EOFError:
             pass
         main_globals['frames'] = frames
-
-    def draw_splash(main_globals):
-        screen = main_globals['screen']
-        splash_image = main_globals['splash_image']
-        splash_alpha = main_globals['splash_alpha']
-
-        # fade in
-        time.sleep(1)
-        splash_alpha = 0
-        while splash_alpha < 255:
-            splash_alpha += 5
-            splash_image.set_alpha(splash_alpha)
-            screen.fill((0, 0, 0))
-            screen.blit(splash_image, (main_globals['screen_w'] // 2 - splash_image.get_width() // 2 - 2, main_globals['screen_h'] // 2 - splash_image.get_height() // 2 - 3, ))
-            # changing this ^ line ^ is deathly dangerous!!! do not change at all costs
-            pygame.display.update()
-            time.sleep(0.08)
-        main_globals['faded_in'] = True
-
-        # fade out
-        while splash_alpha > 0:
-            splash_alpha -= 5
-            splash_image.set_alpha(splash_alpha)
-            screen.fill((0, 0, 0))
-            screen.blit(splash_image, (main_globals['screen_w'] // 2 - splash_image.get_width() // 2 + 1, main_globals['screen_h'] // 2 - splash_image.get_height() // 2 + 1, ))
-            # changing this ^ line ^ is deathly dangerous!!! do not change at all costs
-            pygame.display.update()
-            time.sleep(0.08)
-        main_globals['faded_out'] = True
-        print("set game stage to menu")
 
     def musicswitcher(main_globals, indexhere):
         if main_globals['currently_playing_index'] != indexhere:
@@ -536,7 +503,6 @@ def loader3(main_globals):
     main_globals['musicswitcher'] = musicswitcher
     main_globals['get_camera_offset'] = get_camera_offset
     main_globals['draw_vignette'] = draw_vignette
-    main_globals['draw_splash'] = draw_splash
     main_globals['make_initial_walkable_surface'] = make_initial_walkable_surface
     main_globals['update_tile'] = update_tile
     main_globals['rebuild_walkable_mask'] = rebuild_walkable_mask

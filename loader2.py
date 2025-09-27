@@ -14,8 +14,6 @@ def loader2(main_globals):
     main_globals['menu_background'] = pygame.image.load("assets/useful images/aimenubg.png").convert_alpha()
     main_globals['menu_background'] = pygame.transform.scale(main_globals['menu_background'], (750, 750))
 
-    main_globals['splash_image'] = pygame.image.load("assets/useful images/splashimage.jpg").convert_alpha()
-
     main_globals['floorboard'] = pygame.image.load('assets/useful images/tiles/image.png')
 
     player_health_images = []
