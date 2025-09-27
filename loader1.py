@@ -61,10 +61,10 @@ def loader1(main_globals):
 
     main_globals['tilemap'] = [
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
-        [0, 99, 1, 1, 0, 0, 0, 0, 0, 0,],
-        [0, 1, 0, 0, 0, 0, 0, 0, 0, 0,],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+        [0, 99, 1, 1, 2, 0, 0, 0, 0, 0,],
+        [0, 1, 0, 2, 0, 0, 0, 0, 0, 0,],
+        [0, 3, 0, 2, 0, 0, 0, 0, 0, 0,],
+        [0, 0, 0, 2, 0, 0, 0, 0, 0, 0,],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
@@ -79,5 +79,11 @@ def loader1(main_globals):
 
     main_globals['playergif'] = Image.open("assets/models/player/playergif.gif")
     main_globals['match'] = None
+    main_globals['bridging'] = True
+
+    main_globals['Weapon'] = None
+
+    main_globals['walkable_tiles'] = [1, 2, 3, 99]  # tiles that can be walked on
+    main_globals['weapons_on_map'] = []
 
     print("loader1 file loaded")

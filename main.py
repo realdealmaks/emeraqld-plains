@@ -48,22 +48,6 @@ main_globals = {
     'musicswitcher': None, 'faded_in': False
 }
 
-def match_state(state):
-    match state:
-        case "splash":
-            main.draw_splash(main_globals) # makes shit look cool! 🤖
-            time.sleep(2)
-            main.game_stage = "in menu"
-        case "in menu":
-            main.draw_menu(main_globals, main.mouse_pos)
-        case "in dungeon":
-            main.draw_dungeon(main_globals, main.player, main.is_paused, main.facing_left)
-            # to je prevec za 1 linijo prosim ne sprement 💖
-        case "in settings":
-            main.draw_settings(main_globals, main.mouse_pos)
-        case "dead":
-            main.draw_dead(main_globals, main.mouse_pos)
-
 def draw_loading_screen(step, total):
     screen.fill((20, 20, 20))
     text = ""
@@ -142,6 +126,7 @@ screen = pygame.display.set_mode((main.screen_w, main.screen_h)) # retish the ba
 main.screen = screen # regalishes it to the main globas zalish
 print("started some displayzers")
 main.game_stage = "splash" # starts at splash screen
+print("splashing you... with 1 single tear")
 
 main.walkable_mask = main.make_initial_walkable_surface(main.tilemap, main_globals) # makes the initial walkable surface
 
@@ -187,7 +172,9 @@ while running:
                         rand1 = random.randint(0, 9)
                         rand2 = random.randint(0, 9)
                         main.update_tile(main_globals, rand1, rand2, 99)
+                        main.update_tile(main_globals, rand1 + 1, rand2, 2)
                         main.camera_x, main.camera_y = main.get_camera_offset(main_globals, main.player, main.tile_size)
+                        main.spawn_weapons(main_globals)
 
         # key released
         if event.type == pygame.KEYUP:
@@ -229,14 +216,11 @@ while running:
 
     screen.fill((0, 0, 0))  # background
 
-    # game state is?
-
-    match_state(main.game_stage)
+    main.match_state(main_globals, main.game_stage)
 
     if main.developer_tools == True:
         fps = int(clock.get_fps())
         pygame.display.set_caption(f"FPS: {fps}") # re changes the caption for testings of framings
-
 
     clock.tick(240)
     pygame.display.update()

@@ -8,6 +8,97 @@ from pymunk import shapes
 import time
 
 def loader3(main_globals):
+    def spawn_weapons(main_globals):
+        ts = main_globals['tile_size'] + main_globals['tile_offset']
+        weapon_types = list(main_globals['weapon_images'].keys())
+
+        for row_idx, row in enumerate(main_globals['tilemap']):
+            for col_idx, tile_type in enumerate(row):
+                if tile_type == 2:
+                    center_x = col_idx * ts + main_globals['tile_size'] // 2
+                    center_y = row_idx * ts + main_globals['tile_size'] // 2
+
+                    if any(math.isclose(w.x, center_x, abs_tol=1) and math.isclose(w.y, center_y, abs_tol=1) for w in main_globals['weapons_on_map']):
+                        continue
+                    # pick random
+                    weapon_name = random.choice(weapon_types)
+                    new_weapon = main_globals['Weapon'](weapon_name)
+                    new_weapon.x = center_x
+                    new_weapon.y = center_y
+                    main_globals['weapons_on_map'].append(new_weapon)
+                    print(f"spawned weapon '{weapon_name}' on tile ({row_idx}, {col_idx})")
+
+    class Weapon():
+        def __init__(self, name):
+            self.name = name
+            stats = main_globals['weapon_stats'][name]
+            self.damage = stats['damage']
+            self.range = stats['range']
+            self.cooldown = stats['cooldown']
+            self.x = main_globals['tile_size'] // 2
+            self.y = main_globals['tile_size'] // 2
+            self.last_attack_time = 0
+        def can_attack(self):
+            current_time = time.time()
+            return (current_time - self.last_attack_time) >= self.cooldown
+        def attack(self):
+            if self.can_attack():
+                self.last_attack_time = time.time()
+            else:
+                print(f"{self.name} is on cooldown.")
+        def pickup(self, player):
+            if distance_to(self, player) < 50:
+                player.weapons.append(self)
+                if self in main_globals['weapons_on_map']:
+                    main_globals['weapons_on_map'].remove(self)
+        def draw(self, screen, x, y):
+            screen.blit(main_globals['weapon_images'][self.name], (x, y))
+
+    def distance_to(thing1, thing2):
+        return math.hypot(thing1.x - thing2.x, thing1.y - thing2.y)
+
+    class Enemy():
+        def __init__(self, main_globals, x, y):
+            self.main_globals = main_globals
+            self.x = x
+            self.y = y
+            self.size = main_globals['player_size']
+            self.health = 50
+            self.alive = True
+            self.speed = 0.8
+        def move(self):
+            if self.type == 1 and self.alive:
+                pass
+
+            elif self.type == 2 and self.alive:
+                pass
+        def take_damage(self, amount):
+            self.health -= amount
+            if self.health <= 0:
+                self.die()
+        def die(self):
+            self.alive = False
+            print("enemy died")
+        def draw(self):
+            if self.alive:
+                pass
+                # main_globals['screen'].blit(main_globals['enemygif'], (self.x, self.y))
+
+    def match_state(main_globals, state): # useless indian naganou function for stages
+        match state:
+            case "splash":
+                main_globals['draw_splash'](main_globals) # makes shit look cool! 🤖
+                time.sleep(2)
+                main_globals['game_stage'] = "in menu"
+            case "in menu":
+                main_globals['draw_menu'](main_globals, main_globals['mouse_pos'])
+            case "in dungeon":
+                main_globals['draw_dungeon'](main_globals, main_globals['player'], main_globals['is_paused'], main_globals['facing_left'])
+            case "in settings":
+                main_globals['draw_settings'](main_globals, main_globals['mouse_pos'])
+            case "dead":
+                main_globals['draw_dead'](main_globals, main_globals['mouse_pos'])
+
     def player_gif(main_globals):
         frames = []
         player_gif = main_globals['playergif']
@@ -83,19 +174,22 @@ def loader3(main_globals):
 
         for row_idx, row in enumerate(tilemap):
             for col_idx, tile_type in enumerate(row):
-                if tile_type in (1, 99):
+                if tile_type in main_globals['walkable_tiles']:
                     tx = col_idx * ts
                     ty = row_idx * ts
                     # draw main tile
                     pygame.draw.rect(mask, (0, 255, 0), (tx, ty, tile_size, tile_size))
 
                     # horizontal bridge
-                    if col_idx + 1 < len(row) and tilemap[row_idx][col_idx + 1] in (1, 99):
-                        pygame.draw.rect(mask, (0, 255, 0), (tx + tile_size, ty + tile_size//2 - bridge_size//2,bridge_size, bridge_size))
+                    if col_idx + 1 < len(row) and tilemap[row_idx][col_idx + 1] in main_globals['walkable_tiles']:
+                        if main_globals['bridging'] == True:
+                            pygame.draw.rect(mask, (0, 255, 0), (tx + tile_size, ty + tile_size//2 - bridge_size//2,bridge_size, bridge_size))
 
                     # vertical bridge
-                    if row_idx + 1 < len(tilemap) and tilemap[row_idx + 1][col_idx] in (1, 99):
-                        pygame.draw.rect(mask, (0, 255, 0), (tx + tile_size//2 - bridge_size//2, ty + tile_size, bridge_size, bridge_size))
+                    if row_idx + 1 < len(tilemap) and tilemap[row_idx + 1][col_idx] in main_globals['walkable_tiles']:
+                        if main_globals['bridging'] == True:
+                            pygame.draw.rect(mask, (0, 255, 0), (tx + tile_size//2 - bridge_size//2, ty + tile_size, bridge_size, bridge_size))
+        spawn_weapons(main_globals)
         return mask
 
     def rebuild_walkable_mask(main_globals):
@@ -114,14 +208,23 @@ def loader3(main_globals):
 
     def update_tile(main_globals, col_idx, row_idx, new_tile_type):
         # ex. update_tilemap(main_globals, 0, 0, 99)
-
         # clear old tiles if new tile is a spawn tile
+
+        ts = main_globals['tile_size'] + main_globals['tile_offset']
+        center_x = col_idx * ts + main_globals['tile_size'] // 2
+        center_y = row_idx * ts + main_globals['tile_size'] // 2
+
         if new_tile_type == 99:
             print("clearing tiles")
             for i in range(len(main_globals['tilemap'])):
                 for j in range(len(main_globals['tilemap'][0])):
                     main_globals['tilemap'][i][j] = 0
             player.respawn()
+
+        main_globals['weapons_on_map'] = [
+        w for w in main_globals['weapons_on_map']
+            if not (math.isclose(w.x, center_x, abs_tol=1) and math.isclose(w.y, center_y, abs_tol=1))
+        ]
 
         print(f"updating tilemap with {col_idx, row_idx, new_tile_type}")
         main_globals['tilemap'][row_idx][col_idx] = new_tile_type
@@ -137,6 +240,7 @@ def loader3(main_globals):
             self.alive = True
             self.shake_timer = 0
             self.main_globals = main_globals
+            self.weapons = []
 
         def move(self, dx, dy):
             new_x = self.x + dx * self.speed
@@ -201,13 +305,6 @@ def loader3(main_globals):
                     player.health = 100
             elif effect_type == "healfull":
                 player.health = 100
-
-    class Tile:
-        def __init__(self, main_globals, x, y):
-            self.main_globals = main_globals
-            self.size = main_globals['tile_size']
-            self.x = x
-            self.y = y
 
     def draw_hud(main_globals, player):
         if player.alive:
@@ -359,6 +456,30 @@ def loader3(main_globals):
                             main_globals['player'].y = main_globals['spawn_y']
                         main_globals['spawn_set'] = True
 
+                elif tile_type == 2:
+                    ts = main_globals['tile_size'] + main_globals['tile_offset']
+                    center_x = col_idx * ts + main_globals['tile_size'] // 2
+                    center_y = row_idx * ts + main_globals['tile_size'] // 2
+
+                    # spawn weapon if not already spawned here
+                    existing = [w for w in main_globals['weapons_on_map'] if w.x == center_x and w.y == center_y]
+                    if not existing:
+                        new_weapon = main_globals['Weapon']("sword", 10, 50, 1)  # pick type dynamically if needed
+                        new_weapon.x = center_x
+                        new_weapon.y = center_y
+                        main_globals['weapons_on_map'].append(new_weapon)
+
+                elif tile_type == 3:
+                    for i in range(random.randint(1, 3)):
+                        Enemy(main_globals, col_idx * ts + (main_globals['tile_size'] - 40) // 2, row_idx * ts + (main_globals['tile_size'] - 40) // 2).draw()
+
+        for weapon in main_globals['weapons_on_map']:
+            weapon_image = main_globals['weapon_images'][weapon.name]
+            draw_x = weapon.x - weapon_image.get_width() // 2 - camera_x
+            draw_y = weapon.y - weapon_image.get_height() // 2 - camera_y
+            weapon.draw(screen, draw_x, draw_y)
+            weapon.pickup(player)
+
         # animate player
         frame_timer += 1
         if frame_timer >= frame_delay:
@@ -403,14 +524,6 @@ def loader3(main_globals):
         else:
             draw_pause_menu(main_globals)
 
-    class Enemy():
-        def __init__(self, main_globals, x, y):
-            self.main_globals = main_globals
-            self.x = x
-            self.y = y
-            
-    tile = Tile(main_globals, 0, 0)
-    enemy = Enemy(main_globals, 0, 0)
     player = Player(main_globals, main_globals['spawn_x'], main_globals['spawn_y'])
 
     main_globals['player_gif'] = player_gif
@@ -427,12 +540,13 @@ def loader3(main_globals):
     main_globals['make_initial_walkable_surface'] = make_initial_walkable_surface
     main_globals['update_tile'] = update_tile
     main_globals['rebuild_walkable_mask'] = rebuild_walkable_mask
-    main_globals['Tile'] = Tile
+    main_globals['match_state'] = match_state
+    main_globals['spawn_weapons'] = spawn_weapons
+
     main_globals['player'] = player
     main_globals['Player'] = Player
-    main_globals['tile'] = tile
     main_globals['Enemy'] = Enemy
-    main_globals['enemy'] = enemy
+    main_globals['Weapon'] = Weapon
 
 
     print("loader3 file loaded")

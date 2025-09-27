@@ -22,3 +22,8 @@ prosim nehaj koristiti desktop aplikacijo github, saj je unicilo par filov, in z
 # sybau 26-09-2025 / realdealmaks
 add switch case thing to main instead of the if else if else if else... hell
 keep in main.py for friggan ez access
+
+# some frameborks / 27.09.2025
+by yours truly
+
+# 

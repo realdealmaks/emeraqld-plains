@@ -32,4 +32,24 @@ def loader2(main_globals):
     mx.music.play(-1)
     mx.music.pause()
     mx.music.set_volume(1)
+
+    sword_image = pygame.image.load("assets/models/weapons/sword.png").convert_alpha()
+    w, h = sword_image.get_size()
+    sword_image = pygame.transform.scale(sword_image, (int(w * 1.2), int(h * 1.2)))
+
+    # Load axe
+    axe_image = pygame.image.load("assets/models/weapons/axe.png").convert_alpha()
+    w, h = axe_image.get_size()
+    axe_image = pygame.transform.scale(axe_image, (int(w * 1.2), int(h * 1.2)))
+
+    main_globals['weapon_images'] = {
+        "sword": sword_image,
+        "axe": axe_image,
+    }
+
+    main_globals['weapon_stats'] = {
+        "sword": {"damage": 10, "range": 50, "cooldown": 1},
+        "axe": {"damage": 15, "range": 40, "cooldown": 0.8},
+    }
+
     print("loader2 file loaded")
