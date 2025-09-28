@@ -42,14 +42,19 @@ def loader2(main_globals):
     w, h = axe_image.get_size()
     axe_image = pygame.transform.scale(axe_image, (int(w * 1.2), int(h * 1.2)))
 
+    main_globals['slash_image'] = pygame.image.load("assets/useful images/slash.png").convert_alpha()
+    main_globals['slash_image'] = pygame.transform.scale(main_globals['slash_image'], (50, 50))
+
+    main_globals['active_slash'] = None
+
     main_globals['weapon_images'] = {
         "sword": sword_image,
         "axe": axe_image,
     }
 
     main_globals['weapon_stats'] = {
-        "sword": {"damage": 10, "range": 50, "cooldown": 1},
-        "axe": {"damage": 15, "range": 40, "cooldown": 0.8},
+        "sword": {"damage": 10, "range": 50, "cooldown": 0.6},
+        "axe": {"damage": 15, "range": 75, "cooldown": 1},
     }
 
     print("loader2 file loaded")

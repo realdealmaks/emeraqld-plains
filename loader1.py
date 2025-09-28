@@ -82,6 +82,7 @@ def loader1(main_globals):
     main_globals['bridging'] = True
 
     main_globals['Weapon'] = None
+    main_globals['attack_counter'] = 0
 
     main_globals['walkable_tiles'] = [1, 2, 3, 99]  # tiles that can be walked on
     main_globals['weapons_on_map'] = []

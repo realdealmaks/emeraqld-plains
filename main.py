@@ -275,6 +275,8 @@ while running:
                         main.update_tile(main_globals, rand1 + 1, rand2, 2)
                         main.camera_x, main.camera_y = main.get_camera_offset(main_globals, main.player, main.tile_size)
                         main.spawn_weapons(main_globals)
+                    if event.key == pygame.K_r:
+                        main.player.respawn()
 
         # key released
         if event.type == pygame.KEYUP:
@@ -305,6 +307,12 @@ while running:
                     if main.to_menu.collidepoint(main.mouse_pos):
                         main.game_stage = "in menu"
                         mx.music.pause()
+
+                if main.player is not None:
+                    if main.game_stage == "in dungeon":
+                        if main.player.weapons != []:
+                            main.player.attack(main_globals)
+                            print("player attacked")
 
         # mouse button up
         if event.type == pygame.MOUSEBUTTONUP:

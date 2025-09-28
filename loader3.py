@@ -51,11 +51,52 @@ def loader3(main_globals):
         def can_attack(self):
             current_time = time.time()
             return (current_time - self.last_attack_time) >= self.cooldown
-        def attack(self):
+        def attack(self, player, main_globals):
+            slash_img = main_globals['slash_image']
             if self.can_attack():
                 self.last_attack_time = time.time()
+                mouse_pos = pygame.mouse.get_pos()
+                scaled_height = int(slash_img.get_height() * (self.range / 50))
+                scaled_slash = pygame.transform.scale(slash_img, (slash_img.get_width(), scaled_height))
+
+                player_cx = player.x + main_globals['player_size'] // 2
+                player_cy = player.y + main_globals['player_size'] // 2 + 20
+
+                # angle to mouse
+                dx = mouse_pos[0] - (player_cx - main_globals['camera_x'])
+                dy = mouse_pos[1] - (player_cy - main_globals['camera_y'])
+                angle = math.degrees(math.atan2(-dy, dx))
+
+                # offset from player center
+                distance = self.range
+                offset_x = math.cos(math.radians(-angle)) * distance
+                offset_y = math.sin(math.radians(-angle)) * distance
+
+                rotated_slash = pygame.transform.rotate(scaled_slash, angle)
+                slash_rect = rotated_slash.get_rect(center=(
+                    player_cx - main_globals['camera_x'] + offset_x,
+                    player_cy - main_globals['camera_y'] + offset_y
+                ))
+
+                # if main_globals['attack_counter'] == 1:
+                #     rotated_slash = pygame.transform.flip(rotated_slash, False, True)
+                # elif main_globals['attack_counter'] == 2:
+                #     pass # for now otherwise like a jab thing
+                # if main_globals['attack_counter'] >= 2:
+                #     main_globals['attack_counter'] = 0
+
+                mouse_x_world = mouse_pos[0] + main_globals['camera_x']
+                if mouse_x_world < player_cx:
+                    main_globals['facing_left'] = True
+                else:
+                    main_globals['facing_left'] = False
+
+                if 'active_slashes' not in main_globals:
+                    main_globals['active_slashes'] = []
+                main_globals['active_slashes'].append((rotated_slash, slash_rect, pygame.time.get_ticks() + 150))
             else:
-                print(f"{self.name} is on cooldown.")
+                remaining = round(self.cooldown - (time.time() - self.last_attack_time), 2)
+                print(f"{self.name} is on cooldown for {remaining} more seconds")
         def pickup(self, player):
             if len(player.weapons) > 0:
                 old_weapon = player.weapons.pop(0)
@@ -303,6 +344,10 @@ def loader3(main_globals):
             elif effect_type == "healfull":
                 player.health = 100
 
+        def attack(self, main_globals):
+            if len(self.weapons) != 0:
+                self.weapons[0].attack(self, main_globals)
+
     def draw_hud(main_globals, player):
         if player.alive:
             shake_x, shake_y = player.shake()
@@ -470,6 +515,16 @@ def loader3(main_globals):
 
                 # pick up weapon
                 main_globals['interact'](main_globals, player, weapon.x, weapon.y, lambda w=weapon: w.pickup(player))
+
+        # draw slash
+        if 'active_slashes' in main_globals:
+            now = pygame.time.get_ticks()
+            still_active = []
+            for slash_img, slash_rect, expiry in main_globals['active_slashes']:
+                if now < expiry:
+                    screen.blit(slash_img, slash_rect)
+                    still_active.append((slash_img, slash_rect, expiry))
+            main_globals['active_slashes'] = still_active
 
         # animate player
         frame_timer += 1
