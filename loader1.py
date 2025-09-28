@@ -72,6 +72,8 @@ def loader1(main_globals):
     main_globals['spawn_x'] = 0
     main_globals['spawn_y'] = 0
 
+    main_globals['pressed_e'] = False
+
     main_globals['tile_offset'] = 50
     main_globals['interact_distance'] = 75
 

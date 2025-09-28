@@ -9,12 +9,11 @@ import time
 
 def loader3(main_globals):
     def interact(main_globals, player, x, y, function):
-        keys = pygame.key.get_pressed()
         if distance_to(player, (x, y)) < main_globals['interact_distance']:
-            main_globals['screen'].blit(main_globals['interact_image'], (x, y))
-            if keys[pygame.K_e] and not main_globals['is_paused'] and function is not None:
+            if main_globals['pressed_e'] and not main_globals['is_paused'] and function is not None:
                 function()
-                print(f"player interacted with {function}")
+                print(f"player interacted with something at ({x}, {y})")
+                main_globals['pressed_e'] = False
 
     def spawn_weapons(main_globals):
         ts = main_globals['tile_size'] + main_globals['tile_offset']
@@ -58,12 +57,18 @@ def loader3(main_globals):
             else:
                 print(f"{self.name} is on cooldown.")
         def pickup(self, player):
+            if len(player.weapons) > 0:
+                old_weapon = player.weapons.pop(0)
+                old_weapon.x = self.x
+                old_weapon.y = self.y
+                main_globals['weapons_on_map'].append(old_weapon)
+                print(f"player dropped {old_weapon.name}")
             player.weapons.append(self)
-            self.destroy()
+
+            if self in main_globals['weapons_on_map']:
+                main_globals['weapons_on_map'].remove(self)
+
             print(f"player picked up {self.name}")
-        def destroy(self):
-            main_globals['weapons_on_map'].remove(self)
-            print(f"destroyed weapon '{self.name}'")
         def draw(self, screen, x, y):
             screen.blit(main_globals['weapon_images'][self.name], (x, y))
 
@@ -448,16 +453,11 @@ def loader3(main_globals):
                             main_globals['player'].y = main_globals['spawn_y']
                         main_globals['spawn_set'] = True
 
-                elif tile_type == 2:
-                    center_x = col_idx * ts + main_globals['tile_size'] // 2
-                    center_y = row_idx * ts + main_globals['tile_size'] // 2
-
                 elif tile_type == 3:
                     for i in range(random.randint(1, 3)):
                         Enemy(main_globals, col_idx * ts + (main_globals['tile_size'] - 40) // 2, row_idx * ts + (main_globals['tile_size'] - 40) // 2).draw()
 
         # draw weapons
-        keys = pygame.key.get_pressed()
         for weapon in main_globals['weapons_on_map'][:]:
             weapon_image = main_globals['weapon_images'][weapon.name]
             draw_x = weapon.x - weapon_image.get_width() // 2 - camera_x
@@ -468,9 +468,8 @@ def loader3(main_globals):
             if distance_to(player, weapon) < main_globals['interact_distance']:
                 screen.blit(main_globals['interact_image'], (draw_x, draw_y + weapon_image.get_height()))
 
-            # pick up weapon
-            if keys[pygame.K_e] and distance_to(player, weapon) < main_globals['interact_distance']:
-                weapon.pickup(player)
+                # pick up weapon
+                main_globals['interact'](main_globals, player, weapon.x, weapon.y, lambda w=weapon: w.pickup(player))
 
         # animate player
         frame_timer += 1

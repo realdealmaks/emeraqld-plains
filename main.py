@@ -241,15 +241,19 @@ while running:
             quit()
 
         # key pressed
-        if event.type == pygame.KEYDOWN: 
-            if event.key == pygame.K_w: main.moving_up = True
-            if event.key == pygame.K_s: main.moving_down = True
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_w: 
+                main.moving_up = True
+            if event.key == pygame.K_s: 
+                main.moving_down = True
             if event.key == pygame.K_a:
                 main.moving_left = True
                 main.facing_left = True
             if event.key == pygame.K_d: 
                 main.moving_right = True
                 main.facing_left = False
+            if event.key == pygame.K_e:
+                main.pressed_e = True
             if event.key == pygame.K_ESCAPE:
                 if main.is_paused == False: main.is_paused = True
                 else: main.is_paused = False

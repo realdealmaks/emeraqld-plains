@@ -32,5 +32,6 @@ added some __repr__ because i looked up on leddit why i am getting memory locati
 vse najboljse
 slide down loading bar
 make some weapons
+handle some inventories
 
 # 
