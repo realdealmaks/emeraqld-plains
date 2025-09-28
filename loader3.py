@@ -8,6 +8,44 @@ from pymunk import shapes
 import time
 
 def loader3(main_globals):
+    def weapon_info(main_globals):
+        screen = main_globals['screen']
+        screen_w = main_globals['screen_w']
+        screen_h = main_globals['screen_h']
+        info_bg_x = screen_w - main_globals['weapon_info_bg'].get_width()
+        info_bg_y = screen_h - main_globals['weapon_info_bg'].get_height()
+        screen.blit(main_globals['weapon_info_bg'], (info_bg_x, info_bg_y))
+        weapon = main_globals['player'].weapons[0]
+        weapon_image = main_globals['weapon_images'][weapon.name]
+        screen.blit(weapon_image, (info_bg_x + 20, info_bg_y + 20))
+
+    def new_mutation(main_globals, effect, number):
+        screen = main_globals['screen']
+        screen_h = main_globals['screen_h']
+        screen_w = main_globals['screen_w']
+        mutation_alpha = 0
+        while mutation_alpha < 255:
+            mutation_alpha += 20
+            if mutation_alpha > 255:
+                mutation_alpha = 255
+            screen.fill((0, 0, 0))
+            main_globals['mutation_image'].set_alpha(mutation_alpha)
+            screen.blit(main_globals['mutation_image'], (0, 0))
+            time.sleep(0.01)
+            pygame.display.flip()
+        player.effect(effect, number)
+        time.sleep(1)
+        while mutation_alpha > 0:
+            mutation_alpha -= 25
+            if mutation_alpha < 0:
+                mutation_alpha = 0
+            screen.fill((0, 0, 0))
+            main_globals['mutation_image'].set_alpha(mutation_alpha)
+            screen.blit(main_globals['mutation_image'], (0, 0))
+            time.sleep(0.01)
+            pygame.display.flip()
+        main_globals['mutation_image'].set_alpha(255)
+
     def interact(main_globals, player, x, y, function):
         if distance_to(player, (x, y)) < main_globals['interact_distance']:
             if main_globals['pressed_e'] and not main_globals['is_paused'] and function is not None:
@@ -552,6 +590,22 @@ def loader3(main_globals):
             draw_x -= 30
 
         screen.blit(player_frame, (draw_x, draw_y))
+        if len(player.weapons) > 0:
+            weapon = player.weapons[0]
+            weapon_image = main_globals['weapon_images'][weapon.name]
+            scale_fraction = 1.8
+            weapon_image = pygame.transform.scale(weapon_image, ((main_globals['player_size'] // 2) * scale_fraction, (main_globals['player_size'] // 2) * scale_fraction))
+            weapon_image = pygame.transform.rotate(weapon_image, 65)
+            weapon_image = pygame.transform.flip(weapon_image, True, False)
+
+            weapon_x = draw_x + player_size + 40 # x offset
+            weapon_y = draw_y + player_size // 2 + 36  # y offset
+
+            if facing_left:
+                weapon_image = pygame.transform.flip(weapon_image, True, False)
+                weapon_x -= 90
+
+            screen.blit(weapon_image, (weapon_x, weapon_y))
 
         if is_paused == False:
             draw_vignette(main_globals, player)
@@ -588,6 +642,8 @@ def loader3(main_globals):
     main_globals['match_state'] = match_state
     main_globals['spawn_weapons'] = spawn_weapons
     main_globals['interact'] = interact
+    main_globals['new_mutation'] = new_mutation
+    main_globals['weapon_info'] = weapon_info
 
     main_globals['player'] = player
     main_globals['Player'] = Player

@@ -34,6 +34,8 @@ def loader2(main_globals):
     main_globals['interact_image'] = pygame.image.load("assets/useful images/interact.png").convert_alpha()
     main_globals['interact_image'] = pygame.transform.scale(main_globals['interact_image'], (50, 50))
 
+    main_globals['new_mutation_image'] = pygame.image.load("assets/useful images/mutation.png").convert_alpha()
+
     # weapon section
     sword_image = pygame.image.load("assets/models/weapons/sword.png").convert_alpha()
     w, h = sword_image.get_size()

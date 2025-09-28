@@ -33,5 +33,6 @@ vse najboljse
 slide down loading bar
 make some weapons
 handle some inventories
+made dude hold weapon
 
 # 
