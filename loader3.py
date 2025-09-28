@@ -8,6 +8,14 @@ from pymunk import shapes
 import time
 
 def loader3(main_globals):
+    def interact(main_globals, player, x, y, function):
+        keys = pygame.key.get_pressed()
+        if distance_to(player, (x, y)) < main_globals['interact_distance']:
+            main_globals['screen'].blit(main_globals['interact_image'], (x, y))
+            if keys[pygame.K_e] and not main_globals['is_paused'] and function is not None:
+                function()
+                print(f"player interacted with {function}")
+
     def spawn_weapons(main_globals):
         ts = main_globals['tile_size'] + main_globals['tile_offset']
         weapon_types = list(main_globals['weapon_images'].keys())
@@ -50,15 +58,30 @@ def loader3(main_globals):
             else:
                 print(f"{self.name} is on cooldown.")
         def pickup(self, player):
-            if distance_to(self, player) < 50:
-                player.weapons.append(self)
-                if self in main_globals['weapons_on_map']:
-                    main_globals['weapons_on_map'].remove(self)
+            player.weapons.append(self)
+            self.destroy()
+            print(f"player picked up {self.name}")
+        def destroy(self):
+            main_globals['weapons_on_map'].remove(self)
+            print(f"destroyed weapon '{self.name}'")
         def draw(self, screen, x, y):
             screen.blit(main_globals['weapon_images'][self.name], (x, y))
 
     def distance_to(thing1, thing2):
-        return math.hypot(thing1.x - thing2.x, thing1.y - thing2.y)
+        def get_xy(thing):
+            if hasattr(thing, "x") and hasattr(thing, "y"):
+                # if thing is player use center
+                if isinstance(thing, main_globals['Player']):
+                    return thing.x + main_globals['player_size'] // 2, thing.y + main_globals['player_size'] // 2
+                return thing.x, thing.y
+            elif isinstance(thing, (tuple, list)) and len(thing) >= 2:
+                return thing[0], thing[1]
+            else:
+                raise TypeError(f"bad type: {thing}")
+
+        x1, y1 = get_xy(thing1)
+        x2, y2 = get_xy(thing2)
+        return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
 
     class Enemy():
         def __init__(self, main_globals, x, y):
@@ -426,28 +449,28 @@ def loader3(main_globals):
                         main_globals['spawn_set'] = True
 
                 elif tile_type == 2:
-                    ts = main_globals['tile_size'] + main_globals['tile_offset']
                     center_x = col_idx * ts + main_globals['tile_size'] // 2
                     center_y = row_idx * ts + main_globals['tile_size'] // 2
-
-                    # spawn weapon if not already spawned here
-                    existing = [w for w in main_globals['weapons_on_map'] if w.x == center_x and w.y == center_y]
-                    if not existing:
-                        new_weapon = main_globals['Weapon']("sword")
-                        new_weapon.x = center_x
-                        new_weapon.y = center_y
-                        main_globals['weapons_on_map'].append(new_weapon)
 
                 elif tile_type == 3:
                     for i in range(random.randint(1, 3)):
                         Enemy(main_globals, col_idx * ts + (main_globals['tile_size'] - 40) // 2, row_idx * ts + (main_globals['tile_size'] - 40) // 2).draw()
 
-        for weapon in main_globals['weapons_on_map']:
+        # draw weapons
+        keys = pygame.key.get_pressed()
+        for weapon in main_globals['weapons_on_map'][:]:
             weapon_image = main_globals['weapon_images'][weapon.name]
             draw_x = weapon.x - weapon_image.get_width() // 2 - camera_x
             draw_y = weapon.y - weapon_image.get_height() // 2 - camera_y
             weapon.draw(screen, draw_x, draw_y)
-            weapon.pickup(player)
+
+            # interact image
+            if distance_to(player, weapon) < main_globals['interact_distance']:
+                screen.blit(main_globals['interact_image'], (draw_x, draw_y + weapon_image.get_height()))
+
+            # pick up weapon
+            if keys[pygame.K_e] and distance_to(player, weapon) < main_globals['interact_distance']:
+                weapon.pickup(player)
 
         # animate player
         frame_timer += 1
@@ -510,6 +533,7 @@ def loader3(main_globals):
     main_globals['rebuild_walkable_mask'] = rebuild_walkable_mask
     main_globals['match_state'] = match_state
     main_globals['spawn_weapons'] = spawn_weapons
+    main_globals['interact'] = interact
 
     main_globals['player'] = player
     main_globals['Player'] = Player

@@ -28,4 +28,9 @@ by yours truly
 make some better loadings
 added some __repr__ because i looked up on leddit why i am getting memory locations
 
+# 28.9.2025 / shrumbly one
+vse najboljse
+slide down loading bar
+make some weapons
+
 # 

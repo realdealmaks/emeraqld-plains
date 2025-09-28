@@ -4,6 +4,7 @@ from PIL import Image
 from pygame import mixer as mx
 from pymunk import shapes
 import time
+import os
 # main python script
 
 # initiate things
@@ -18,7 +19,6 @@ def load_into_globals(filepath):
     spec.loader.exec_module(module)
     globals().update(module.__dict__)
     return module
-
 
 # this turns all of the main_globals[''] slop into actually non eye burning variables
 class DictNamespace:
@@ -106,14 +106,25 @@ def draw_loading_screen(step, total, loading_phase):
         pygame.draw.rect(screen, bar_color, (bar_x, bar_y, bar_w, target_bar_h)) # 100% bar
         pygame.display.update()
         loading_bar_flicker(0.5, 10, force_full = True)
+        time.sleep(0.4)
+        target_bar_h = 0
+        if bar_risen:
+            while bar_h > target_bar_h:
+                bar_h -= 2 # speed
+                bar_y = screen_h - bar_h
+                screen.fill((0, 0, 0))
+                screen.blit(splash_image, (screen_w // 2 - splash_image.get_width() // 2, screen_h // 2 - splash_image.get_height() // 2))
+                pygame.draw.rect(screen, bar_color, (bar_x, bar_y, screen_w, bar_h)) # 100% bar
+                pygame.display.update()
+                time.sleep(0.02)
 
-        time.sleep(3)
+        time.sleep(0.8)
         print("fading out")
         while splash_alpha > 0:
             splash_alpha -= 5
             splash_image.set_alpha(splash_alpha)
             screen.fill((0, 0, 0))
-            screen.blit(splash_image, (screen_w // 2 - splash_image.get_width() // 2 + 1, screen_h // 2 - splash_image.get_height() // 2 + 1, ))
+            screen.blit(splash_image, (screen_w // 2 - splash_image.get_width() // 2, screen_h // 2 - splash_image.get_height() // 2, ))
             pygame.display.update()
             time.sleep(0.08)
 
@@ -161,6 +172,7 @@ bar_risen = False
 bar_h = 0
 splash_alpha = 0
 bar_color = (0, 170, 0)
+loading_fake = False # ehh its all fake
 
 draw_loading_screen(loading_step, loading_steps, "fade_in")
 
@@ -172,7 +184,8 @@ loading_steps += 1
 loading1 = load_into_globals("loader1.py")
 loading_bar_flicker()
 loading1.loader1(main_globals)
-time.sleep(1)
+if loading_fake == True:
+    time.sleep(1.2)
 
 draw_loading_screen(loading_step, loading_steps, "loading")
 loading_step += 1
@@ -180,18 +193,22 @@ loading_steps += 1
 loading_bar_flicker()
 loading2 = load_into_globals("loader2.py")
 loading2.loader2(main_globals)
-time.sleep(1.2)
+if loading_fake == True:
+    time.sleep(1.2)
 
 draw_loading_screen(loading_step, loading_steps, "loading")
 loading_step += 1
 loading_bar_flicker()
 loading3 = load_into_globals("loader3.py")
 loading3.loader3(main_globals)
-time.sleep(2)
+if loading_fake == True:
+    time.sleep(2)
 
 draw_loading_screen(loading_step, loading_steps, "loading")
 draw_loading_screen(loading_steps, loading_steps, "fade_out")
-time.sleep(3)
+if loading_fake == True:
+    time.sleep(3)
+
 
 main_globals['game_stage'] = "in menu"
 pygame.display.quit()

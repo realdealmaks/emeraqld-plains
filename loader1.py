@@ -73,6 +73,7 @@ def loader1(main_globals):
     main_globals['spawn_y'] = 0
 
     main_globals['tile_offset'] = 50
+    main_globals['interact_distance'] = 75
 
     main_globals['playergif'] = Image.open("assets/models/player/playergif.gif")
     main_globals['match'] = None
