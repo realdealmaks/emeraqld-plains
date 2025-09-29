@@ -40,10 +40,11 @@ def loader1(main_globals):
     main_globals['camera_y'] = 0
     main_globals['camera_speed'] = 0.1  # lower = slower
 
-    main_globals['music_slider'] = pygame.Rect(main_globals['screen_w'] - 400, 110, 300, 20)
+    main_globals['music_slider'] = pygame.Rect(main_globals['screen_w'] - 400, 100, 300, 20)
     main_globals['play_button'] = pygame.Rect(50, main_globals['screen_h'] - 150, 200, 100)
     main_globals['settings_button'] = pygame.Rect(50, main_globals['screen_h'] - 300, 200, 100)
     main_globals['to_menu'] = pygame.Rect(main_globals['screen_w'] - 250, main_globals['screen_h'] - 150, 200, 100)
+    main_globals['hints_button'] = pygame.Rect(main_globals['screen_w'] - 400, 143, 75, 35)
 
     main_globals['mouse_pos'] = pygame.mouse.get_pos()
     main_globals['mouse_pressed'] = pygame.mouse.get_pressed()[0]
@@ -80,6 +81,8 @@ def loader1(main_globals):
     main_globals['playergif'] = Image.open("assets/models/player/playergif.gif")
     main_globals['match'] = None
     main_globals['bridging'] = True
+    main_globals['hints_text'] = "True"
+    main_globals['hints'] = main_globals['hints_text'].split(", ")
 
     main_globals['Weapon'] = None
     main_globals['attack_counter'] = 0

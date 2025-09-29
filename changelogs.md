@@ -34,5 +34,8 @@ slide down loading bar
 make some weapons
 handle some inventories
 made dude hold weapon
+made some mutation function for tmr
+made some weapon info for tmr
 
-# 
+# 29.9.2025 / shramble two
+made settings lines and a hints for like really soon

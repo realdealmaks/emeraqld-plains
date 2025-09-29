@@ -301,6 +301,13 @@ while running:
                 if main.game_stage == "in settings":
                     if main.music_slider.collidepoint(main.mouse_pos):
                         main.dragging_music_slider = True
+                    if main.hints_button.collidepoint(main.mouse_pos):
+                        if main.hints_text == "True":
+                            main.hints_text = "False"
+                            print("hints disabled")
+                        else: 
+                            main.hints_text = "True"
+                            print("hints reenabled")
                     if main.to_menu.collidepoint(main.mouse_pos):
                         main.game_stage = "in menu"
                 if main.game_stage == "dead":

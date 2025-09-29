@@ -457,9 +457,19 @@ def loader3(main_globals):
         music_slider = main_globals['music_slider']
         to_menu = main_globals['to_menu']
         font = main_globals['font']
-
         setting_font = pygame.font.SysFont(None, 34)
+
         screen.blit(font.render("settings", True, (255, 255, 255)), (20, 20))
+        # liners
+        liner_y = 85
+        liner = pygame.Rect(100, liner_y, main_globals['screen_w'] - 150, 2)
+        pygame.draw.rect(screen, (40, 40, 40), liner)
+        liner_y += 50
+        liner = pygame.Rect(100, liner_y, main_globals['screen_w'] - 150, 2)
+        pygame.draw.rect(screen, (40, 40, 40), liner)
+        liner_y += 50
+        liner = pygame.Rect(100, liner_y, main_globals['screen_w'] - 150, 2)
+        pygame.draw.rect(screen, (40, 40, 40), liner)
 
         # music slider
         pygame.draw.rect(screen, (120, 120, 120), music_slider)
@@ -475,14 +485,22 @@ def loader3(main_globals):
             mx.music.set_volume(volume)
 
         screen.blit(setting_font.render("music volume", True, (255, 255, 255)), (100, 100))
-        screen.blit(setting_font.render(f"{int(volume * 100)}%", True, (255, 255, 255)), (main_globals['screen_w'] // 2 + 20, 110))
+        screen.blit(setting_font.render(f"{int(volume * 100)}%", True, (255, 255, 255)), (main_globals['screen_w'] // 2 + 20, 100))
 
+        # return
         to_menu_color = (70, 70, 70) if to_menu.collidepoint(mouse_pos) else (40, 40, 40)
         pygame.draw.rect(screen, to_menu_color, to_menu)
         text_surf = font.render("To menu", True, (255, 255, 255))
         text_rect = text_surf.get_rect(center=main_globals['to_menu'].center)
         screen.blit(text_surf, text_rect.topleft)
 
+        # hints
+        screen.blit(setting_font.render("hints", True, (255, 255, 255)), (100, 150))
+        hints_color = (70, 70, 70) if main_globals['hints_button'].collidepoint(mouse_pos) else (40, 40, 40)
+        pygame.draw.rect(screen, hints_color, main_globals['hints_button'])
+        text_surf = setting_font.render(main_globals['hints_text'], True, (255, 255, 255))
+        text_rect = text_surf.get_rect(center=main_globals['hints_button'].center)
+        screen.blit(text_surf, text_rect.topleft)
 
     def draw_dead(main_globals, mouse_pos):
         screen = main_globals['screen']
