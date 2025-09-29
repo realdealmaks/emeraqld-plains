@@ -8,6 +8,39 @@ from pymunk import shapes
 import time
 
 def loader3(main_globals):
+    def draw_hints(main_globals):
+        screen = main_globals['screen']
+        alpha = main_globals['hint_alpha']
+        main_globals['hint_alpha'] = alpha
+        block_size = main_globals['key_w_hint'].get_width()
+
+        if main_globals['idle_time'] >= main_globals['idle_threshold']:
+            alpha = main_globals.get('hint_alpha', 0)
+            alpha += 1 # speed
+            if alpha > 255:
+                alpha = 255
+            main_globals['hint_alpha'] = alpha
+            main_globals['key_w_hint'].set_alpha(alpha)
+            main_globals['key_a_hint'].set_alpha(alpha)
+            main_globals['key_s_hint'].set_alpha(alpha)
+            main_globals['key_d_hint'].set_alpha(alpha)
+            main_globals['key_e_hint'].set_alpha(alpha)
+            main_globals['mouse_left_hint'].set_alpha(alpha)
+            main_globals['mouse_blank_hint'].set_alpha(alpha)
+            screen.blit(main_globals['key_w_hint'], (10 + block_size, main_globals['screen_h'] - block_size*2 - 10))
+            screen.blit(main_globals['key_a_hint'], (10, main_globals['screen_h'] - block_size - 10))
+            screen.blit(main_globals['key_s_hint'], (10 + block_size, main_globals['screen_h'] - block_size - 10))
+            screen.blit(main_globals['key_d_hint'], (10 + block_size*2, main_globals['screen_h'] - block_size - 10))
+            screen.blit(main_globals['key_e_hint'], (10 + block_size*2, main_globals['screen_h'] - block_size*2 - 10))
+            # swap mouse image
+            ticks = pygame.time.get_ticks() # ms
+            if (ticks // 1000) % 2 == 0: # every s
+                screen.blit(main_globals['mouse_blank_hint'], (main_globals['screen_w'] - main_globals['mouse_blank_hint'].get_width() - 10, main_globals['screen_h'] - main_globals['mouse_blank_hint'].get_height() - 10))
+            else:
+                screen.blit(main_globals['mouse_left_hint'], (main_globals['screen_w'] - main_globals['mouse_left_hint'].get_width() - 10, main_globals['screen_h'] - main_globals['mouse_left_hint'].get_height() - 10))
+        else:
+            main_globals['hint_alpha'] = 0
+
     def weapon_info(main_globals):
         screen = main_globals['screen']
         screen_w = main_globals['screen_w']
@@ -200,6 +233,7 @@ def loader3(main_globals):
                 main_globals['draw_menu'](main_globals, main_globals['mouse_pos'])
             case "in dungeon":
                 main_globals['draw_dungeon'](main_globals, main_globals['player'], main_globals['is_paused'], main_globals['facing_left'])
+                main_globals['draw_hints'](main_globals)
             case "in settings":
                 main_globals['draw_settings'](main_globals, main_globals['mouse_pos'])
             case "dead":
@@ -390,15 +424,14 @@ def loader3(main_globals):
         if player.alive:
             shake_x, shake_y = player.shake()
             screen = main_globals['screen']
-            pygame.draw.circle(screen, (20, 20, 20), (100, main_globals['screen_h'] - 100), 80)
-            screen.blit(main_globals['font'].render(str(player.health), True, (255, 255, 255)),
-                        (120, main_globals['screen_h'] - 220))
+            pygame.draw.circle(screen, (20, 20, 20), (100, 100), 80)
+            screen.blit(main_globals['font'].render(str(player.health), True, (255, 255, 255)), (120, 200))
             if player.health > 66:
-                screen.blit(main_globals['player_health_images'][0], (-50 + shake_x, main_globals['screen_h'] - 260 + shake_y))
+                screen.blit(main_globals['player_health_images'][0], (-50 + shake_x, -50 + shake_y))
             elif player.health > 33:
-                screen.blit(main_globals['player_health_images'][1], (-50 + shake_x, main_globals['screen_h'] - 260 + shake_y))
+                screen.blit(main_globals['player_health_images'][1], (-50 + shake_x, -50 + shake_y))
             else:
-                screen.blit(main_globals['player_health_images'][2], (-50 + shake_x, main_globals['screen_h'] - 260 + shake_y))
+                screen.blit(main_globals['player_health_images'][2], (-50 + shake_x, -50 + shake_y))
 
     def draw_vignette(main_globals, player):
         if player.alive:
@@ -415,6 +448,7 @@ def loader3(main_globals):
 
     def draw_menu(main_globals, mouse_pos):
         screen = main_globals['screen']
+        screen.fill((0, 0, 0))
         if main_globals['menu_bg_can_animate']:
             target_x = main_globals['screen_w'] - main_globals['menu_background'].get_width()
             if main_globals['menu_bg_x'] > target_x:
@@ -525,6 +559,7 @@ def loader3(main_globals):
         frame_delay = main_globals['frame_delay']
         frames = main_globals['frames']
         player_size = main_globals['player_size']
+        screen.fill((0, 0, 0))
 
         target_x, target_y = get_camera_offset(main_globals, player, main_globals['tile_size'])
         camera_x += (target_x - camera_x) * camera_speed
@@ -662,6 +697,7 @@ def loader3(main_globals):
     main_globals['interact'] = interact
     main_globals['new_mutation'] = new_mutation
     main_globals['weapon_info'] = weapon_info
+    main_globals['draw_hints'] = draw_hints
 
     main_globals['player'] = player
     main_globals['Player'] = Player

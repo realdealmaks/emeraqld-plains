@@ -329,7 +329,20 @@ while running:
         main.mouse_pos = pygame.mouse.get_pos()
         main.mouse_pressed = pygame.mouse.get_pressed()[0]
 
-    screen.fill((0, 0, 0))  # background
+    if main.game_stage == "in dungeon":
+        keys = pygame.key.get_pressed()
+        if any(keys): # any key
+            main_globals['last_input_time'] = pygame.time.get_ticks() / 1000  # ms to s
+
+        mouse_buttons = pygame.mouse.get_pressed()
+        if any(mouse_buttons): # any mouse press
+            main_globals['last_input_time'] = pygame.time.get_ticks() / 1000
+
+        current_time = pygame.time.get_ticks() / 1000
+        main_globals['idle_time'] = current_time - main_globals['last_input_time']
+
+        screen.fill((0, 0, 0))
+    else: main_globals['last_input_time'] = 0
 
     main.match_state(main_globals, main.game_stage)
 

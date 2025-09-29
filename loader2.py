@@ -36,6 +36,25 @@ def loader2(main_globals):
 
     main_globals['new_mutation_image'] = pygame.image.load("assets/useful images/mutation.png").convert_alpha()
 
+    main_globals['key_a_hint'] = pygame.image.load("assets/keys/key_A.png").convert_alpha()
+    main_globals['key_a_hint'] = pygame.transform.scale2x(main_globals['key_a_hint'])
+    main_globals['key_s_hint'] = pygame.image.load("assets/keys/key_S.png").convert_alpha()
+    main_globals['key_s_hint'] = pygame.transform.scale2x(main_globals['key_s_hint'])
+    main_globals['key_d_hint'] = pygame.image.load("assets/keys/key_D.png").convert_alpha()
+    main_globals['key_d_hint'] = pygame.transform.scale2x(main_globals['key_d_hint'])
+    main_globals['key_w_hint'] = pygame.image.load("assets/keys/key_W.png").convert_alpha()
+    main_globals['key_w_hint'] = pygame.transform.scale2x(main_globals['key_w_hint'])
+    main_globals['key_e_hint'] = pygame.image.load("assets/keys/key_E.png").convert_alpha()
+    main_globals['key_e_hint'] = pygame.transform.scale2x(main_globals['key_e_hint'])
+    main_globals['mouse_blank_hint'] = pygame.image.load("assets/keys/normal_mouse.png").convert_alpha()
+    mouse_w = main_globals['mouse_blank_hint'].get_width()
+    mouse_h = main_globals['mouse_blank_hint'].get_height()
+    main_globals['mouse_blank_hint'] = pygame.transform.scale(main_globals['mouse_blank_hint'], (mouse_w * 3.5, mouse_h * 3.5))
+    main_globals['mouse_left_hint'] = pygame.image.load("assets/keys/left_mouse.png").convert_alpha()
+    main_globals['mouse_left_hint'] = pygame.transform.scale(main_globals['mouse_left_hint'], (mouse_w * 3.5, mouse_h * 3.5))
+    main_globals['mouse_right_hint'] = pygame.image.load("assets/keys/right_mouse.png").convert_alpha()
+    main_globals['mouse_right_hint'] = pygame.transform.scale(main_globals['mouse_right_hint'], (mouse_w * 3.5, mouse_h * 3.5))
+
     # weapon section
     sword_image = pygame.image.load("assets/models/weapons/sword.png").convert_alpha()
     w, h = sword_image.get_size()

@@ -57,6 +57,12 @@ def loader1(main_globals):
 
     main_globals['developer_tools'] = True
 
+    main_globals['hint_alpha'] = 0
+
+    main_globals['idle_time'] = 0
+    main_globals['idle_threshold'] = 5 # time before hints appear
+    main_globals['last_input_time'] = 0
+
     main_globals['tilemap'] = [
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
         [0, 99, 1, 1, 2, 0, 0, 0, 0, 0,],
