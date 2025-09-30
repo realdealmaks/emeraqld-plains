@@ -40,3 +40,6 @@ made some weapon info
 # 29.9.2025 / shramble two
 made settings lines and a hints for like really soon
 used hints (should it really be called hints man i ran out of ideas frfr 😛)
+
+# 30.9.25 / shambles
+did some images

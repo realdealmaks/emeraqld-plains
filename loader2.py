@@ -55,6 +55,9 @@ def loader2(main_globals):
     main_globals['mouse_right_hint'] = pygame.image.load("assets/keys/right_mouse.png").convert_alpha()
     main_globals['mouse_right_hint'] = pygame.transform.scale(main_globals['mouse_right_hint'], (mouse_w * 3.5, mouse_h * 3.5))
 
+    main_globals['pedistal_image'] = pygame.image.load("assets/useful images/pedestal.png").convert_alpha()
+    main_globals['pedistal_image'] = pygame.transform.scale2x(main_globals['pedistal_image'])
+
     # weapon section
     sword_image = pygame.image.load("assets/models/weapons/sword.png").convert_alpha()
     w, h = sword_image.get_size()

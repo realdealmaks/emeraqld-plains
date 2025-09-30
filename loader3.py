@@ -589,6 +589,9 @@ def loader3(main_globals):
                             main_globals['player'].y = main_globals['spawn_y']
                         main_globals['spawn_set'] = True
 
+                elif tile_type == 2:
+                    screen.blit(main_globals['pedistal_image'], (col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_width() // 2, row_idx * ts - camera_y + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_height() // 2 + 50))
+
                 elif tile_type == 3:
                     for i in range(random.randint(1, 3)):
                         Enemy(main_globals, col_idx * ts + (main_globals['tile_size'] - 40) // 2, row_idx * ts + (main_globals['tile_size'] - 40) // 2).draw()
@@ -596,7 +599,7 @@ def loader3(main_globals):
         # draw weapons
         for weapon in main_globals['weapons_on_map'][:]:
             weapon_image = main_globals['weapon_images'][weapon.name]
-            draw_x = weapon.x - weapon_image.get_width() // 2 - camera_x
+            draw_x = weapon.x - weapon_image.get_width() // 2 - camera_x + 15
             draw_y = weapon.y - weapon_image.get_height() // 2 - camera_y
             weapon.draw(screen, draw_x, draw_y)
 
