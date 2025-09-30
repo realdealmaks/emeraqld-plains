@@ -8,12 +8,9 @@ from pygame import mixer as mx
 from pymunk import shapes
 
 def loader1(main_globals):
-    # global tile_size, currently_playing_index, player_size, screen_h, screen_w, menu_bg_x, menu_background, moving_up, moving_down, moving_left, moving_right, game_stage, font, is_paused, dragging_music_slider, menu_bg_can_animate, flash_alpha, flash_active, flash_speed, camera_x, camera_y, camera_speed, music_slider, play_button, settings_button, to_menu, mouse_pos, mouse_pressed, current_frame, frame_timer, frame_delay, facing_left, frames, developert_tools
     main_globals['tile_size'] = 600
     main_globals['currently_playing_index'] = 0 # 0 being the first track so it's insta loaded
     main_globals['player_size'] = 50
-    main_globals['screen_h'] = 750 
-    main_globals['screen_w'] = 1080
 
     main_globals['menu_bg_x'] = main_globals['screen_w']
 
@@ -95,5 +92,11 @@ def loader1(main_globals):
 
     main_globals['walkable_tiles'] = [1, 2, 3, 99]  # tiles that can be walked on
     main_globals['weapons_on_map'] = []
+
+    main_globals['hint_fade_duration'] = 0.5
+    main_globals['prev_time'] = pygame.time.get_ticks() / 1000
+    main_globals['dt'] = 0
+    main_globals['virtual_screen'] = main_globals['screen']
+    main_globals['max_fps'] = 0
 
     print("loader1 file loaded")

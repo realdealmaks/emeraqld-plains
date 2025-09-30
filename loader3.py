@@ -1,6 +1,8 @@
 # this file is for classes and definitions
 # loader 3
 
+# FOR YOUR OWN SAFETY ONLY KEEP 1 FUNCTION OPEN AT ONE TIME 👀👺
+
 import math, random, pygame, pydub, pytweening, scipy, pymunk, pathfinding
 from PIL import Image
 from pygame import mixer as mx
@@ -8,6 +10,9 @@ from pymunk import shapes
 import time
 
 def loader3(main_globals):
+
+    dt = main_globals['dt'] # the god of them all
+
     def draw_hints(main_globals):
         screen = main_globals['screen']
         alpha = main_globals['hint_alpha']
@@ -16,7 +21,7 @@ def loader3(main_globals):
 
         if main_globals['idle_time'] >= main_globals['idle_threshold']:
             alpha = main_globals.get('hint_alpha', 0)
-            alpha += 1 # speed
+            alpha += dt * 255 / main_globals['hint_fade_duration']
             if alpha > 255:
                 alpha = 255
             main_globals['hint_alpha'] = alpha
@@ -353,8 +358,8 @@ def loader3(main_globals):
             self.weapons = []
 
         def move(self, dx, dy):
-            new_x = self.x + dx * self.speed
-            new_y = self.y + dy * self.speed
+            new_x = self.x + dx * self.speed * dt * 60
+            new_y = self.y + dy * self.speed * dt * 60
             mask = self.main_globals.get('walkable_mask')
 
             # horizontal
@@ -384,7 +389,7 @@ def loader3(main_globals):
 
         def shake(self):
             if self.shake_timer > 0:
-                self.shake_timer -= 1
+                self.shake_timer -= 1 * dt * 60
                 return random.randint(-5, 5), random.randint(-5, 5)
             return 0, 0
 
@@ -612,7 +617,7 @@ def loader3(main_globals):
 
         # draw slash
         if 'active_slashes' in main_globals:
-            now = pygame.time.get_ticks()
+            now = pygame.time.get_ticks()  # current time in ms
             still_active = []
             for slash_img, slash_rect, expiry in main_globals['active_slashes']:
                 if now < expiry:

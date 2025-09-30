@@ -8,6 +8,7 @@
             <img src="https://img.shields.io/badge/build-broken-red" alt="">
             <img src="https://img.shields.io/badge/tests-what%20tests%3F-lightgrey" alt="">
             <img src="https://img.shields.io/badge/code%20style-chaotic%20evil-purple" alt="">
+            <img src="https://img.shields.io/badge/magic-all of it%20-blue" alt="">
         </div>
         <hr>
         <picture>

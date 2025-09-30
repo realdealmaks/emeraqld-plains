@@ -13,6 +13,19 @@ mx.init(frequency=44100, size=-16, channels=16, buffer=8192)
 screen_h, screen_w = 750, 1080
 screen = pygame.display.set_mode((screen_w, screen_h))
 
+virtual_fps = 0
+vfps_max = 175
+virtual_dt = 1 / vfps_max
+virtual_accumulator = 0
+virtual_prev_time = pygame.time.get_ticks() / 1000
+virtual_clock = pygame.time.Clock()
+virtual_w = 1080
+virtual_h = 750
+virtual_screen = pygame.Surface((virtual_w, virtual_h))
+dt = dt = virtual_clock.tick(vfps_max) / 1000
+prev_time = pygame.time.get_ticks() / 1000
+max_fps = 120
+
 def load_into_globals(filepath):
     spec = importlib.util.spec_from_file_location("module_name", filepath)
     module = importlib.util.module_from_spec(spec)
@@ -211,30 +224,37 @@ if loading_fake == True:
 
 
 main_globals['game_stage'] = "in menu"
-pygame.display.quit()
-print("restarting displayzers")
+print("starting")
 
 main = DictNamespace(main_globals) # converts some globals
 print("converted main_globals to mains, get ready to tish!")
 # dont use main_globals['🤖'] but instead use main.🤖
 # stupar ce to vidite me je res prevec motilo da je vse bilo v neumni barvi vsega drugega "" texta in nisem hotel kopirati main_globals[''] cisto povsod
 
+current_time = pygame.time.get_ticks() / 1000
+main.dt = current_time - main.prev_time
+main.prev_time = current_time
+main.screen = virtual_screen
+main.max_fps = max_fps
+
+main.player_gif(main_globals) # loads the player gif
+
 time.sleep(0.3)
-pygame.init()
 screen = pygame.display.set_mode((main.screen_w, main.screen_h)) # retish the balish
 main.screen = screen # regalishes it to the main globas zalish
-print("started some displayzers")
 
+print("started")
 # loop setup
 clock = pygame.time.Clock() # makes some clocks and sets the titles
 pygame.display.set_caption('Game')
 
 main.walkable_mask = main.make_initial_walkable_surface(main.tilemap, main_globals) # makes the initial walkable surface
-main.player_gif(main_globals) # loads the player gif
 
 # makes some game loops
 running = True
 while running:
+    main.virtual_screen.fill((0, 0, 0))
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -341,16 +361,30 @@ while running:
         current_time = pygame.time.get_ticks() / 1000
         main_globals['idle_time'] = current_time - main_globals['last_input_time']
 
-        screen.fill((0, 0, 0))
     else: main_globals['last_input_time'] = 0
 
-    main.match_state(main_globals, main.game_stage)
+    # update main screen with virtual screen
+    current_time = pygame.time.get_ticks() / 1000
+    frame_time = current_time - virtual_prev_time
+    virtual_prev_time = current_time
 
-    if main.developer_tools == True:
-        fps = int(clock.get_fps())
-        pygame.display.set_caption(f"FPS: {fps}") # re changes the caption for testings of framings
+    frame_time = min(frame_time, 0.1)
+    virtual_accumulator += frame_time
+    max_virtual_steps = 5
+    steps = 0
+    while virtual_accumulator >= virtual_dt and steps < max_virtual_steps:
+        main.dt = virtual_dt
+        main.match_state(main_globals, main.game_stage)
+        virtual_accumulator -= virtual_dt
+        steps += 1
 
-    clock.tick(240)
-    pygame.display.update()
+    screen.blit(pygame.transform.scale(main.virtual_screen, (screen_w, screen_h)), (0, 0))
+
+    loop_fps = clock.tick(max_fps)
+    pygame.display.flip()
+
+    if main.developer_tools:
+        vfps = int(1 / virtual_dt)
+        pygame.display.set_caption(f"fps: {int(clock.get_fps())} / {max_fps}, vfps: {vfps}")
 
 pygame.quit()

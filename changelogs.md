@@ -43,3 +43,8 @@ used hints (should it really be called hints man i ran out of ideas frfr 😛)
 
 # 30.9.25 / shambles
 did some images
+sparkle some dark prograzzabor magic onto frames
+
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! real tish ballish please center the images man (pedrstall, interact, weapon on the pedrstall)!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+# 
