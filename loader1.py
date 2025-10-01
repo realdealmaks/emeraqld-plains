@@ -40,6 +40,7 @@ def loader1(main_globals):
     main_globals['music_slider'] = pygame.Rect(main_globals['screen_w'] - 400, 100, 300, 20)
     main_globals['play_button'] = pygame.Rect(50, main_globals['screen_h'] - 150, 200, 100)
     main_globals['settings_button'] = pygame.Rect(50, main_globals['screen_h'] - 300, 200, 100)
+    main_globals['credits_button'] = pygame.Rect(50, main_globals['screen_h'] - 450, 200, 100)
     main_globals['to_menu'] = pygame.Rect(main_globals['screen_w'] - 250, main_globals['screen_h'] - 150, 200, 100)
     main_globals['hints_button'] = pygame.Rect(main_globals['screen_w'] - 400, 143, 75, 35)
 

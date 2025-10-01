@@ -232,7 +232,7 @@ def loader3(main_globals):
                 pass
                 # main_globals['screen'].blit(main_globals['enemygif'], (self.x, self.y))
 
-    def match_state(main_globals, state): # useless indian naganou function for stages
+    def match_state(main_globals, state): # useless indian naganou function for stages # >:(
         match state:
             case "in menu":
                 main_globals['draw_menu'](main_globals, main_globals['mouse_pos'])
@@ -243,6 +243,8 @@ def loader3(main_globals):
                 main_globals['draw_settings'](main_globals, main_globals['mouse_pos'])
             case "dead":
                 main_globals['draw_dead'](main_globals, main_globals['mouse_pos'])
+            case "in credits":
+                main_globals['draw_credits'](main_globals, main_globals['mouse_pos'])
 
     def player_gif(main_globals):
         frames = []
@@ -489,7 +491,22 @@ def loader3(main_globals):
             text_surf = main_globals['font'].render("Settings", True, (255, 255, 255))
             text_rect = text_surf.get_rect(center=main_globals['settings_button'].center)
             screen.blit(text_surf, text_rect.topleft)
+            # kredits batten :robot:
+            credits_color = (70, 70, 70) if main_globals['credits_button'].collidepoint(mouse_pos) else (40, 40, 40)
+            pygame.draw.rect(screen, credits_color, main_globals['credits_button'])
+            text_surf = main_globals['font'].render("Credits", True, (255, 255, 255))
+            text_rect = text_surf.get_rect(center=main_globals['credits_button'].center)
+            screen.blit(text_surf, text_rect.topleft)
 
+
+    def draw_credits(main_globals, mouse_pos):
+        screen = main_globals['screen']
+        to_menu = main_globals['to_menu']
+        font = main_globals['font']
+        credits_font = pygame.font.SysFont(None, 34)
+
+        screen.blit(font.render("credits", True, (255, 255, 255)), (20, 20))
+        # have to finish this later
 
     def draw_settings(main_globals, mouse_pos):
         screen = main_globals['screen']

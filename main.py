@@ -318,6 +318,8 @@ while running:
                         mx.music.unpause()
                     if main.settings_button.collidepoint(main.mouse_pos):
                         main.game_stage = "in settings"
+                    if main.credits_button.collidepoint(main.mouse_pos):
+                        main.game_stage = "in credits"
                 if main.game_stage == "in settings":
                     if main.music_slider.collidepoint(main.mouse_pos):
                         main.dragging_music_slider = True

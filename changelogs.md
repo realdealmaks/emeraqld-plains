@@ -45,6 +45,7 @@ used hints (should it really be called hints man i ran out of ideas frfr 😛)
 did some images
 sparkle some dark prograzzabor magic onto frames
 
-  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! real tish ballish please center the images man (pedrstall, interact, weapon on the pedrstall)!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! real tish ballish please center the images man (pedrstall, interact, weapon on the pedrstall)!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! (ok)
 
-# 
+# 1 10 25 / dealbadeals
+add some credits but i didn't do the menu itself yet because https://media.discordapp.net/attachments/643544148468695090/1422896462320369785/image.png?ex=68de5718&is=68dd0598&hm=3973b7b804a58dfcc06ea476c58083e831271d33b8bd27b9feedddff67f55e5d&=&format=webp&quality=lossless
