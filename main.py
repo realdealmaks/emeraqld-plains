@@ -321,8 +321,12 @@ while running:
                     if main.credits_button.collidepoint(main.mouse_pos):
                         main.game_stage = "in credits"
                 if main.game_stage == "in settings":
-                    if main.music_slider.collidepoint(main.mouse_pos):
+                    if main.frame_slider.collidepoint(main.mouse_pos):
+                        main.dragging_frame_slider = True
+                    elif main.music_slider.collidepoint(main.mouse_pos):
                         main.dragging_music_slider = True
+                    elif main.resolution_slider.collidepoint(main.mouse_pos):
+                        main.dragging_resolution_slider = True
                     if main.hints_button.collidepoint(main.mouse_pos):
                         if main.hints_text == "True":
                             main.hints_text = "False"
@@ -343,13 +347,15 @@ while running:
                             main.player.attack(main_globals)
                             print("player attacked")
 
+        main.mouse_pos = pygame.mouse.get_pos()
+        main.mouse_pressed = pygame.mouse.get_pressed()[0]
+
         # mouse button up
         if event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:
+                main.dragging_frame_slider = False
                 main.dragging_music_slider = False
-
-        main.mouse_pos = pygame.mouse.get_pos()
-        main.mouse_pressed = pygame.mouse.get_pressed()[0]
+                main.dragging_resolution_slider = False
 
     if main.game_stage == "in dungeon":
         keys = pygame.key.get_pressed()

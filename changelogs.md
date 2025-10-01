@@ -1,3 +1,5 @@
+![Changelog](https://img.shields.io/badge/Changelog-v67-yellow)
+
 # before friggan making this file /s /r
 friggan character /s
 friggan camera /s
@@ -48,4 +50,15 @@ sparkle some dark prograzzabor magic onto frames
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! real tish ballish please center the images man (pedrstall, interact, weapon on the pedrstall)!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! (ok)
 
 # 1 10 25 / dealbadeals
-add some credits but i didn't do the menu itself yet because https://media.discordapp.net/attachments/643544148468695090/1422896462320369785/image.png?ex=68de5718&is=68dd0598&hm=3973b7b804a58dfcc06ea476c58083e831271d33b8bd27b9feedddff67f55e5d&=&format=webp&quality=lossless
+add some credits but i didn't do the menu itself yet because https://media.discordapp.net/attachments/643544148468695090/1422896462320369785/image.png?ex=68de5718&is=68dd0598&hm=3973b7b804a58dfcc06ea476c58083e831271d33b8bd27b9feedddff67f55e5d&=&format=webp&quality=lossles
+
+# 1 10 25 / shambles truly
+man sybau 💔
+nobody gives a single tish about slo and i know you dont either
+https://tenor.com/view/sybau-ts-pmo-gif-2102579015947246168
+
+added some sliders for resolution and fps
+
+future me (a couple minutes or something) will apply some frames and resoltutions with 1 click of a button
+
+# 

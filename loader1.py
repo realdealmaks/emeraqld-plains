@@ -27,6 +27,8 @@ def loader1(main_globals):
     main_globals['is_paused'] = False
 
     main_globals['dragging_music_slider'] = False
+    main_globals['dragging_resolution_slider'] = False
+    main_globals['dragging_frame_slider'] = False
 
     main_globals['menu_bg_can_animate'] = True
     main_globals['flash_alpha'] = 0
@@ -42,7 +44,11 @@ def loader1(main_globals):
     main_globals['settings_button'] = pygame.Rect(50, main_globals['screen_h'] - 300, 200, 100)
     main_globals['credits_button'] = pygame.Rect(50, main_globals['screen_h'] - 450, 200, 100)
     main_globals['to_menu'] = pygame.Rect(main_globals['screen_w'] - 250, main_globals['screen_h'] - 150, 200, 100)
-    main_globals['hints_button'] = pygame.Rect(main_globals['screen_w'] - 400, 143, 75, 35)
+    main_globals['hints_button'] = pygame.Rect(main_globals['screen_w'] - 400, 100 + 43, 75, 35)
+    main_globals['resolution_slider_base'] = pygame.Rect(main_globals['screen_w'] - 400, 200 + 7, 300, 5)
+    main_globals['frame_slider_base'] = pygame.Rect(main_globals['screen_w'] - 400, 250 + 7, 300, 5)
+    main_globals['frame_slider'] = pygame.Rect(0,0,0,0)
+    main_globals['resolution_slider'] = pygame.Rect(0,0,0,0)
 
     main_globals['mouse_pos'] = pygame.mouse.get_pos()
     main_globals['mouse_pressed'] = pygame.mouse.get_pressed()[0]
@@ -99,5 +105,20 @@ def loader1(main_globals):
     main_globals['dt'] = 0
     main_globals['virtual_screen'] = main_globals['screen']
     main_globals['max_fps'] = 0
+
+    resolutions = [(1920, 1080), (2560, 1440), (3840, 2160), (1280, 720), (1280, 1024), (1600, 900), (1920, 1200), (2560, 1600), (800, 600)]
+    resolutions.sort()
+    main_globals['resolutions'] = resolutions
+    for i in range(len(resolutions)):
+        if resolutions[i] == (1280, 720):
+            main_globals['resolution_index'] = i
+
+    frame_caps = [10, 15, 20, 25, 30, 40, 60, 75, 120, 144, 175, 200, 240]
+    frame_caps.sort()
+    main_globals['frame_caps'] = frame_caps
+    main_globals['frame_cap'] = 60
+    for i in range(len(frame_caps)):
+        if frame_caps[i] == 60:
+            main_globals['frame_cap_index'] = i
 
     print("loader1 file loaded")
