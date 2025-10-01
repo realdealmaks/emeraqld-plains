@@ -24,7 +24,7 @@ virtual_h = 750
 virtual_screen = pygame.Surface((virtual_w, virtual_h))
 dt = dt = virtual_clock.tick(vfps_max) / 1000
 prev_time = pygame.time.get_ticks() / 1000
-max_fps = 120
+max_fps = 60
 
 def load_into_globals(filepath):
     spec = importlib.util.spec_from_file_location("module_name", filepath)
@@ -249,7 +249,6 @@ clock = pygame.time.Clock() # makes some clocks and sets the titles
 pygame.display.set_caption('Game')
 
 main.walkable_mask = main.make_initial_walkable_surface(main.tilemap, main_globals) # makes the initial walkable surface
-
 # makes some game loops
 running = True
 while running:
@@ -388,11 +387,11 @@ while running:
 
     screen.blit(pygame.transform.scale(main.virtual_screen, (screen_w, screen_h)), (0, 0))
 
-    loop_fps = clock.tick(max_fps)
+    loop_fps = clock.tick(main.max_fps)
     pygame.display.flip()
 
     if main.developer_tools:
         vfps = int(1 / virtual_dt)
-        pygame.display.set_caption(f"fps: {int(clock.get_fps())} / {max_fps}, vfps: {vfps}")
+        pygame.display.set_caption(f"fps: {int(clock.get_fps())} / {main.max_fps}, vfps: {vfps}")
 
 pygame.quit()

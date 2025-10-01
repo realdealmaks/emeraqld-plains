@@ -13,6 +13,26 @@ def loader3(main_globals):
 
     dt = main_globals['dt'] # the god of them all
 
+    def draw_apply_button(main_globals, x, y, function):
+        font = pygame.font.SysFont(None, 24)
+        screen = main_globals['screen']
+        if main_globals['apply_button'] is not pygame.rect.Rect(x, y, 100, 40):
+            main_globals['apply_button'] = pygame.rect.Rect(x, y, 100, 40)
+        pygame.draw.rect(screen, (70, 70, 70), main_globals['apply_button'])
+        text_surf = font.render("Apply", True, (255, 255, 255))
+        text_rect = text_surf.get_rect(center=main_globals['apply_button'].center)
+        screen.blit(text_surf, text_rect)
+
+        if main_globals['apply_button'].collidepoint(main_globals['mouse_pos']) and pygame.mouse.get_pressed()[0]:
+            if function == "resolution":
+                print(f"set resolution to {main_globals['window_w']}x{main_globals['window_h']}")
+                pass # for now, im really gassy
+
+            elif function == "framerate":
+                new_fps = main_globals['frame_caps'][main_globals['frame_cap_index']]
+                main_globals['max_fps'] = new_fps
+                print(f"set fps to {new_fps}")
+
     def draw_hints(main_globals):
         screen = main_globals['screen']
         alpha = main_globals['hint_alpha']
@@ -580,6 +600,7 @@ def loader3(main_globals):
         screen.blit(setting_font.render(res_text, True, (255, 255, 255)), (main_globals['screen_w'] // 2 + 20, 200))
         pygame.draw.rect(screen, resolution_color, handle_rect)
         main_globals['resolution_slider'] = handle_rect
+        draw_apply_button(main_globals, main_globals['screen_w'] // 2 - 120, 200, "resolution")
 
         # framerate cap
         frame_cap_index = main_globals['frame_cap_index']
@@ -605,6 +626,8 @@ def loader3(main_globals):
         screen.blit(setting_font.render(frame_text, True, (255, 255, 255)), (main_globals['screen_w'] // 2 + 20, 250))
         pygame.draw.rect(screen, framerate_color, handle_rect)
         main_globals['frame_slider'] = handle_rect
+        if frame != main_globals['max_fps']:
+            draw_apply_button(main_globals, main_globals['screen_w'] // 2 - 120, 250, "framerate")
 
     def draw_dead(main_globals, mouse_pos):
         screen = main_globals['screen']
@@ -772,6 +795,7 @@ def loader3(main_globals):
     main_globals['weapon_info'] = weapon_info
     main_globals['draw_hints'] = draw_hints
     main_globals['draw_credits'] = draw_credits
+    main_globals['draw_apply_button'] = draw_apply_button
 
     main_globals['player'] = player
     main_globals['Player'] = Player

@@ -49,6 +49,7 @@ def loader1(main_globals):
     main_globals['frame_slider_base'] = pygame.Rect(main_globals['screen_w'] - 400, 250 + 7, 300, 5)
     main_globals['frame_slider'] = pygame.Rect(0,0,0,0)
     main_globals['resolution_slider'] = pygame.Rect(0,0,0,0)
+    main_globals['apply_button'] = pygame.Rect(0,0,0,0)
 
     main_globals['mouse_pos'] = pygame.mouse.get_pos()
     main_globals['mouse_pressed'] = pygame.mouse.get_pressed()[0]

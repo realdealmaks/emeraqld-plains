@@ -61,4 +61,6 @@ added some sliders for resolution and fps
 
 future me (a couple minutes or something) will apply some frames and resoltutions with 1 click of a button
 
+done frapes
+
 # 
