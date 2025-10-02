@@ -66,3 +66,9 @@ done frapes
 # 2 10 2025 / mkes
 eats some fruit
 adds some enemy stuff
+
+# 2 10 25 / shabumbles
+fix rdms heartbreak
+fix rdsm stupididdy
+
+# 

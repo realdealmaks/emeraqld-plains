@@ -11,7 +11,6 @@ def loader1(main_globals):
     main_globals['tile_size'] = 600
     main_globals['currently_playing_index'] = 0 # 0 being the first track so it's insta loaded
     main_globals['player_size'] = 50
-    main_globals['enemy_size'] = 50
 
     main_globals['menu_bg_x'] = main_globals['screen_w']
 
