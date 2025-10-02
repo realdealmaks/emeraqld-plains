@@ -359,7 +359,7 @@ while running:
     if main.game_stage == "in dungeon":
         keys = pygame.key.get_pressed()
         if any(keys): # any key
-            main_globals['last_input_time'] = pygame.time.get_ticks() / 1000  # ms to s
+            main_globals['last_input_time'] = pygame.time.get_ticks() / 1000 # ms to s
 
         mouse_buttons = pygame.mouse.get_pressed()
         if any(mouse_buttons): # any mouse press

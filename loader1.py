@@ -83,7 +83,7 @@ def loader1(main_globals):
     ]
 
     main_globals['enemy_spawn_y'] = 0
-    main_globals['enemy_spawn_y'] = 0
+    main_globals['enemy_spawn_x'] = 0
 
     main_globals['spawn_x'] = 0
     main_globals['spawn_y'] = 0

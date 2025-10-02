@@ -226,7 +226,7 @@ def loader3(main_globals):
         return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
 
     class Enemy():
-        def __init__(self, main_globals, x, y):
+        def __init__(self, main_globals, x, y, type):
             self.main_globals = main_globals
             self.x = x
             self.y = y
@@ -234,7 +234,7 @@ def loader3(main_globals):
             self.health = 50
             self.alive = True
             self.speed = 0.8
-            self.type = enumerate(0, 1, 2)
+            self.type = type
             self.test_image = main_globals['enemy_test_0']
         
         def damaged(self, damage):
@@ -781,7 +781,7 @@ def loader3(main_globals):
             draw_pause_menu(main_globals)
 
     player = Player(main_globals, main_globals['spawn_x'], main_globals['spawn_y'])
-    enemy = Enemy(main_globals, main_globals['enemy_spawn_x'], main_globals['enemy_spawn_y'])
+    enemy = Enemy(main_globals, main_globals['enemy_spawn_x'], main_globals['enemy_spawn_y'], 0)
 
     main_globals['player_gif'] = player_gif
     main_globals['draw_menu'] = draw_menu
