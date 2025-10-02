@@ -234,24 +234,25 @@ def loader3(main_globals):
             self.health = 50
             self.alive = True
             self.speed = 0.8
-        def move(self):
-            if self.type == 1 and self.alive:
-                pass
-
-            elif self.type == 2 and self.alive:
-                pass
-        def take_damage(self, amount):
-            self.health -= amount
+            self.type = enumerate(0, 1, 2)
+            self.test_image = main_globals['enemy_test_0']
+        
+        def damaged(self, damage):
+            self.health -= damage
             if self.health <= 0:
                 self.die()
-        def die(self):
-            self.alive = False
-            print("enemy died")
-        def draw(self):
+
+        def move(self):
             if self.alive:
                 pass
-                # main_globals['screen'].blit(main_globals['enemygif'], (self.x, self.y))
 
+        def draw(self):
+            if self.alive and self.type == 0:
+                pass
+        
+        def die(self):
+            pass # heh
+        
     def match_state(main_globals, state): # useless indian naganou function for stages # >:(
         match state:
             case "in menu":
@@ -377,6 +378,7 @@ def loader3(main_globals):
             self.shake_timer = 0
             self.main_globals = main_globals
             self.weapons = []
+            self.score = 0 # hehe
 
         def move(self, dx, dy):
             new_x = self.x + dx * self.speed * dt * 60
@@ -524,7 +526,7 @@ def loader3(main_globals):
         credits_font = pygame.font.SysFont(None, 34)
 
         screen.blit(font.render("credits", True, (255, 255, 255)), (20, 20))
-        # have to finish this later
+        # have to finish this later dont touch
 
     def draw_settings(main_globals, mouse_pos):
         screen = main_globals['screen']
@@ -652,6 +654,7 @@ def loader3(main_globals):
         frame_delay = main_globals['frame_delay']
         frames = main_globals['frames']
         player_size = main_globals['player_size']
+        enemy_size = main_globals['enemy_size']
         screen.fill((0, 0, 0))
 
         target_x, target_y = get_camera_offset(main_globals, player, main_globals['tile_size'])
@@ -685,10 +688,14 @@ def loader3(main_globals):
                 elif tile_type == 2:
                     screen.blit(main_globals['pedistal_image'], (col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_width() // 2, row_idx * ts - camera_y + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_height() // 2 + 50))
 
-                elif tile_type == 3:
-                    for i in range(random.randint(1, 3)):
-                        Enemy(main_globals, col_idx * ts + (main_globals['tile_size'] - 40) // 2, row_idx * ts + (main_globals['tile_size'] - 40) // 2).draw()
+                elif tile_type == 3: # okay...
+                    main_globals["enemy_spawn_x"] = col_idx * ts + (main_globals['tile_size'] - enemy_size) // 2
+                    main_globals["enemy_spawn_y"] = row_idx * ts + (main_globals['tile_size'] - enemy_size) // 2
 
+                    enemy.x = main_globals['enemy_spawn_x']     
+                    enemy.y = main_globals['enemy_spawn_y']
+
+                    
         # draw weapons
         for weapon in main_globals['weapons_on_map'][:]:
             weapon_image = main_globals['weapon_images'][weapon.name]
@@ -774,6 +781,7 @@ def loader3(main_globals):
             draw_pause_menu(main_globals)
 
     player = Player(main_globals, main_globals['spawn_x'], main_globals['spawn_y'])
+    enemy = Enemy(main_globals, main_globals['enemy_spawn_x'], main_globals['enemy_spawn_y'])
 
     main_globals['player_gif'] = player_gif
     main_globals['draw_menu'] = draw_menu
@@ -798,8 +806,8 @@ def loader3(main_globals):
     main_globals['draw_apply_button'] = draw_apply_button
 
     main_globals['player'] = player
-    main_globals['Player'] = Player
-    main_globals['Enemy'] = Enemy
+    main_globals['enemy'] = enemy
+    main_globals['Player'] = Player 
     main_globals['Weapon'] = Weapon
 
 

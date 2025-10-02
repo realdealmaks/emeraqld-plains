@@ -63,4 +63,6 @@ future me (a couple minutes or something) will apply some frames and resoltution
 
 done frapes
 
-# 
+# 2 10 2025 / mkes
+eats some fruit
+adds some enemy stuff
