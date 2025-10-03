@@ -12,6 +12,7 @@ pygame.init()
 mx.init(frequency=44100, size=-16, channels=16, buffer=8192)
 screen_h, screen_w = 750, 1080
 screen = pygame.display.set_mode((screen_w, screen_h))
+resolution = screen_w, screen_h
 
 virtual_fps = 0
 vfps_max = 175
@@ -236,6 +237,7 @@ main.dt = current_time - main.prev_time
 main.prev_time = current_time
 main.screen = virtual_screen
 main.max_fps = max_fps
+main.resolution = resolution
 
 main.player_gif(main_globals) # loads the player gif
 

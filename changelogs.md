@@ -71,4 +71,6 @@ adds some enemy stuff
 fix rdms heartbreak
 fix rdsm stupididdy
 
-# 
+# 3 10 25 / shambles
+fixed resolution scaling 
+fixed framerate black flashes

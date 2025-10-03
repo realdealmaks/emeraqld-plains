@@ -24,11 +24,12 @@ def loader3(main_globals):
         screen.blit(text_surf, text_rect)
 
         if main_globals['apply_button'].collidepoint(main_globals['mouse_pos']) and pygame.mouse.get_pressed()[0]:
-            if function == "resolution":
-                print(f"set resolution to {main_globals['window_w']}x{main_globals['window_h']}")
-                pass # for now, im really gassy
+            # if function == "resolution":
+            #     new_res = main_globals['resolutions'][main_globals['resolution_index']]
+            #     main_globals['screen_w'], main_globals['screen_h'] = new_res
+            #     print(f"set resolution to {new_res}")
 
-            elif function == "framerate":
+            if function == "framerate":
                 new_fps = main_globals['frame_caps'][main_globals['frame_cap_index']]
                 main_globals['max_fps'] = new_fps
                 print(f"set fps to {new_fps}")
@@ -546,6 +547,12 @@ def loader3(main_globals):
         liner_y += 50
         liner = pygame.Rect(100, liner_y, main_globals['screen_w'] - 150, 2)
         pygame.draw.rect(screen, (40, 40, 40), liner)
+        liner_y += 50
+        liner = pygame.Rect(100, liner_y, main_globals['screen_w'] - 150, 2)
+        pygame.draw.rect(screen, (40, 40, 40), liner)
+        liner_y += 50
+        liner = pygame.Rect(100, liner_y, main_globals['screen_w'] - 150, 2)
+        pygame.draw.rect(screen, (40, 40, 40), liner)
 
         # music slider
         pygame.draw.rect(screen, (120, 120, 120), music_slider)
@@ -579,30 +586,31 @@ def loader3(main_globals):
         screen.blit(text_surf, text_rect.topleft)
 
         # resolution
-        resolution_index = main_globals['resolution_index']
-        step = main_globals['frame_slider_base'].width / (len(main_globals['resolutions'])-1)
+        # resolution_index = main_globals['resolution_index']
+        # step = main_globals['frame_slider_base'].width / (len(main_globals['resolutions'])-1)
 
-        if main_globals['dragging_resolution_slider']:
-            relative_x = mouse_pos[0] - main_globals['resolution_slider_base'].x
-            resolution_index = round(relative_x / step)
-            resolution_index = max(0, min(resolution_index, len(main_globals['resolutions'])-1))
-            main_globals['resolution_index'] = resolution_index
+        # if main_globals['dragging_resolution_slider']:
+        #     relative_x = mouse_pos[0] - main_globals['resolution_slider_base'].x
+        #     resolution_index = round(relative_x / step)
+        #     resolution_index = max(0, min(resolution_index, len(main_globals['resolutions'])-1))
+        #     main_globals['resolution_index'] = resolution_index
 
-        handle_width = 15
-        handle_height = main_globals['resolution_slider_base'].height + 15
-        handle_x = main_globals['resolution_slider_base'].x + resolution_index * step - handle_width // 2
-        handle_y = main_globals['resolution_slider_base'].y - 7 # y offset
-        handle_rect = pygame.Rect(handle_x, handle_y, handle_width, handle_height)
+        # handle_width = 15
+        # handle_height = main_globals['resolution_slider_base'].height + 15
+        # handle_x = main_globals['resolution_slider_base'].x + resolution_index * step - handle_width // 2
+        # handle_y = main_globals['resolution_slider_base'].y - 7 # y offset
+        # handle_rect = pygame.Rect(handle_x, handle_y, handle_width, handle_height)
 
-        screen.blit(setting_font.render("resolution", True, (255, 255, 255)), (100, 200))
-        resolution_color = (120, 120, 120) if handle_rect.collidepoint(mouse_pos) else (70, 70, 70)
-        pygame.draw.rect(screen, (40, 40, 40), main_globals['resolution_slider_base'])
-        res = main_globals['resolutions'][resolution_index]
-        res_text = f"{res[0]}x{res[1]}"
-        screen.blit(setting_font.render(res_text, True, (255, 255, 255)), (main_globals['screen_w'] // 2 + 20, 200))
-        pygame.draw.rect(screen, resolution_color, handle_rect)
-        main_globals['resolution_slider'] = handle_rect
-        draw_apply_button(main_globals, main_globals['screen_w'] // 2 - 120, 200, "resolution")
+        # screen.blit(setting_font.render("resolution", True, (255, 255, 255)), (100, 200))
+        # resolution_color = (120, 120, 120) if handle_rect.collidepoint(mouse_pos) else (70, 70, 70)
+        # pygame.draw.rect(screen, (40, 40, 40), main_globals['resolution_slider_base'])
+        # res = main_globals['resolutions'][resolution_index]
+        # res_text = f"{res[0]}x{res[1]}"
+        # screen.blit(setting_font.render(res_text, True, (255, 255, 255)), (main_globals['screen_w'] // 2 + 20, 200))
+        # pygame.draw.rect(screen, resolution_color, handle_rect)
+        # main_globals['resolution_slider'] = handle_rect
+        # if res != main_globals['resolution']:
+        #     draw_apply_button(main_globals, main_globals['screen_w'] // 2 - 120, 200, "resolution")
 
         # framerate cap
         frame_cap_index = main_globals['frame_cap_index']
@@ -629,7 +637,7 @@ def loader3(main_globals):
         pygame.draw.rect(screen, framerate_color, handle_rect)
         main_globals['frame_slider'] = handle_rect
         if frame != main_globals['max_fps']:
-            draw_apply_button(main_globals, main_globals['screen_w'] // 2 - 120, 250, "framerate")
+            draw_apply_button(main_globals, main_globals['screen_w'] // 2 - 120, 242, "framerate")
 
     def draw_dead(main_globals, mouse_pos):
         screen = main_globals['screen']
