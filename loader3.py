@@ -80,8 +80,6 @@ def loader3(main_globals):
 
     def new_mutation(main_globals, effect, number):
         screen = main_globals['screen']
-        screen_h = main_globals['screen_h']
-        screen_w = main_globals['screen_w']
         mutation_alpha = 0
         while mutation_alpha < 255:
             mutation_alpha += 20
@@ -231,7 +229,7 @@ def loader3(main_globals):
             self.main_globals = main_globals
             self.x = x
             self.y = y
-            self.size = main_globals['player_size']
+            self.size = main_globals['enemy_size']
             self.health = 50
             self.alive = True
             self.speed = 0.8
@@ -525,9 +523,13 @@ def loader3(main_globals):
         to_menu = main_globals['to_menu']
         font = main_globals['font']
         credits_font = pygame.font.SysFont(None, 34)
+        screen.fill((0, 0, 0))
 
         screen.blit(font.render("credits", True, (255, 255, 255)), (20, 20))
-        screen.blit(main_globals['thx'], (540, 0)) # i got the coordinates right first try btw
+        # screen.blit(main_globals['thx'], (540, 0)) # i got the coordinates right first try btw
+
+        # no problem man
+        screen.blit(main_globals['thx'], (main_globals['screen_w'] // 2, 0))
 
         to_menu_color = (70, 70, 70) if to_menu.collidepoint(mouse_pos) else (40, 40, 40)
         pygame.draw.rect(screen, to_menu_color, to_menu)

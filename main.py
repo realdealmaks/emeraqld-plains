@@ -21,7 +21,7 @@ virtual_accumulator = 0
 virtual_prev_time = pygame.time.get_ticks() / 1000
 virtual_clock = pygame.time.Clock()
 virtual_w = 1080
-virtual_h = 750 
+virtual_h = 750
 virtual_screen = pygame.Surface((virtual_w, virtual_h))
 dt = dt = virtual_clock.tick(vfps_max) / 1000
 prev_time = pygame.time.get_ticks() / 1000

@@ -77,3 +77,13 @@ fixed framerate black flashes
 
 # 6 10 25 / badeals
 finish credits in time for Swoopy Tuesday™
+
+# 6 10 25 / ruins
+why are you like this.....
+delete some shits by white space master 95
+fix some fillings with blacks
+made emeny use zamny zises since ragaslop wanted it so bad
+reposition some images without hardcodes
+..am i forgetting something..?
+
+#
