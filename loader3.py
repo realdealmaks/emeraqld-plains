@@ -584,6 +584,7 @@ def loader3(main_globals):
         to_menu = main_globals['to_menu']
         font = main_globals['font']
         setting_font = pygame.font.SysFont(None, 34)
+        screen.fill((0, 0, 0))
 
         screen.blit(font.render("settings", True, (255, 255, 255)), (20, 20))
         # liners
