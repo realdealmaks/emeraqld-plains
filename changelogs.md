@@ -74,3 +74,6 @@ fix rdsm stupididdy
 # 3 10 25 / shambles
 fixed resolution scaling 
 fixed framerate black flashes
+
+# 6 10 25 / badeals
+finish credits in time for Swoopy Tuesday™

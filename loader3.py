@@ -527,7 +527,54 @@ def loader3(main_globals):
         credits_font = pygame.font.SysFont(None, 34)
 
         screen.blit(font.render("credits", True, (255, 255, 255)), (20, 20))
-        # have to finish this later dont touch
+        screen.blit(main_globals['thx'], (540, 0)) # i got the coordinates right first try btw
+
+        to_menu_color = (70, 70, 70) if to_menu.collidepoint(mouse_pos) else (40, 40, 40)
+        pygame.draw.rect(screen, to_menu_color, to_menu)
+        text_surf = font.render("To menu", True, (255, 255, 255))
+        text_rect = text_surf.get_rect(center=main_globals['to_menu'].center)
+        screen.blit(text_surf, text_rect.topleft)
+
+        # credits text
+        screen.blit(credits_font.render("shmuby ones", True, (255, 255, 255)), (50, 100))
+        screen.blit(credits_font.render("made some code and pixel art", True, (255, 255, 255)), (50, 150))
+
+        screen.blit(credits_font.render("deal bedal maks", True, (255, 255, 255)), (50, 250))
+        screen.blit(credits_font.render("some more code and the sfx", True, (255, 255, 255)), (50, 300))
+
+        screen.blit(credits_font.render("SPECIAL THANKS!!!:", True, (255, 255, 255)), (50, 400))
+
+        screen.blit(credits_font.render("you", True, (255, 255, 255)), (50, 500))
+        screen.blit(credits_font.render("for playing, my boy", True, (255, 255, 255)), (50, 550))
+
+        # liners (credits edition)
+        liner_y = 85
+        liner = pygame.Rect(50, liner_y, main_globals['screen_w'] / 2 - 100, 2)
+        pygame.draw.rect(screen, (40, 40, 40), liner)
+        liner_y += 100
+        liner = pygame.Rect(50, liner_y, main_globals['screen_w'] / 2 - 100, 2)
+        pygame.draw.rect(screen, (40, 40, 40), liner)
+
+        liner_y += 50
+        liner = pygame.Rect(50, liner_y, main_globals['screen_w'] / 2 - 100, 2)
+        pygame.draw.rect(screen, (40, 40, 40), liner)
+        liner_y += 100
+        liner = pygame.Rect(50, liner_y, main_globals['screen_w'] / 2 - 100, 2)
+        pygame.draw.rect(screen, (40, 40, 40), liner)
+
+        liner_y += 50
+        liner = pygame.Rect(50, liner_y, main_globals['screen_w'] / 2 - 100, 2)
+        pygame.draw.rect(screen, (40, 40, 40), liner)
+        liner_y += 50
+        liner = pygame.Rect(50, liner_y, main_globals['screen_w'] / 2 - 100, 2)
+        pygame.draw.rect(screen, (40, 40, 40), liner)
+
+        liner_y += 50
+        liner = pygame.Rect(50, liner_y, main_globals['screen_w'] / 2 - 100, 2)
+        pygame.draw.rect(screen, (40, 40, 40), liner)
+        liner_y += 100
+        liner = pygame.Rect(50, liner_y, main_globals['screen_w'] / 2 - 100, 2)
+        pygame.draw.rect(screen, (40, 40, 40), liner)
 
     def draw_settings(main_globals, mouse_pos):
         screen = main_globals['screen']
@@ -797,6 +844,7 @@ def loader3(main_globals):
     main_globals['draw_hud'] = draw_hud
     main_globals['draw_pause_menu'] = draw_pause_menu
     main_globals['draw_settings'] = draw_settings
+    main_globals['draw_credits'] = draw_credits
     main_globals['draw_dead'] = draw_dead
     main_globals['musicswitcher'] = musicswitcher
     main_globals['get_camera_offset'] = get_camera_offset

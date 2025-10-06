@@ -21,7 +21,7 @@ virtual_accumulator = 0
 virtual_prev_time = pygame.time.get_ticks() / 1000
 virtual_clock = pygame.time.Clock()
 virtual_w = 1080
-virtual_h = 750
+virtual_h = 750 
 virtual_screen = pygame.Surface((virtual_w, virtual_h))
 dt = dt = virtual_clock.tick(vfps_max) / 1000
 prev_time = pygame.time.get_ticks() / 1000
@@ -248,7 +248,7 @@ main.screen = screen # regalishes it to the main globas zalish
 print("started")
 # loop setup
 clock = pygame.time.Clock() # makes some clocks and sets the titles
-pygame.display.set_caption('Game')
+pygame.display.set_caption('Game') # change to naganou? :)))
 
 main.walkable_mask = main.make_initial_walkable_surface(main.tilemap, main_globals) # makes the initial walkable surface
 # makes some game loops
@@ -321,6 +321,9 @@ while running:
                         main.game_stage = "in settings"
                     if main.credits_button.collidepoint(main.mouse_pos):
                         main.game_stage = "in credits"
+                if main.game_stage == "in credits":
+                    if main.to_menu.collidepoint(main.mouse_pos):
+                        main.game_stage = "in menu"
                 if main.game_stage == "in settings":
                     if main.frame_slider.collidepoint(main.mouse_pos):
                         main.dragging_frame_slider = True
