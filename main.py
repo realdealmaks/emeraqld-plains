@@ -186,7 +186,6 @@ bar_risen = False
 bar_h = 0
 splash_alpha = 0
 bar_color = (0, 170, 0)
-loading_fake = False # ehh its all fake
 
 draw_loading_screen(loading_step, loading_steps, "fade_in")
 
@@ -198,8 +197,13 @@ loading_steps += 1
 loading1 = load_into_globals("loader1.py")
 loading_bar_flicker()
 loading1.loader1(main_globals)
-if loading_fake == True:
-    time.sleep(1.2)
+
+draw_loading_screen(loading_step, loading_steps, "loading")
+loading_step += 1
+loading_steps += 1
+loading_bar_flicker()
+loading0 = load_into_globals("connector.py")
+loading0.connector(main_globals)
 
 draw_loading_screen(loading_step, loading_steps, "loading")
 loading_step += 1
@@ -207,36 +211,39 @@ loading_steps += 1
 loading_bar_flicker()
 loading2 = load_into_globals("loader2.py")
 loading2.loader2(main_globals)
-if loading_fake == True:
-    time.sleep(1.2)
 
 draw_loading_screen(loading_step, loading_steps, "loading")
 loading_step += 1
+# skip loading steps + 1 to make it look like this is big file (it is)
 loading_bar_flicker()
 loading3 = load_into_globals("loader3.py")
 loading3.loader3(main_globals)
-if loading_fake == True:
-    time.sleep(2)
 
-draw_loading_screen(loading_step, loading_steps, "loading")
 draw_loading_screen(loading_steps, loading_steps, "fade_out")
-if loading_fake == True:
-    time.sleep(3)
-
 
 main_globals['game_stage'] = "in menu"
 print("starting")
+
+saved_data = main_globals['connector_instance'].get_data()
+for key, value in saved_data.items():
+    if key in main_globals:
+        main_globals[key] = value
+print(f"loaded saved data: {saved_data}")
 
 main = DictNamespace(main_globals) # converts some globals
 print("converted main_globals to mains, get ready to tish!")
 # dont use main_globals['🤖'] but instead use main.🤖
 # stupar ce to vidite me je res prevec motilo da je vse bilo v neumni barvi vsega drugega "" texta in nisem hotel kopirati main_globals[''] cisto povsod
 
+frame_caps = main_globals['frame_caps']
+main_globals['frame_cap'] = main_globals.get('max_fps', 60)
+main_globals['frame_cap_index'] = min(range(len(frame_caps)), key=lambda i: abs(frame_caps[i] - main_globals['frame_cap']))
+main_globals['frame_cap'] = frame_caps[main_globals['frame_cap_index']]
+
 current_time = pygame.time.get_ticks() / 1000
 main.dt = current_time - main.prev_time
 main.prev_time = current_time
 main.screen = virtual_screen
-main.max_fps = max_fps
 main.resolution = resolution
 
 main.player_gif(main_globals) # loads the player gif

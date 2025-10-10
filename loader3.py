@@ -8,10 +8,33 @@ from PIL import Image
 from pygame import mixer as mx
 from pymunk import shapes
 import time
+import json
 
 def loader3(main_globals):
 
     dt = main_globals['dt'] # the god of them all
+
+    def save(main_globals, **new_data):
+        pos = (main_globals['save_image'].get_width(), main_globals['screen_h'] - main_globals['save_image'].get_height())
+        screen = main_globals['screen']
+        connector = main_globals['connector_instance']
+
+        data = connector.get_data()
+        data.update(new_data)
+        connector.set_data(data)
+        connector.save_data()
+
+        start = time.time()
+        duration = 1.0
+        while time.time() - start < duration:
+            angle = ((time.time() - start) * 720) % 360
+            rotated = pygame.transform.rotate(main_globals['save_image'], angle)
+            rect = rotated.get_rect(center=pos)
+            screen.blit(rotated, rect)
+            pygame.display.flip()
+
+        print(f"saved {new_data}")
+        return True
 
     def draw_apply_button(main_globals, x, y, function):
         font = pygame.font.SysFont(None, 24)
@@ -32,6 +55,7 @@ def loader3(main_globals):
             if function == "framerate":
                 new_fps = main_globals['frame_caps'][main_globals['frame_cap_index']]
                 main_globals['max_fps'] = new_fps
+                save(main_globals, max_fps=new_fps)
                 print(f"set fps to {new_fps}")
 
     def draw_hints(main_globals):
@@ -606,16 +630,16 @@ def loader3(main_globals):
 
         # music slider
         pygame.draw.rect(screen, (120, 120, 120), music_slider)
-        volume = mx.music.get_volume()
+        volume = main_globals.get('music_volume', mx.music.get_volume())
         filled_width = int(music_slider.width * volume)
         filled_rect = pygame.Rect(music_slider.x, music_slider.y, filled_width, music_slider.height)
         pygame.draw.rect(screen, (180, 180, 180), filled_rect)
 
-        mouse_pressed = pygame.mouse.get_pressed()
         if main_globals['dragging_music_slider']:
             relative_x = mouse_pos[0] - music_slider.x
             volume = max(0.0, min(1.0, relative_x / music_slider.width))
             mx.music.set_volume(volume)
+            main_globals['music_volume'] = volume
 
         screen.blit(setting_font.render("music volume", True, (255, 255, 255)), (100, 100))
         screen.blit(setting_font.render(f"{int(volume * 100)}%", True, (255, 255, 255)), (main_globals['screen_w'] // 2 + 20, 100))
@@ -863,6 +887,7 @@ def loader3(main_globals):
     main_globals['draw_hints'] = draw_hints
     main_globals['draw_credits'] = draw_credits
     main_globals['draw_apply_button'] = draw_apply_button
+    main_globals['save'] = save
 
     main_globals['player'] = player
     main_globals['enemy'] = enemy

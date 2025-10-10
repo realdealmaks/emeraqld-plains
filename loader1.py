@@ -122,9 +122,9 @@ def loader1(main_globals):
     frame_caps = [10, 15, 20, 25, 30, 40, 60, 75, 120]
     frame_caps.sort()
     main_globals['frame_caps'] = frame_caps
-    main_globals['frame_cap'] = 60
-    for i in range(len(frame_caps)):
-        if frame_caps[i] == 60:
-            main_globals['frame_cap_index'] = i
+    main_globals['frame_cap'] = main_globals.get('max_fps', 60) # default 60
+    closest_index = min(range(len(frame_caps)), key=lambda i: abs(frame_caps[i] - main_globals['frame_cap']))
+    main_globals['frame_cap_index'] = closest_index
+    main_globals['frame_cap'] = frame_caps[closest_index]
 
     print("loader1 file loaded")

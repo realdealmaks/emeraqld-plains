@@ -6,12 +6,8 @@ import os
 
 def connector(main_globals):
     default_data = {
-        "settings": {
             "music": 100,
-            "sfx": 100,
-            "resolution": (1280, 720),
-            "framerate": 60
-        }
+            "max_fps": 25
     }
 
     class Connector:
