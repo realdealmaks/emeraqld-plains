@@ -71,9 +71,9 @@ def loader1(main_globals):
 
     main_globals['tilemap'] = [
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
-        [0, 99, 1, 1, 2, 0, 0, 0, 0, 0,],
+        [0, 99, 1, 1, 2, 88, 0, 0, 0, 0,],
         [0, 1, 0, 2, 0, 0, 0, 0, 0, 0,],
-        [0, 3, 0, 2, 0, 0, 0, 0, 0, 0,],
+        [0, 1, 0, 2, 0, 0, 0, 0, 0, 0,],
         [0, 0, 0, 2, 0, 0, 0, 0, 0, 0,],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
@@ -89,6 +89,7 @@ def loader1(main_globals):
     main_globals['spawn_y'] = 0
 
     main_globals['pressed_e'] = False
+    main_globals['pressed_f'] = False
 
     main_globals['tile_offset'] = 50
     main_globals['interact_distance'] = 75
@@ -102,7 +103,7 @@ def loader1(main_globals):
     main_globals['Weapon'] = None
     main_globals['attack_counter'] = 0
 
-    main_globals['walkable_tiles'] = [1, 2, 3, 99]  # tiles that can be walked on
+    main_globals['walkable_tiles'] = [1, 2, 3, 99, 88]  # tiles that can be walked on
     main_globals['weapons_on_map'] = []
 
     main_globals['hint_fade_duration'] = 0.5

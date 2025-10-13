@@ -110,3 +110,8 @@ make framerates sync with data
 make data sync with mr frame
 
 >  dont know what will do with music thingy yet but o kay
+
+# 13 10 / deal m
+
+start adding shop stuff but it's too late
+i do the rest tomorrow in class with shmaby

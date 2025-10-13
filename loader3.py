@@ -289,6 +289,8 @@ def loader3(main_globals):
                 main_globals['draw_dead'](main_globals, main_globals['mouse_pos'])
             case "in credits":
                 main_globals['draw_credits'](main_globals, main_globals['mouse_pos'])
+            case "shopping":
+                main_globals['draw_shop'](main_globals, main_globals['mouse_pos'])
 
     def player_gif(main_globals):
         frames = []
@@ -401,7 +403,7 @@ def loader3(main_globals):
             self.shake_timer = 0
             self.main_globals = main_globals
             self.weapons = []
-            self.score = 0 # hehe
+            self.wealth = 50000 # consider this debug money for now
 
         def move(self, dx, dy):
             new_x = self.x + dx * self.speed * dt * 60
@@ -477,6 +479,7 @@ def loader3(main_globals):
             screen = main_globals['screen']
             pygame.draw.circle(screen, (20, 20, 20), (100, 100), 80)
             screen.blit(main_globals['font'].render(str(player.health), True, (255, 255, 255)), (120, 200))
+            screen.blit(main_globals['font'].render(str(player.wealth), True, (255, 215, 0)), (120, 250))
             if player.health > 66:
                 screen.blit(main_globals['player_health_images'][0], (-50 + shake_x, -50 + shake_y))
             elif player.health > 33:
@@ -726,6 +729,15 @@ def loader3(main_globals):
         text_surf = font.render("To menu", True, (255, 255, 255))
         screen.blit(text_surf, to_menu.topleft)
 
+    class Shop:
+        def __init__(self, main_globals):
+            stand_image = main_globals['shop_holder']
+            stand_x = None
+            stand_y = None
+        
+        def draw_shop(self, main_globals):
+            pass
+
     def draw_dungeon(main_globals, player, is_paused, facing_left):
         screen = main_globals['screen']
         camera_x = main_globals['camera_x']
@@ -775,9 +787,19 @@ def loader3(main_globals):
                     main_globals["enemy_spawn_y"] = row_idx * ts + (main_globals['tile_size'] - enemy_size) // 2
 
                     enemy.x = main_globals['enemy_spawn_x']     
-                    enemy.y = main_globals['enemy_spawn_y']
+                    enemy.y = main_globals['enemy_spawn_y'] # i am putting this off until i figure it out
+                
+                elif tile_type == 88:
+                    Shop.stand_x = col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['shop_holder'].get_width() // 2
+                    Shop.stand_y = row_idx * ts - camera_y + main_globals['tile_size'] // 2 - main_globals['shop_holder'].get_height() // 2 + 50
+                    screen.blit(main_globals['shop_holder'], (Shop.stand_x, Shop.stand_y))
 
-                    
+                    # interact with shop
+                    if distance_to(player, (Shop.stand_x, Shop.stand_y)) < main_globals['interact_distance']:
+                        screen.blit(main_globals['interact_image'], (Shop.stand_x, Shop.stand_y + 50))
+                    if main_globals['pressed_f'] and distance_to(player, (Shop.stand_x, Shop.stand_y)) < main_globals['interact_distance']:
+                        main_globals['game_stage'] = "shopping"
+
         # draw weapons
         for weapon in main_globals['weapons_on_map'][:]:
             weapon_image = main_globals['weapon_images'][weapon.name]
@@ -872,6 +894,7 @@ def loader3(main_globals):
     main_globals['draw_pause_menu'] = draw_pause_menu
     main_globals['draw_settings'] = draw_settings
     main_globals['draw_credits'] = draw_credits
+    main_globals['draw_shop'] = Shop.draw_shop
     main_globals['draw_dead'] = draw_dead
     main_globals['musicswitcher'] = musicswitcher
     main_globals['get_camera_offset'] = get_camera_offset

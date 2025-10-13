@@ -62,7 +62,9 @@ def loader2(main_globals):
     main_globals['pedistal_image'] = pygame.image.load("assets/useful images/pedestal.png").convert_alpha()
     main_globals['pedistal_image'] = pygame.transform.scale2x(main_globals['pedistal_image'])
 
-    # weapon section
+    main_globals['shop_holder'] = pygame.image.load("assets/useful images/shop_holder.png").convert_alpha()
+
+    # weapone sectione
     sword_image = pygame.image.load("assets/models/weapons/sword.png").convert_alpha()
     w, h = sword_image.get_size()
     sword_image = pygame.transform.scale(sword_image, (int(w * 1.2), int(h * 1.2)))

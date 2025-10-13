@@ -282,9 +282,17 @@ while running:
                 main.facing_left = False
             if event.key == pygame.K_e:
                 main.pressed_e = True
+            else:
+                main.pressed_e = False
+            if event.key == pygame.K_f:
+                main.pressed_f = True
+            else:
+                main.pressed_f = False
             if event.key == pygame.K_ESCAPE:
                 if main.is_paused == False: main.is_paused = True
                 else: main.is_paused = False
+            if event.key == pygame.K_b:
+                main.game_stage = "shopping" # just now for debugging use match state when actually doing the thing
 
             if main.developer_tools == True:
                 if event.key == pygame.K_m:
@@ -317,7 +325,7 @@ while running:
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 main.mouse_pos = pygame.mouse.get_pos()
-                if main.game_stage == "in menu":
+                if main.game_stage == "in menu": # IF IN MENU
                     if main.play_button.collidepoint(main.mouse_pos):
                         main.player.respawn()
                         main.player.effect("healfull", 0) # resets player health
@@ -328,10 +336,10 @@ while running:
                         main.game_stage = "in settings"
                     if main.credits_button.collidepoint(main.mouse_pos):
                         main.game_stage = "in credits"
-                if main.game_stage == "in credits":
+                if main.game_stage == "in credits": # IF IN CREDITS
                     if main.to_menu.collidepoint(main.mouse_pos):
                         main.game_stage = "in menu"
-                if main.game_stage == "in settings":
+                if main.game_stage == "in settings": # IF IN SETTINGS
                     if main.frame_slider.collidepoint(main.mouse_pos):
                         main.dragging_frame_slider = True
                     elif main.music_slider.collidepoint(main.mouse_pos):
@@ -347,11 +355,12 @@ while running:
                             print("hints reenabled")
                     if main.to_menu.collidepoint(main.mouse_pos):
                         main.game_stage = "in menu"
-                if main.game_stage == "dead":
+                if main.game_stage == "dead": # IF DEAD
                     if main.to_menu.collidepoint(main.mouse_pos):
                         main.game_stage = "in menu"
                         mx.music.pause()
-
+                if main.game_stage == "shopping": # IF IN SHOP
+                    pass
                 if main.player is not None:
                     if main.game_stage == "in dungeon":
                         if main.player.weapons != []:
