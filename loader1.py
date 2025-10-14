@@ -65,6 +65,8 @@ def loader1(main_globals):
 
     main_globals['hint_alpha'] = 0
 
+    main_globals['in_shop'] = False
+
     main_globals['idle_time'] = 0
     main_globals['idle_threshold'] = 5 # time before hints appear
     main_globals['last_input_time'] = 0

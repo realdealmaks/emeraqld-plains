@@ -115,3 +115,9 @@ make data sync with mr frame
 
 start adding shop stuff but it's too late
 i do the rest tomorrow in class with shmaby
+
+# 14 10 / deal m and shamu
+
+I LOVE DRUGS! AND I LOVE PRSLJA! BECAUSE HE GIVES ME ONLY THE BEST FENTANYL LACED HORSE TRANQUILIZER! THEY GO WELL TOGETHER
+
+add more shop

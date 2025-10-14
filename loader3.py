@@ -14,6 +14,16 @@ def loader3(main_globals):
 
     dt = main_globals['dt'] # the god of them all
 
+    class Shop:
+        def __init__(self, main_globals, x = None, y = None):
+            self.image = main_globals['shop_holder']
+            self.x = x
+            self. y = y
+
+        def draw_shop(self, main_globals):
+            screen = main_globals['screen']
+            screen.fill((0, 0, 0))
+
     def save(main_globals, **new_data):
         pos = (main_globals['save_image'].get_width(), main_globals['screen_h'] - main_globals['save_image'].get_height())
         screen = main_globals['screen']
@@ -279,18 +289,18 @@ def loader3(main_globals):
     def match_state(main_globals, state): # useless indian naganou function for stages # >:(
         match state:
             case "in menu":
-                main_globals['draw_menu'](main_globals, main_globals['mouse_pos'])
+                draw_menu(main_globals, main_globals['mouse_pos'])
             case "in dungeon":
-                main_globals['draw_dungeon'](main_globals, main_globals['player'], main_globals['is_paused'], main_globals['facing_left'])
-                main_globals['draw_hints'](main_globals)
+                draw_dungeon(main_globals, main_globals['player'], main_globals['is_paused'], main_globals['facing_left'])
+                draw_hints(main_globals)
             case "in settings":
-                main_globals['draw_settings'](main_globals, main_globals['mouse_pos'])
+                draw_settings(main_globals, main_globals['mouse_pos'])
             case "dead":
-                main_globals['draw_dead'](main_globals, main_globals['mouse_pos'])
+                draw_dead(main_globals, main_globals['mouse_pos'])
             case "in credits":
-                main_globals['draw_credits'](main_globals, main_globals['mouse_pos'])
+                draw_credits(main_globals, main_globals['mouse_pos'])
             case "shopping":
-                main_globals['draw_shop'](main_globals, main_globals['mouse_pos'])
+                shop.draw_shop(main_globals)
 
     def player_gif(main_globals):
         frames = []
@@ -729,15 +739,6 @@ def loader3(main_globals):
         text_surf = font.render("To menu", True, (255, 255, 255))
         screen.blit(text_surf, to_menu.topleft)
 
-    class Shop:
-        def __init__(self, main_globals):
-            stand_image = main_globals['shop_holder']
-            stand_x = None
-            stand_y = None
-        
-        def draw_shop(self, main_globals):
-            pass
-
     def draw_dungeon(main_globals, player, is_paused, facing_left):
         screen = main_globals['screen']
         camera_x = main_globals['camera_x']
@@ -790,14 +791,14 @@ def loader3(main_globals):
                     enemy.y = main_globals['enemy_spawn_y'] # i am putting this off until i figure it out
                 
                 elif tile_type == 88:
-                    Shop.stand_x = col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['shop_holder'].get_width() // 2
-                    Shop.stand_y = row_idx * ts - camera_y + main_globals['tile_size'] // 2 - main_globals['shop_holder'].get_height() // 2 + 50
-                    screen.blit(main_globals['shop_holder'], (Shop.stand_x, Shop.stand_y))
+                    shop.stand_x = col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['shop_holder'].get_width() // 2
+                    shop.stand_y = row_idx * ts - camera_y + main_globals['tile_size'] // 2 - main_globals['shop_holder'].get_height() // 2 + 50
+                    screen.blit(main_globals['shop_holder'], (shop.stand_x, shop.stand_y))
 
                     # interact with shop
-                    if distance_to(player, (Shop.stand_x, Shop.stand_y)) < main_globals['interact_distance']:
-                        screen.blit(main_globals['interact_image'], (Shop.stand_x, Shop.stand_y + 50))
-                    if main_globals['pressed_f'] and distance_to(player, (Shop.stand_x, Shop.stand_y)) < main_globals['interact_distance']:
+                    if distance_to(player, (shop.stand_x, shop.stand_y)) < main_globals['interact_distance']:
+                        screen.blit(main_globals['interact_image'], (shop.stand_x, shop.stand_y + 50))
+                    if main_globals['pressed_f'] and distance_to(player, (shop.stand_x, shop.stand_y)) < main_globals['interact_distance']:
                         main_globals['game_stage'] = "shopping"
 
         # draw weapons
@@ -886,6 +887,7 @@ def loader3(main_globals):
 
     player = Player(main_globals, main_globals['spawn_x'], main_globals['spawn_y'])
     enemy = Enemy(main_globals, main_globals['enemy_spawn_x'], main_globals['enemy_spawn_y'], 0)
+    shop = Shop(main_globals)
 
     main_globals['player_gif'] = player_gif
     main_globals['draw_menu'] = draw_menu
@@ -914,8 +916,10 @@ def loader3(main_globals):
 
     main_globals['player'] = player
     main_globals['enemy'] = enemy
+    main_globals['shop'] = shop
     main_globals['Player'] = Player 
     main_globals['Weapon'] = Weapon
+    main_globals['Shop'] = Shop
 
 
-    print("loader3 file loaded")
+    print("loader3 file loaderd")

@@ -291,9 +291,6 @@ while running:
             if event.key == pygame.K_ESCAPE:
                 if main.is_paused == False: main.is_paused = True
                 else: main.is_paused = False
-            if event.key == pygame.K_b:
-                main.game_stage = "shopping" # just now for debugging use match state when actually doing the thing
-
             if main.developer_tools == True:
                 if event.key == pygame.K_m:
                     if main.game_stage == "in dungeon":
@@ -313,7 +310,15 @@ while running:
                         main.spawn_weapons(main_globals)
                     if event.key == pygame.K_r:
                         main.player.respawn()
-
+                    if event.key == pygame.K_b:
+                        if not main.in_shop:
+                            main.in_shop = True # just now for debugging use match state when actually doing the thing
+                            main.game_stage = "shopping"
+                            print("in shop")
+                        else:
+                            main.in_shop = False
+                            main.game_stage = "in dungeon"
+                            print("dih")
         # key released
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_w: main.moving_up = False
@@ -359,8 +364,6 @@ while running:
                     if main.to_menu.collidepoint(main.mouse_pos):
                         main.game_stage = "in menu"
                         mx.music.pause()
-                if main.game_stage == "shopping": # IF IN SHOP
-                    pass
                 if main.player is not None:
                     if main.game_stage == "in dungeon":
                         if main.player.weapons != []:
