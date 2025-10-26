@@ -4,7 +4,6 @@
 import math, random, pygame, pydub, pytweening, scipy, pymunk, pathfinding
 from PIL import Image
 from pygame import mixer as mx
-from pymunk import shapes
 
 def loader2(main_globals):
     main_globals['player_ded'] = pygame.image.load("assets/models/player/ded.png").convert_alpha()

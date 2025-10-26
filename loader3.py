@@ -6,7 +6,6 @@
 import math, random, pygame, pydub, pytweening, scipy, pymunk, pathfinding
 from PIL import Image
 from pygame import mixer as mx
-from pymunk import shapes
 import time
 import json
 
@@ -23,6 +22,40 @@ def loader3(main_globals):
         def draw_shop(self, main_globals):
             screen = main_globals['screen']
             screen.fill((0, 0, 0))
+
+    def spawn_blood_particles(space, player_x, player_y, player_size, amount=10):
+        particles = []
+        # bloods at player lower center
+        spawn_x = player_x + player_size // 2
+        spawn_y = player_y + player_size + 25
+
+        # y where they stop
+        landing_y = spawn_y + 30
+
+        for _ in range(amount):
+            # random size
+            radius = random.randint(1, 2)
+            body = pymunk.Body(1, pymunk.moment_for_circle(1, 0, radius))
+            body.position = spawn_x, spawn_y
+            shape = pymunk.Circle(body, radius)
+            shape.elasticity = 0.3
+            shape.friction = 0.5
+
+            impulse_x = random.uniform(-30, 30)
+            impulse_y = -random.uniform(100, 200)
+            body.apply_impulse_at_local_point((impulse_x, impulse_y))
+
+            body.landing_y = landing_y
+            space.add(body, shape)
+            # random lifetime in s
+            lifetime = random.uniform(2, 4)
+
+            # random red
+            color = (200 + random.randint(-30, 30), 0, 0)
+            max_lifetime = lifetime
+            particles.append((body, shape, color, lifetime, max_lifetime))
+
+        return particles
 
     def save(main_globals, **new_data):
         pos = (main_globals['save_image'].get_width(), main_globals['screen_h'] - main_globals['save_image'].get_height())
@@ -285,7 +318,7 @@ def loader3(main_globals):
         
         def die(self):
             pass # heh
-        
+
     def match_state(main_globals, state): # useless indian naganou function for stages # >:(
         match state:
             case "in menu":
@@ -446,6 +479,7 @@ def loader3(main_globals):
                 self.y = new_y
 
         def shake(self):
+            dt = self.main_globals['dt']
             if self.shake_timer > 0:
                 self.shake_timer -= 1 * dt * 60
                 return random.randint(-5, 5), random.randint(-5, 5)
@@ -454,10 +488,20 @@ def loader3(main_globals):
         def damaged(self, amount):
             self.health -= amount
             self.shake_timer = 10
+
+            # spawn bloodes at players
+            blood_x = self.x + self.main_globals['player_size'] / 2
+            blood_y = self.y + self.main_globals['player_size'] / 2
+            new_particles = self.main_globals['spawn_blood_particles'](
+                self.main_globals['space'], blood_x, blood_y, amount // 2
+            )
+            self.main_globals['blood_particles'].extend(new_particles)
+
             if self.health <= 0:
                 self.die()
             else:
-                self.main_globals['hurt_sound'].play()
+                """self.main_globals['hurt_sound'].play()
+                please fix this man"""
 
         def die(self):
             self.main_globals['game_stage'] = "dead"
@@ -469,6 +513,8 @@ def loader3(main_globals):
             self.alive = True
             self.x = self.main_globals['spawn_x']
             self.y = self.main_globals['spawn_y']
+            self.weapons = []
+            self.main_globals['blood_particles'] = []
             mx.music.rewind()
 
         def effect(self, effect_type, number):
@@ -850,6 +896,7 @@ def loader3(main_globals):
         else:
             draw_x -= 30
 
+        # draw weapon to player
         screen.blit(player_frame, (draw_x, draw_y))
         if len(player.weapons) > 0:
             weapon = player.weapons[0]
@@ -867,6 +914,32 @@ def loader3(main_globals):
                 weapon_x -= 90
 
             screen.blit(weapon_image, (weapon_x, weapon_y))
+
+        # draw bloodes
+        # this has to be here because player draws before
+        new_particles = []
+        for body, shape, color, lifetime, max_lifetime in main_globals['blood_particles']:
+            # stop at landing y
+            if body.position.y > body.landing_y:
+                body.position = (body.position.x, body.landing_y)
+                body.velocity = (0, 0)
+
+            # fade out
+            alpha = max(0, min(255, int(255 * (lifetime / max_lifetime))))
+            draw_color = (*color, alpha)
+            pos = int(body.position.x - main_globals['camera_x']), int(body.position.y - main_globals['camera_y'])
+            surf = pygame.Surface((int(shape.radius*2), int(shape.radius*2)), pygame.SRCALPHA)
+            pygame.draw.circle(surf, draw_color, (int(shape.radius), int(shape.radius)), int(shape.radius))
+            screen.blit(surf, (pos[0]-shape.radius, pos[1]-shape.radius))
+
+            lifetime -= main_globals['dt']
+            if lifetime > 0:
+                new_particles.append((body, shape, color, lifetime, max_lifetime))
+            else:
+                # remove
+                main_globals['space'].remove(body, shape)
+
+        main_globals['blood_particles'] = new_particles
 
         if is_paused == False:
             draw_vignette(main_globals, player)
@@ -913,6 +986,7 @@ def loader3(main_globals):
     main_globals['draw_credits'] = draw_credits
     main_globals['draw_apply_button'] = draw_apply_button
     main_globals['save'] = save
+    main_globals['spawn_blood_particles'] = spawn_blood_particles
 
     main_globals['player'] = player
     main_globals['enemy'] = enemy

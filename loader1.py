@@ -5,7 +5,6 @@ import math, random, pygame, pydub, pytweening, scipy, pymunk, pathfinding
 import importlib.util
 from PIL import Image
 from pygame import mixer as mx
-from pymunk import shapes
 
 def loader1(main_globals):
     main_globals['tile_size'] = 600
@@ -129,5 +128,8 @@ def loader1(main_globals):
     closest_index = min(range(len(frame_caps)), key=lambda i: abs(frame_caps[i] - main_globals['frame_cap']))
     main_globals['frame_cap_index'] = closest_index
     main_globals['frame_cap'] = frame_caps[closest_index]
+
+    main_globals['blood_particles'] = []
+    main_globals['space'] = None # set in main
 
     print("loader1 file loaded")

@@ -121,3 +121,8 @@ i do the rest tomorrow in class with shmaby
 I LOVE DRUGS! AND I LOVE PRSLJA! BECAUSE HE GIVES ME ONLY THE BEST FENTANYL LACED HORSE TRANQUILIZER! THEY GO WELL TOGETHER
 
 add more shop
+
+# 26 10 / shmamby
+make blood parteclies when player is hurt
+fix shakes
+

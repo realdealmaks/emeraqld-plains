@@ -32,7 +32,7 @@ this code may give one major trauma, epileptic seizures, void your warranty, sum
 # requirements and how to run
 - some python version (??)
 - hope sprinkled with some dreams
-- libraries
+- useless libraries
 - luck
 
 ## FAQ

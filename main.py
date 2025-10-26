@@ -2,7 +2,6 @@ import math, random, pygame, pydub, pytweening, scipy, pymunk, pathfinding
 import importlib.util
 from PIL import Image
 from pygame import mixer as mx
-from pymunk import shapes
 import time
 import os
 # main python script
@@ -26,6 +25,9 @@ virtual_screen = pygame.Surface((virtual_w, virtual_h))
 dt = dt = virtual_clock.tick(vfps_max) / 1000
 prev_time = pygame.time.get_ticks() / 1000
 max_fps = 60
+
+space = pymunk.Space()
+space.gravity = (0, 0)
 
 def load_into_globals(filepath):
     spec = importlib.util.spec_from_file_location("module_name", filepath)
@@ -248,6 +250,9 @@ main.resolution = resolution
 
 main.player_gif(main_globals) # loads the player gif
 
+main.space = space
+space.gravity = (0, 500)
+
 time.sleep(0.3)
 screen = pygame.display.set_mode((main.screen_w, main.screen_h)) # retish the balish
 main.screen = screen # regalishes it to the main globas zalish
@@ -255,12 +260,13 @@ main.screen = screen # regalishes it to the main globas zalish
 print("started")
 # loop setup
 clock = pygame.time.Clock() # makes some clocks and sets the titles
-pygame.display.set_caption('Game') # change to naganou? :)))
+pygame.display.set_caption(' naganou" :)))') # change to naganou? :))) # sure man
 
 main.walkable_mask = main.make_initial_walkable_surface(main.tilemap, main_globals) # makes the initial walkable surface
 # makes some game loops
 running = True
 while running:
+    main.space.step(main.dt)
     main.virtual_screen.fill((0, 0, 0))
 
     for event in pygame.event.get():
