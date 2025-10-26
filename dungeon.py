@@ -1,12 +1,7 @@
-# this file is for classes and definitions
-# loader 3
+# this file is for loading the dungeon
 
-# FOR YOUR OWN SAFETY ONLY KEEP 1 FUNCTION OPEN AT ONE TIME 👀👺
-
-import math, random, pygame, pydub, pytweening, scipy, pymunk, pathfinding
-from PIL import Image
+import pygame
 from pygame import mixer as mx
-import time
 
 def dungeon(main_globals):
 

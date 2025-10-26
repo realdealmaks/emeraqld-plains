@@ -183,7 +183,7 @@ def loading_bar_flicker(duration=0.5, steps=10, force_full=False):
     bar_color = normal
 
 loading_step = 0
-loading_steps = 2
+loading_steps = 4
 bar_risen = False
 bar_h = 0
 splash_alpha = 0
