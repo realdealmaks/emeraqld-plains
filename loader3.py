@@ -157,7 +157,7 @@ def loader3(main_globals):
             screen.blit(main_globals['mutation_image'], (0, 0))
             time.sleep(0.01)
             pygame.display.flip()
-        player.effect(effect, number)
+        main_globals['player'].effect(effect, number)
         time.sleep(1)
         while mutation_alpha > 0:
             mutation_alpha -= 25
@@ -324,7 +324,7 @@ def loader3(main_globals):
             case "in menu":
                 draw_menu(main_globals, main_globals['mouse_pos'])
             case "in dungeon":
-                draw_dungeon(main_globals, main_globals['player'], main_globals['is_paused'], main_globals['facing_left'])
+                main_globals['draw_dungeon'](main_globals, main_globals['player'], main_globals['is_paused'], main_globals['facing_left'])
                 draw_hints(main_globals)
             case "in settings":
                 draw_settings(main_globals, main_globals['mouse_pos'])
@@ -424,7 +424,7 @@ def loader3(main_globals):
             for i in range(len(main_globals['tilemap'])):
                 for j in range(len(main_globals['tilemap'][0])):
                     main_globals['tilemap'][i][j] = 0
-            player.respawn()
+            main_globals['player'].respawn()
 
         main_globals['weapons_on_map'] = [
         w for w in main_globals['weapons_on_map']
@@ -435,99 +435,6 @@ def loader3(main_globals):
         main_globals['tilemap'][row_idx][col_idx] = new_tile_type
         main_globals['rebuild_walkable_mask'](main_globals)
         print(f"new tilemap: {main_globals['tilemap']}")
-
-    class Player:
-        def __init__(self, main_globals, x, y):
-            self.x = x
-            self.y = y
-            self.speed = 2
-            self.health = 100
-            self.alive = True
-            self.shake_timer = 0
-            self.main_globals = main_globals
-            self.weapons = []
-            self.wealth = 50000 # consider this debug money for now
-
-        def move(self, dx, dy):
-            new_x = self.x + dx * self.speed * dt * 60
-            new_y = self.y + dy * self.speed * dt * 60
-            mask = self.main_globals.get('walkable_mask')
-
-            # horizontal
-            new_x = self.x + dx * self.speed
-            can_move_x = True
-            for cy_offset in (25, self.main_globals['player_size'] + 25):
-                cx = new_x + 6 if dx < 0 else new_x + self.main_globals['player_size'] - 6
-                cy = self.y + cy_offset
-                if cx < 0 or cy < 0 or cx >= mask.get_width() or cy >= mask.get_height() or mask.get_at((int(cx), int(cy)))[:3] != (0, 255, 0):
-                    can_move_x = False
-                    break
-                
-            # vertical
-            new_y = self.y + dy * self.speed
-            can_move_y = True
-            for cx_offset in (6, self.main_globals['player_size'] - 6):
-                cx = self.x + cx_offset
-                cy = new_y + 25 if dy < 0 else new_y + self.main_globals['player_size'] + 25
-                if cx < 0 or cy < 0 or cx >= mask.get_width() or cy >= mask.get_height() or mask.get_at((int(cx), int(cy)))[:3] != (0, 255, 0):
-                    can_move_y = False
-                    break
-                
-            if can_move_x:
-                self.x = new_x
-            if can_move_y:
-                self.y = new_y
-
-        def shake(self):
-            dt = self.main_globals['dt']
-            if self.shake_timer > 0:
-                self.shake_timer -= 1 * dt * 60
-                return random.randint(-5, 5), random.randint(-5, 5)
-            return 0, 0
-
-        def damaged(self, amount):
-            self.health -= amount
-            self.shake_timer = 10
-
-            # spawn bloodes at players
-            blood_x = self.x + self.main_globals['player_size'] / 2
-            blood_y = self.y + self.main_globals['player_size'] / 2
-            new_particles = self.main_globals['spawn_blood_particles'](
-                self.main_globals['space'], blood_x, blood_y, amount // 2
-            )
-            self.main_globals['blood_particles'].extend(new_particles)
-
-            if self.health <= 0:
-                self.die()
-            else:
-                """self.main_globals['hurt_sound'].play()
-                please fix this man"""
-
-        def die(self):
-            self.main_globals['game_stage'] = "dead"
-            print("player died")
-
-        def respawn(self):
-            print("player respawning")
-            main_globals['spawn_set'] = False
-            self.alive = True
-            self.x = self.main_globals['spawn_x']
-            self.y = self.main_globals['spawn_y']
-            self.weapons = []
-            self.main_globals['blood_particles'] = []
-            mx.music.rewind()
-
-        def effect(self, effect_type, number):
-            if effect_type == "heal":
-                player.health += number
-                if player.health > 100:
-                    player.health = 100
-            elif effect_type == "healfull":
-                player.health = 100
-
-        def attack(self, main_globals):
-            if len(self.weapons) != 0:
-                self.weapons[0].attack(self, main_globals)
 
     def draw_hud(main_globals, player):
         if player.alive:
@@ -785,186 +692,11 @@ def loader3(main_globals):
         text_surf = font.render("To menu", True, (255, 255, 255))
         screen.blit(text_surf, to_menu.topleft)
 
-    def draw_dungeon(main_globals, player, is_paused, facing_left):
-        screen = main_globals['screen']
-        camera_x = main_globals['camera_x']
-        camera_y = main_globals['camera_y']
-        camera_speed = main_globals['camera_speed']
-        current_frame = main_globals['current_frame']
-        frame_timer = main_globals['frame_timer']
-        frame_delay = main_globals['frame_delay']
-        frames = main_globals['frames']
-        player_size = main_globals['player_size']
-        enemy_size = main_globals['enemy_size']
-        screen.fill((0, 0, 0))
-
-        target_x, target_y = get_camera_offset(main_globals, player, main_globals['tile_size'])
-        camera_x += (target_x - camera_x) * camera_speed
-        camera_y += (target_y - camera_y) * camera_speed
-        main_globals['camera_x'] = camera_x
-        main_globals['camera_y'] = camera_y
-        ts = main_globals['tile_size'] + main_globals['tile_offset']
-
-        mask_width, mask_height = main_globals['walkable_mask'].get_size()
-        tile_surface = main_globals['tile_images']
-        for y in range(0, mask_height, ts):
-            for x in range(0, mask_width, ts):
-                if main_globals['walkable_mask'].get_at((x, y))[:3] == (0, 255, 0):
-                    screen.blit(tile_surface, (x - camera_x, y - camera_y))
-
-        for row_idx, row in enumerate(main_globals['tilemap']):
-            for col_idx, tile_type in enumerate(row):
-                if tile_type == 99: # makes player spawn here 
-                    if main_globals['spawn_set'] == False:
-                        ts = main_globals['tile_size'] + main_globals['tile_offset']
-                        main_globals['spawn_x'] = col_idx * ts + (main_globals['tile_size'] - player_size) // 2
-                        main_globals['spawn_y'] = row_idx * ts + (main_globals['tile_size'] - player_size) // 2
-                        if main_globals.get('player') is None:
-                            main_globals['player'] = main_globals['Player'](main_globals, main_globals['spawn_x'], main_globals['spawn_y'])
-                        else:
-                            main_globals['player'].x = main_globals['spawn_x']
-                            main_globals['player'].y = main_globals['spawn_y']
-                        main_globals['spawn_set'] = True
-
-                elif tile_type == 2:
-                    screen.blit(main_globals['pedistal_image'], (col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_width() // 2, row_idx * ts - camera_y + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_height() // 2 + 50))
-
-                elif tile_type == 3: # okay...
-                    main_globals["enemy_spawn_x"] = col_idx * ts + (main_globals['tile_size'] - enemy_size) // 2
-                    main_globals["enemy_spawn_y"] = row_idx * ts + (main_globals['tile_size'] - enemy_size) // 2
-
-                    enemy.x = main_globals['enemy_spawn_x']     
-                    enemy.y = main_globals['enemy_spawn_y'] # i am putting this off until i figure it out
-                
-                elif tile_type == 88:
-                    shop.stand_x = col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['shop_holder'].get_width() // 2
-                    shop.stand_y = row_idx * ts - camera_y + main_globals['tile_size'] // 2 - main_globals['shop_holder'].get_height() // 2 + 50
-                    screen.blit(main_globals['shop_holder'], (shop.stand_x, shop.stand_y))
-
-                    # interact with shop
-                    if distance_to(player, (shop.stand_x, shop.stand_y)) < main_globals['interact_distance']:
-                        screen.blit(main_globals['interact_image'], (shop.stand_x, shop.stand_y + 50))
-                    if main_globals['pressed_f'] and distance_to(player, (shop.stand_x, shop.stand_y)) < main_globals['interact_distance']:
-                        main_globals['game_stage'] = "shopping"
-
-        # draw weapons
-        for weapon in main_globals['weapons_on_map'][:]:
-            weapon_image = main_globals['weapon_images'][weapon.name]
-            draw_x = weapon.x - weapon_image.get_width() // 2 - camera_x + 15
-            draw_y = weapon.y - weapon_image.get_height() // 2 - camera_y
-            weapon.draw(screen, draw_x, draw_y)
-
-            # interact image
-            if distance_to(player, weapon) < main_globals['interact_distance']:
-                screen.blit(main_globals['interact_image'], (draw_x, draw_y + weapon_image.get_height()))
-
-                # pick up weapon
-                main_globals['interact'](main_globals, player, weapon.x, weapon.y, lambda w=weapon: w.pickup(player))
-
-        # draw slash
-        if 'active_slashes' in main_globals:
-            now = pygame.time.get_ticks()  # current time in ms
-            still_active = []
-            for slash_img, slash_rect, expiry in main_globals['active_slashes']:
-                if now < expiry:
-                    screen.blit(slash_img, slash_rect)
-                    still_active.append((slash_img, slash_rect, expiry))
-            main_globals['active_slashes'] = still_active
-
-        # animate player
-        frame_timer += 1
-        if frame_timer >= frame_delay:
-            frame_timer = 0
-            if main_globals['moving_up'] or main_globals['moving_down'] or main_globals['moving_left'] or main_globals['moving_right']:
-                current_frame = (current_frame + 1) % len(frames)
-            else:
-                current_frame = 1
-        main_globals['frame_timer'] = frame_timer
-        main_globals['current_frame'] = current_frame
-
-        player_frame = pygame.transform.scale(frames[current_frame], (player_size * 3, player_size * 3))
-        if main_globals['facing_left']:
-            player_frame = pygame.transform.flip(player_frame, True, False)
-
-        offset_x = (player_size * 3 - player_size) // 2
-        offset_y = (player_size * 3 - player_size) // 2
-        shake_x, shake_y = player.shake()
-        draw_x = player.x - camera_x - offset_x + shake_x
-        draw_y = player.y - camera_y - offset_y + shake_y
-        if facing_left:
-            draw_x += 30
-        else:
-            draw_x -= 30
-
-        # draw weapon to player
-        screen.blit(player_frame, (draw_x, draw_y))
-        if len(player.weapons) > 0:
-            weapon = player.weapons[0]
-            weapon_image = main_globals['weapon_images'][weapon.name]
-            scale_fraction = 1.8
-            weapon_image = pygame.transform.scale(weapon_image, ((main_globals['player_size'] // 2) * scale_fraction, (main_globals['player_size'] // 2) * scale_fraction))
-            weapon_image = pygame.transform.rotate(weapon_image, 65)
-            weapon_image = pygame.transform.flip(weapon_image, True, False)
-
-            weapon_x = draw_x + player_size + 40 # x offset
-            weapon_y = draw_y + player_size // 2 + 36  # y offset
-
-            if facing_left:
-                weapon_image = pygame.transform.flip(weapon_image, True, False)
-                weapon_x -= 90
-
-            screen.blit(weapon_image, (weapon_x, weapon_y))
-
-        # draw bloodes
-        # this has to be here because player draws before
-        new_particles = []
-        for body, shape, color, lifetime, max_lifetime in main_globals['blood_particles']:
-            # stop at landing y
-            if body.position.y > body.landing_y:
-                body.position = (body.position.x, body.landing_y)
-                body.velocity = (0, 0)
-
-            # fade out
-            alpha = max(0, min(255, int(255 * (lifetime / max_lifetime))))
-            draw_color = (*color, alpha)
-            pos = int(body.position.x - main_globals['camera_x']), int(body.position.y - main_globals['camera_y'])
-            surf = pygame.Surface((int(shape.radius*2), int(shape.radius*2)), pygame.SRCALPHA)
-            pygame.draw.circle(surf, draw_color, (int(shape.radius), int(shape.radius)), int(shape.radius))
-            screen.blit(surf, (pos[0]-shape.radius, pos[1]-shape.radius))
-
-            lifetime -= main_globals['dt']
-            if lifetime > 0:
-                new_particles.append((body, shape, color, lifetime, max_lifetime))
-            else:
-                # remove
-                main_globals['space'].remove(body, shape)
-
-        main_globals['blood_particles'] = new_particles
-
-        if is_paused == False:
-            draw_vignette(main_globals, player)
-            mx.music.unpause()
-            dx = dy = 0
-            if main_globals['moving_up']: dy -= 1
-            if main_globals['moving_down']: dy += 1
-            if main_globals['moving_left']:
-                dx -= 1
-                main_globals['facing_left'] = True
-            if main_globals['moving_right']:
-                dx += 1
-                main_globals['facing_left'] = False
-            player.move(dx, dy)
-            draw_hud(main_globals, player)
-        else:
-            draw_pause_menu(main_globals)
-
-    player = Player(main_globals, main_globals['spawn_x'], main_globals['spawn_y'])
     enemy = Enemy(main_globals, main_globals['enemy_spawn_x'], main_globals['enemy_spawn_y'], 0)
     shop = Shop(main_globals)
 
     main_globals['player_gif'] = player_gif
     main_globals['draw_menu'] = draw_menu
-    main_globals['draw_dungeon'] = draw_dungeon
     main_globals['draw_hud'] = draw_hud
     main_globals['draw_pause_menu'] = draw_pause_menu
     main_globals['draw_settings'] = draw_settings
@@ -987,13 +719,12 @@ def loader3(main_globals):
     main_globals['draw_apply_button'] = draw_apply_button
     main_globals['save'] = save
     main_globals['spawn_blood_particles'] = spawn_blood_particles
+    main_globals['distance_to'] = distance_to
 
-    main_globals['player'] = player
     main_globals['enemy'] = enemy
     main_globals['shop'] = shop
-    main_globals['Player'] = Player 
     main_globals['Weapon'] = Weapon
     main_globals['Shop'] = Shop
 
 
-    print("loader3 file loaderd")
+    print("loader3 file loaded")

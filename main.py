@@ -221,6 +221,20 @@ loading_bar_flicker()
 loading3 = load_into_globals("loader3.py")
 loading3.loader3(main_globals)
 
+draw_loading_screen(loading_step, loading_steps, "loading")
+loading_step += 1
+loading_steps += 1
+loading_bar_flicker()
+load_dungeon = load_into_globals("dungeon.py")
+load_dungeon.dungeon(main_globals)
+
+draw_loading_screen(loading_step, loading_steps, "loading")
+loading_step += 1
+loading_steps += 1
+loading_bar_flicker()
+load_player = load_into_globals("player.py")
+load_player.player(main_globals)
+
 draw_loading_screen(loading_steps, loading_steps, "fade_out")
 
 main_globals['game_stage'] = "in menu"

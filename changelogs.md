@@ -126,3 +126,4 @@ add more shop
 make blood parteclies when player is hurt
 fix shakes
 
+quick organisation of loader3
