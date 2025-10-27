@@ -235,6 +235,13 @@ loading_bar_flicker()
 load_player = load_into_globals("player.py")
 load_player.player(main_globals)
 
+draw_loading_screen(loading_step, loading_steps, "loading")
+loading_step += 1
+loading_steps += 1
+loading_bar_flicker()
+load_enemy = load_into_globals("enemy.py")
+load_enemy.enemy(main_globals)
+
 draw_loading_screen(loading_steps, loading_steps, "fade_out")
 
 main_globals['game_stage'] = "in menu"
@@ -436,6 +443,6 @@ while running:
 
     if main.developer_tools:
         vfps = int(1 / virtual_dt)
-        pygame.display.set_caption(f"fps: {int(clock.get_fps())} / {main.max_fps}, vfps: {vfps}")
+        pygame.display.set_caption(f"fps: {int(clock.get_fps())} / {main.max_fps}, vfps: {vfps}, mouse pos: {pygame.mouse.get_pos()}, player pos: {main_globals['player'].x, main_globals['player'].y}")
 
 pygame.quit()

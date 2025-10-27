@@ -291,34 +291,6 @@ def loader3(main_globals):
         x2, y2 = get_xy(thing2)
         return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
 
-    class Enemy():
-        def __init__(self, main_globals, x, y, type):
-            self.main_globals = main_globals
-            self.x = x
-            self.y = y
-            self.size = main_globals['enemy_size']
-            self.health = 50
-            self.alive = True
-            self.speed = 0.8
-            self.type = type
-            self.test_image = main_globals['enemy_test_0']
-        
-        def damaged(self, damage):
-            self.health -= damage
-            if self.health <= 0:
-                self.die()
-
-        def move(self):
-            if self.alive:
-                pass
-
-        def draw(self):
-            if self.alive and self.type == 0:
-                pass
-        
-        def die(self):
-            pass # heh
-
     def match_state(main_globals, state): # useless indian naganou function for stages # >:(
         match state:
             case "in menu":
@@ -692,7 +664,6 @@ def loader3(main_globals):
         text_surf = font.render("To menu", True, (255, 255, 255))
         screen.blit(text_surf, to_menu.topleft)
 
-    enemy = Enemy(main_globals, main_globals['enemy_spawn_x'], main_globals['enemy_spawn_y'], 0)
     shop = Shop(main_globals)
 
     main_globals['player_gif'] = player_gif
@@ -721,7 +692,6 @@ def loader3(main_globals):
     main_globals['spawn_blood_particles'] = spawn_blood_particles
     main_globals['distance_to'] = distance_to
 
-    main_globals['enemy'] = enemy
     main_globals['shop'] = shop
     main_globals['Weapon'] = Weapon
     main_globals['Shop'] = Shop

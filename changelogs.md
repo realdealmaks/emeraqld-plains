@@ -127,3 +127,8 @@ make blood parteclies when player is hurt
 fix shakes
 
 quick organisation of loader3
+
+# 27 10 / demaks
+
+make enemies exist and spawn and nothing else
+also window title now shows mouse xy and player xy because i needed it for debug things so its just there now

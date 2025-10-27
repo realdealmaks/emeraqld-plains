@@ -27,7 +27,7 @@ def loader2(main_globals):
         player_health_images.append(img)
     main_globals['player_health_images'] = player_health_images
     main_globals['death_sound'] = mx.Sound("assets/audio/sfx/vineboom.mp3")
-    main_globals['hurt_sound'] = mx.Sound("assets/audio/sfx/hurt.mp3") # FUCK
+    main_globals['hurt_sound'] = mx.Sound("assets/audio/sfx/new_hurt.ogg") # FUCK
     main_globals['musics'] = ["assets/audio/music/testdroga.mp3", "assets/audio/music/game_over_loop.mp3"]
     mx.music.load(main_globals['musics'][0])
     mx.music.play(-1)

@@ -11,6 +11,7 @@ def loader1(main_globals):
     main_globals['currently_playing_index'] = 0 # 0 being the first track so it's insta loaded
     main_globals['player_size'] = 50
     main_globals['enemy_size'] = 50
+    main_globals['enemy_type'] = None
 
     main_globals['menu_bg_x'] = main_globals['screen_w']
 
@@ -72,8 +73,8 @@ def loader1(main_globals):
 
     main_globals['tilemap'] = [
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
-        [0, 99, 1, 1, 2, 88, 0, 0, 0, 0,],
-        [0, 1, 0, 2, 0, 0, 0, 0, 0, 0,],
+        [0, 99, 3, 1, 2, 88, 0, 0, 0, 0,],
+        [0, 3, 0, 2, 0, 0, 0, 0, 0, 0,],
         [0, 1, 0, 2, 0, 0, 0, 0, 0, 0,],
         [0, 0, 0, 2, 0, 0, 0, 0, 0, 0,],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
@@ -83,6 +84,7 @@ def loader1(main_globals):
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
     ]
 
+    main_globals['enemy_list'] = []
     main_globals['enemy_spawn_y'] = 0
     main_globals['enemy_spawn_x'] = 0
 
@@ -104,7 +106,7 @@ def loader1(main_globals):
     main_globals['Weapon'] = None
     main_globals['attack_counter'] = 0
 
-    main_globals['walkable_tiles'] = [1, 2, 3, 99, 88]  # tiles that can be walked on
+    main_globals['walkable_tiles'] = [1, 2, 3, 4, 99, 88]  # tiles that can be walked on
     main_globals['weapons_on_map'] = []
 
     main_globals['hint_fade_duration'] = 0.5
