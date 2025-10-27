@@ -20,9 +20,6 @@ def enemy(main_globals):
             ]
             self.rect = self.images[0].get_rect()
 
-        def spawn(self):
-            pass
-
         def damaged(self, damage):
             self.health -= damage
             if self.health <= 0:
