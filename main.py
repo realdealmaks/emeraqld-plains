@@ -1,10 +1,6 @@
-import math, random, pygame, pydub, pytweening, scipy, pymunk, pathfinding
-import importlib.util
-from PIL import Image
-from pygame import mixer as mx
-import time
-import os
 # main python script
+import random, pygame, pymunk, time, importlib.util
+from pygame import mixer as mx
 
 # initiate things
 pygame.init()

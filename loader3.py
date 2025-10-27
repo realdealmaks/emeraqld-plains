@@ -3,15 +3,25 @@
 
 # FOR YOUR OWN SAFETY ONLY KEEP 1 FUNCTION OPEN AT ONE TIME 👀👺
 
-import math, random, pygame, pydub, pytweening, scipy, pymunk, pathfinding
-from PIL import Image
+import math, random, pygame, pymunk, pathfinding, time
 from pygame import mixer as mx
-import time
-import json
 
 def loader3(main_globals):
 
     dt = main_globals['dt'] # the god of them all
+
+    """
+    def get_random_walkable_position(main_globals): # DID NOT WORK 
+        mask = main_globals['walkable_mask']
+        ts = main_globals['tile_size'] + main_globals['tile_offset']
+        mask_width, mask_height = mask.get_size()
+
+        while True:
+            x = random.randrange(0, mask_width, ts)
+            y = random.randrange(0, mask_height, ts)
+            if mask.get_at((x, y))[:3] == (0, 255, 0):
+                return x, y
+    """
 
     class Shop:
         def __init__(self, main_globals, x = None, y = None):
@@ -208,7 +218,7 @@ def loader3(main_globals):
             self.x = main_globals['tile_size'] // 2
             self.y = main_globals['tile_size'] // 2
             self.last_attack_time = 0
-        def __repr__(self):
+        def __repr__(self): # makes it printable without memory locations
             return f"Weapon('{self.name}')"
         def can_attack(self):
             current_time = time.time()

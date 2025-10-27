@@ -1,23 +1,8 @@
 # this file is for loading the dungeon
-
-import pygame
+import pygame, random
 from pygame import mixer as mx
-from random import randrange
 
 def dungeon(main_globals):
-
-    dt = main_globals['dt']
-
-    def get_random_walkable_position(main_globals): # DID NOT WORK 
-        mask = main_globals['walkable_mask']
-        ts = main_globals['tile_size'] + main_globals['tile_offset']
-        mask_width, mask_height = mask.get_size()
-
-        while True:
-            x = randrange(0, mask_width, ts)
-            y = randrange(0, mask_height, ts)
-            if mask.get_at((x, y))[:3] == (0, 255, 0):
-                return x, y
 
     def draw_dungeon(main_globals, player, is_paused, facing_left):
         screen = main_globals['screen']
@@ -48,12 +33,9 @@ def dungeon(main_globals):
                 if main_globals['walkable_mask'].get_at((x, y))[:3] == (0, 255, 0):
                     screen.blit(tile_surface, (x - camera_x, y - camera_y))
 
-
-        if 'groups_spawned' not in main_globals:
-            main_globals['groups_spawned'] = 0
-        spawn_tiles = sum(dih.count(3) for dih in tilemap)
         for row_idx, row in enumerate(main_globals['tilemap']):
             for col_idx, tile_type in enumerate(row):
+
                 if tile_type == 99: # makes player spawn here 
                     if main_globals['spawn_set'] == False:
                         ts = main_globals['tile_size'] + main_globals['tile_offset']
@@ -67,29 +49,26 @@ def dungeon(main_globals):
                         main_globals['spawn_set'] = True
 
                 elif tile_type == 2:
+                    # fixed position because why would it not be
                     screen.blit(main_globals['pedistal_image'], (col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_width() // 2, row_idx * ts - camera_y + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_height() // 2 + 50))
 
                 elif tile_type == 3: # okay...
-                        ts = main_globals['tile_size'] + main_globals['tile_offset']
-                        # main globals enemy list
-                        # groups_spawned = 0
-                        if main_globals['groups_spawned'] > spawn_tiles:
-                            # print("nothing to spawn")
-                            pass
-                        else:
-                            tile_center_x = col_idx * ts + main_globals['tile_size'] // 2
-                            tile_center_y = row_idx * ts + main_globals['tile_size'] // 2
-                            upper = randrange(2, 6)
-                            for i in range(1, upper): # adds x through y
-                                enemy_x = tile_center_x - enemy_size // 2
-                                enemy_y = tile_center_y - enemy_size // 2
-                                enemy_type = randrange(2) # 0 or 1
-                                new_enemy = main_globals['Enemy'](main_globals, enemy_x, enemy_y, enemy_type)
-                                enemy_list.append(new_enemy)
-                                # print(f"spawned enemy number {i}")
-                            main_globals['groups_spawned'] += 1
-                        # print(f"there are {spawn_tiles} spawn tiles and {main_globals['groups_spawned']} groups have been spawned")
-                
+                    ts = main_globals['tile_size'] + main_globals['tile_offset']
+                    if main_globals['groups_spawned'] > sum(i.count(3) for i in tilemap): # not dIh
+                        pass
+                    else:
+                        tile_center_x = col_idx * ts + main_globals['tile_size'] // 2
+                        tile_center_y = row_idx * ts + main_globals['tile_size'] // 2
+                        # i dont know what this is for and im not going to question it \/
+                        upper = random.randrange(2, 6)
+                        for i in range(1, upper): # adds x through y
+                            enemy_x = tile_center_x - enemy_size // 2
+                            enemy_y = tile_center_y - enemy_size // 2
+                            new_enemy = main_globals['Enemy'](main_globals, enemy_x, enemy_y, random.choice([0, 1]))
+                            # or just change choice for the type you want
+                            enemy_list.append(new_enemy)
+                        main_globals['groups_spawned'] += 1
+
                 elif tile_type == 88:
                     main_globals['shop'].stand_x = col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['shop_holder'].get_width() // 2
                     main_globals['shop'].stand_y = row_idx * ts - camera_y + main_globals['tile_size'] // 2 - main_globals['shop_holder'].get_height() // 2 + 50

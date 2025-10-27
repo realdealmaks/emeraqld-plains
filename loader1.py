@@ -1,10 +1,7 @@
 # this file is for variables
 # loader 1
 
-import math, random, pygame, pydub, pytweening, scipy, pymunk, pathfinding
-import importlib.util
-from PIL import Image
-from pygame import mixer as mx
+import pygame
 
 def loader1(main_globals):
     main_globals['tile_size'] = 600
@@ -97,7 +94,6 @@ def loader1(main_globals):
     main_globals['tile_offset'] = 50
     main_globals['interact_distance'] = 75
 
-    main_globals['playergif'] = Image.open("assets/models/player/playergif.gif")
     main_globals['match'] = None
     main_globals['bridging'] = True
     main_globals['hints_text'] = "True"
@@ -133,5 +129,7 @@ def loader1(main_globals):
 
     main_globals['blood_particles'] = []
     main_globals['space'] = None # set in main
+
+    main_globals['groups_spawned'] = 0 # no problem man i did it for you
 
     print("loader1 file loaded")
