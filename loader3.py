@@ -226,6 +226,7 @@ def loader3(main_globals):
         def attack(self, player, main_globals):
             slash_img = main_globals['slash_image']
             if self.can_attack():
+                print(f"player attacked with {self.name}")
                 self.last_attack_time = time.time()
                 mouse_pos = pygame.mouse.get_pos()
                 scaled_height = int(slash_img.get_height() * (self.range / 50))

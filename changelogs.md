@@ -132,3 +132,14 @@ quick organisation of loader3
 
 make enemies exist and spawn and nothing else
 also window title now shows mouse xy and player xy because i needed it for debug things so its just there now
+
+# 28 october 00:39:28 / shamby
+cleanup a little from demaks
+gain 30 fps from cleanup
+
+prefrence changes
+
+make loading icon appear
+not done yet but its there and its currently 0:55:34
+
+#

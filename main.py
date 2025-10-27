@@ -63,6 +63,8 @@ main_globals = {
 def draw_loading_screen(step, total, loading_phase):
     global bar_risen, bar_h, splash_alpha, bar_color
     splash_image = pygame.image.load("assets/useful images/splashimage.jpg").convert_alpha()
+    loading_icon = pygame.image.load("assets/useful images/save.png")
+    loading_icon = pygame.transform.scale2x(loading_icon)
 
     # fade in
     if loading_phase == "fade_in":
@@ -93,16 +95,29 @@ def draw_loading_screen(step, total, loading_phase):
                 bar_y = screen_h - bar_h
                 screen.fill((0, 0, 0))
                 screen.blit(splash_image, (screen_w // 2 - splash_image.get_width() // 2 - 2, screen_h // 2 - splash_image.get_height() // 2 - 3))
-                pygame.draw.rect(screen, (80, 80, 80), (bar_x, bar_y, bar_w, target_bar_h))  # background bar
+                pygame.draw.rect(screen, (80, 80, 80), (bar_x, bar_y, bar_w, target_bar_h)) # background bar
                 pygame.display.update()
                 time.sleep(0.02)
                 if bar_h == target_bar_h:
                     bar_risen = True
+
+                    angle = (pygame.time.get_ticks() // 5) % 360
+                    rotated_icon = pygame.transform.rotate(loading_icon, angle)
+                    rotated_rect = rotated_icon.get_rect(center=(50, screen_h - 70))
+                    screen.blit(rotated_icon, rotated_rect.topleft)
+                    pygame.display.update()
+
                     time.sleep(3)
                     break
         else:
-            pygame.draw.rect(screen, (80, 80, 80), (bar_x, bar_y, bar_w, target_bar_h))  # background bar
+            pygame.draw.rect(screen, (80, 80, 80), (bar_x, bar_y, bar_w, target_bar_h)) # background bar
             pygame.draw.rect(screen, bar_color, (bar_x, bar_y, (bar_w / total) * step, target_bar_h)) # progress bar
+
+            angle = (pygame.time.get_ticks() // 5) % 360
+            rotated_icon = pygame.transform.rotate(loading_icon, angle)
+            rotated_rect = rotated_icon.get_rect(center=(50, screen_h - 70))
+            screen.blit(rotated_icon, rotated_rect.topleft)
+
             pygame.display.update()
             time.sleep(0.02)
 
@@ -391,7 +406,7 @@ while running:
                     if main.game_stage == "in dungeon":
                         if main.player.weapons != []:
                             main.player.attack(main_globals)
-                            print("player attacked")
+                            # print("player attacked") annoys me that it says it even if its on cd so i moved it
 
         main.mouse_pos = pygame.mouse.get_pos()
         main.mouse_pressed = pygame.mouse.get_pressed()[0]

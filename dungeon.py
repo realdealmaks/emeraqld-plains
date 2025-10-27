@@ -60,6 +60,7 @@ def dungeon(main_globals):
                         tile_center_x = col_idx * ts + main_globals['tile_size'] // 2
                         tile_center_y = row_idx * ts + main_globals['tile_size'] // 2
                         # i dont know what this is for and im not going to question it \/
+                        # actually i will question it, stop calling random every damn frame
                         upper = random.randrange(2, 6)
                         for i in range(1, upper): # adds x through y
                             enemy_x = tile_center_x - enemy_size // 2
@@ -93,6 +94,15 @@ def dungeon(main_globals):
 
                 # pick up weapon
                 main_globals['interact'](main_globals, player, weapon.x, weapon.y, lambda w=weapon: w.pickup(player))
+
+        # gets bobbers moving
+        # hopefully this fits here
+        # it did actually fit here, but i moved it because i wanted to draw slashes over bobbers
+        for enemy in enemy_list:
+            enemy.move()
+
+        for enemy in enemy_list:
+            enemy.draw(enemy.type)
 
         # draw slash
         if 'active_slashes' in main_globals:
@@ -147,14 +157,6 @@ def dungeon(main_globals):
                 weapon_x -= 90
 
             screen.blit(weapon_image, (weapon_x, weapon_y))
-
-        # gets bobbers moving
-        # hopefully this fits here 
-        for enemy in enemy_list:
-            enemy.move()
-
-        for enemy in enemy_list:
-            enemy.draw(enemy.type)
 
         # draw bloodes
         # this has to be here because player draws before
