@@ -1,7 +1,7 @@
 # this file is for images and audio
 # loader 2
 
-import math, random, pygame, pydub, pytweening, scipy, pymunk, pathfinding
+import pygame
 from PIL import Image
 from pygame import mixer as mx
 
@@ -18,6 +18,7 @@ def loader2(main_globals):
     main_globals['save_image'] = pygame.image.load("assets/useful images/save.png")
     main_globals['save_image'] = pygame.transform.scale2x(main_globals['save_image'])
     main_globals['floorboard'] = pygame.image.load('assets/useful images/tiles/image.png')
+    main_globals['playergif'] = Image.open("assets/models/player/playergif.gif")
 
     player_health_images = []
     for i in range(1, 4):
