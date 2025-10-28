@@ -60,11 +60,17 @@ main_globals = {
     'musicswitcher': None, 'faded_in': False
 }
 
-def draw_loading_screen(step, total, loading_phase):
-    global bar_risen, bar_h, splash_alpha, bar_color
+last_context = None
+def draw_loading_screen(step, total, loading_phase, context):
+    global bar_risen, bar_h, splash_alpha, bar_color, last_context
     splash_image = pygame.image.load("assets/useful images/splashimage.jpg").convert_alpha()
     loading_icon = pygame.image.load("assets/useful images/save.png")
     loading_icon = pygame.transform.scale2x(loading_icon)
+
+    if context is not None:
+        last_context = context
+    else:
+        context = last_context
 
     # fade in
     if loading_phase == "fade_in":
@@ -105,6 +111,12 @@ def draw_loading_screen(step, total, loading_phase):
                     rotated_icon = pygame.transform.rotate(loading_icon, angle)
                     rotated_rect = rotated_icon.get_rect(center=(50, screen_h - 70))
                     screen.blit(rotated_icon, rotated_rect.topleft)
+
+                    temp_font = pygame.font.SysFont(None, 34)
+                    text = temp_font.render("preparing", True, (255, 255, 255))
+                    text_rect = text.get_rect(topleft=(loading_icon.get_width() + 20, screen_h - 60))
+                    screen.blit(text, text_rect)
+
                     pygame.display.update()
 
                     time.sleep(3)
@@ -117,6 +129,14 @@ def draw_loading_screen(step, total, loading_phase):
             rotated_icon = pygame.transform.rotate(loading_icon, angle)
             rotated_rect = rotated_icon.get_rect(center=(50, screen_h - 70))
             screen.blit(rotated_icon, rotated_rect.topleft)
+
+            temp_font = pygame.font.SysFont(None, 34)
+            if context == "finalizing":
+                text = temp_font.render("finalizing", True, (255, 255, 255))
+            else:
+                text = temp_font.render(f"loading {context}...", True, (255, 255, 255))
+            text_rect = text.get_rect(topleft=(loading_icon.get_width() + 20, screen_h - 60))
+            screen.blit(text, text_rect)
 
             pygame.display.update()
             time.sleep(0.02)
@@ -173,7 +193,8 @@ def loading_bar_flicker(duration=0.5, steps=10, force_full=False):
         draw_loading_screen(
             loading_steps if force_full else loading_step, 
             loading_steps, 
-            "loading"
+            "loading",
+            last_context
         )
         time.sleep(duration / (2*steps))
 
@@ -187,7 +208,8 @@ def loading_bar_flicker(duration=0.5, steps=10, force_full=False):
         draw_loading_screen(
             loading_steps if force_full else loading_step, 
             loading_steps, 
-            "loading"
+            "loading",
+            last_context
         )
         time.sleep(duration / (2*steps))
 
@@ -200,60 +222,60 @@ bar_h = 0
 splash_alpha = 0
 bar_color = (0, 170, 0)
 
-draw_loading_screen(loading_step, loading_steps, "fade_in")
+draw_loading_screen(loading_step, loading_steps, "fade_in", "starting")
 
-draw_loading_screen(1, 100, "loading")
+draw_loading_screen(1, 100, "loading", "preparing")
 
-draw_loading_screen(loading_step, loading_steps, "loading")
+draw_loading_screen(loading_step, loading_steps, "loading", "variables")
 loading_step += 1
 loading_steps += 1
 loading1 = load_into_globals("loader1.py")
 loading_bar_flicker()
 loading1.loader1(main_globals)
 
-draw_loading_screen(loading_step, loading_steps, "loading")
+draw_loading_screen(loading_step, loading_steps, "loading", "data")
 loading_step += 1
 loading_steps += 1
 loading_bar_flicker()
 loading0 = load_into_globals("connector.py")
 loading0.connector(main_globals)
 
-draw_loading_screen(loading_step, loading_steps, "loading")
+draw_loading_screen(loading_step, loading_steps, "loading", "assets")
 loading_step += 1
 loading_steps += 1
 loading_bar_flicker()
 loading2 = load_into_globals("loader2.py")
 loading2.loader2(main_globals)
 
-draw_loading_screen(loading_step, loading_steps, "loading")
+draw_loading_screen(loading_step, loading_steps, "loading", "logic")
 loading_step += 1
 # skip loading steps + 1 to make it look like this is big file (it is)
 loading_bar_flicker()
 loading3 = load_into_globals("loader3.py")
 loading3.loader3(main_globals)
 
-draw_loading_screen(loading_step, loading_steps, "loading")
+draw_loading_screen(loading_step, loading_steps, "loading", "logic")
 loading_step += 1
 loading_steps += 1
 loading_bar_flicker()
 load_dungeon = load_into_globals("dungeon.py")
 load_dungeon.dungeon(main_globals)
 
-draw_loading_screen(loading_step, loading_steps, "loading")
+draw_loading_screen(loading_step, loading_steps, "loading", "logic")
 loading_step += 1
 loading_steps += 1
 loading_bar_flicker()
 load_player = load_into_globals("player.py")
 load_player.player(main_globals)
 
-draw_loading_screen(loading_step, loading_steps, "loading")
+draw_loading_screen(loading_step, loading_steps, "loading", "logic")
 loading_step += 1
 loading_steps += 1
 loading_bar_flicker()
 load_enemy = load_into_globals("enemy.py")
 load_enemy.enemy(main_globals)
 
-draw_loading_screen(loading_steps, loading_steps, "fade_out")
+draw_loading_screen(loading_steps, loading_steps, "fade_out", "finalizing")
 
 main_globals['game_stage'] = "in menu"
 print("starting")
