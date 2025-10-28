@@ -147,6 +147,10 @@ add text on loading
 finished loading once more
 yeah i totally didnt forget half of it
 
+rework loading almost completely
+make enemies only take 1 set of damages from a single slash
+
+
 # 28 10 / ma
 add collision but it's fucked
 shkkubya please fix

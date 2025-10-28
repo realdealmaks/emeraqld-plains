@@ -101,26 +101,28 @@ def dungeon(main_globals):
         # it did actually fit here, but i moved it because i wanted to draw slashes over bobbers
         for enemy in enemy_list:
             enemy.move()
-        
-        for enemy in enemy_list: # collision
-            if 'active_slashes' in main_globals and main_globals['active_slashes']:
-                active_slashes = main_globals['active_slashes']
-                for slash_img, slash_rect, expiry in active_slashes:
-                    if pygame.Rect.colliderect(enemy.rect, slash_rect):
-                        enemy.damaged(20)
-                        # print(f"enemy damaged for 20, remaining health is {enemy.health}")
+
+        if 'active_slashes' in main_globals and main_globals['active_slashes']:
+            active_slashes = main_globals['active_slashes']
+            for enemy in enemy_list:
+                if not enemy.alive:
+                    continue
+                for slash in active_slashes:
+                    if pygame.Rect.colliderect(enemy.rect, slash['rect']):
+                        if enemy not in slash['hit_enemies']:
+                            enemy.damaged(20) # or use weapon damage eh?
+                            slash['hit_enemies'].add(enemy)
 
         for enemy in enemy_list:
             enemy.draw(enemy.type)
 
-        # draw slash
         if 'active_slashes' in main_globals:
-            now = pygame.time.get_ticks()  # current time in ms
+            now = pygame.time.get_ticks() # current time in ms
             still_active = []
-            for slash_img, slash_rect, expiry in main_globals['active_slashes']:
-                if now < expiry:
-                    screen.blit(slash_img, slash_rect)
-                    still_active.append((slash_img, slash_rect, expiry))
+            for slash in main_globals['active_slashes']:
+                if now < slash['expiry']:
+                    screen.blit(slash['image'], slash['rect'])
+                    still_active.append(slash)
             main_globals['active_slashes'] = still_active
 
         # animate player

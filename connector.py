@@ -4,6 +4,12 @@ import os
 # connector
 # this file is for storing data
 
+"""
+okay so new plan for this since it isnt a db, we can still just
+store game data in here and everything like score and shit can just go to
+database
+"""
+
 def connector(main_globals):
     default_data = {
             "music": 100,
@@ -48,6 +54,8 @@ def connector(main_globals):
             return self.data
 
     main_globals['connector_instance'] = Connector(default_data=default_data)
+
+    print("connector file loaded")
 
 # test to see if the file gets written anything
 test = False
