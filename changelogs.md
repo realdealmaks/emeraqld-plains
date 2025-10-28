@@ -144,5 +144,6 @@ not done yet but its there and its currently 0:55:34
 
 # 28 10 / sandbye
 add text on loading
+finished loading once more
 
 # 
