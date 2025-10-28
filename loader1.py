@@ -49,7 +49,6 @@ def loader1(main_globals):
     main_globals['resolution_slider'] = pygame.Rect(0,0,0,0)
     main_globals['apply_button'] = pygame.Rect(0,0,0,0)
 
-    main_globals['mouse_pos'] = pygame.mouse.get_pos()
     main_globals['mouse_pressed'] = pygame.mouse.get_pressed()[0]
 
     main_globals['current_frame'] = 0
@@ -111,8 +110,8 @@ def loader1(main_globals):
     main_globals['virtual_screen'] = main_globals['screen']
     main_globals['max_fps'] = 0
 
-    main_globals['resolution'] = (1280, 720)
-    resolutions = [(1920, 1080), (2560, 1440), (3840, 2160), (1280, 720), (1280, 1024), (1600, 900), (1920, 1200), (2560, 1600), (800, 600)]
+    main_globals['resolution'] = (1080, 750)
+    resolutions = [(420, 800), (1920, 1080), (2560, 1440), (3840, 2160), (1280, 720), (1280, 1024), (1600, 900), (1920, 1200), (2560, 1600), (800, 600), (1080, 750), (1024, 2048)]
     resolutions.sort()
     main_globals['resolutions'] = resolutions
     for i in range(len(resolutions)):

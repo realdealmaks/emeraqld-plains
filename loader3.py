@@ -71,7 +71,7 @@ def loader3(main_globals):
         return particles
 
     def save(main_globals, **new_data):
-        pos = (main_globals['save_image'].get_width(), main_globals['screen_h'] - main_globals['save_image'].get_height())
+        pos = (main_globals['save_image'].get_width(), main_globals['screen'].get_height() - main_globals['save_image'].get_height())
         screen = main_globals['screen']
         connector = main_globals['connector_instance']
 
@@ -103,10 +103,11 @@ def loader3(main_globals):
         screen.blit(text_surf, text_rect)
 
         if main_globals['apply_button'].collidepoint(main_globals['mouse_pos']) and pygame.mouse.get_pressed()[0]:
-            # if function == "resolution":
-            #     new_res = main_globals['resolutions'][main_globals['resolution_index']]
-            #     main_globals['screen_w'], main_globals['screen_h'] = new_res
-            #     print(f"set resolution to {new_res}")
+
+            if function == "resolution":
+                new_res = main_globals['resolutions'][main_globals['resolution_index']]
+                main_globals['resolution'] = new_res
+                print(f"set resolution to {new_res}")
 
             if function == "framerate":
                 new_fps = main_globals['frame_caps'][main_globals['frame_cap_index']]
@@ -134,24 +135,24 @@ def loader3(main_globals):
             main_globals['key_e_hint'].set_alpha(alpha)
             main_globals['mouse_left_hint'].set_alpha(alpha)
             main_globals['mouse_blank_hint'].set_alpha(alpha)
-            screen.blit(main_globals['key_w_hint'], (10 + block_size, main_globals['screen_h'] - block_size*2 - 10))
-            screen.blit(main_globals['key_a_hint'], (10, main_globals['screen_h'] - block_size - 10))
-            screen.blit(main_globals['key_s_hint'], (10 + block_size, main_globals['screen_h'] - block_size - 10))
-            screen.blit(main_globals['key_d_hint'], (10 + block_size*2, main_globals['screen_h'] - block_size - 10))
-            screen.blit(main_globals['key_e_hint'], (10 + block_size*2, main_globals['screen_h'] - block_size*2 - 10))
+            screen.blit(main_globals['key_w_hint'], (10 + block_size, main_globals['screen'].get_height() - block_size*2 - 10))
+            screen.blit(main_globals['key_a_hint'], (10, main_globals['screen'].get_height() - block_size - 10))
+            screen.blit(main_globals['key_s_hint'], (10 + block_size, main_globals['screen'].get_height() - block_size - 10))
+            screen.blit(main_globals['key_d_hint'], (10 + block_size*2, main_globals['screen'].get_height() - block_size - 10))
+            screen.blit(main_globals['key_e_hint'], (10 + block_size*2, main_globals['screen'].get_height() - block_size*2 - 10))
             # swap mouse image
             ticks = pygame.time.get_ticks() # ms
             if (ticks // 1000) % 2 == 0: # every s
-                screen.blit(main_globals['mouse_blank_hint'], (main_globals['screen_w'] - main_globals['mouse_blank_hint'].get_width() - 10, main_globals['screen_h'] - main_globals['mouse_blank_hint'].get_height() - 10))
+                screen.blit(main_globals['mouse_blank_hint'], (main_globals['screen'].get_width() - main_globals['mouse_blank_hint'].get_width() - 10, main_globals['screen'].get_height() - main_globals['mouse_blank_hint'].get_height() - 10))
             else:
-                screen.blit(main_globals['mouse_left_hint'], (main_globals['screen_w'] - main_globals['mouse_left_hint'].get_width() - 10, main_globals['screen_h'] - main_globals['mouse_left_hint'].get_height() - 10))
+                screen.blit(main_globals['mouse_left_hint'], (main_globals['screen'].get_width() - main_globals['mouse_left_hint'].get_width() - 10, main_globals['screen'].get_height() - main_globals['mouse_left_hint'].get_height() - 10))
         else:
             main_globals['hint_alpha'] = 0
 
     def weapon_info(main_globals):
         screen = main_globals['screen']
-        screen_w = main_globals['screen_w']
-        screen_h = main_globals['screen_h']
+        screen_w = main_globals['screen'].get_width()
+        screen_h = main_globals['screen'].get_height()
         info_bg_x = screen_w - main_globals['weapon_info_bg'].get_width()
         info_bg_y = screen_h - main_globals['weapon_info_bg'].get_height()
         screen.blit(main_globals['weapon_info_bg'], (info_bg_x, info_bg_y))
@@ -236,8 +237,8 @@ def loader3(main_globals):
         tile_x = player_center_x // (tile_size + main_globals['tile_offset'])
         tile_y = player_center_y // (tile_size + main_globals['tile_offset'])
         # camera snaps to the center
-        offset_x = tile_x * (tile_size + main_globals['tile_offset']) + tile_size // 2 - main_globals['screen_w'] // 2
-        offset_y = tile_y * (tile_size + main_globals['tile_offset']) + tile_size // 2 - main_globals['screen_h'] // 2
+        offset_x = tile_x * (tile_size + main_globals['tile_offset']) + tile_size // 2 - main_globals['screen'].get_width() // 2
+        offset_y = tile_y * (tile_size + main_globals['tile_offset']) + tile_size // 2 - main_globals['screen'].get_height() // 2
         return offset_x, offset_y
 
     def make_initial_walkable_surface(tilemap, main_globals):
@@ -331,15 +332,15 @@ def loader3(main_globals):
 
     def draw_pause_menu(main_globals):
         screen = main_globals['screen']
-        pygame.draw.rect(screen, (20, 20, 20), (main_globals['screen_w'] // 2 - main_globals['screen_w'] // 4, main_globals['screen_h'] // 2 - main_globals['screen_h'] // 4, main_globals['screen_w'] // 2, main_globals['screen_h'] // 2), 0)
-        screen.blit(main_globals['font'].render("paused", True, (255, 255, 255)), (main_globals['screen_w'] // 2 - 60, main_globals['screen_h'] // 2 - 22))
+        pygame.draw.rect(screen, (20, 20, 20), (main_globals['screen'].get_width() // 2 - main_globals['screen'].get_width() // 4, main_globals['screen'].get_height() // 2 - main_globals['screen'].get_height() // 4, main_globals['screen'].get_width() // 2, main_globals['screen'].get_height() // 2), 0)
+        screen.blit(main_globals['font'].render("paused", True, (255, 255, 255)), (main_globals['screen'].get_width() // 2 - 60, main_globals['screen'].get_height() // 2 - 22))
         mx.music.pause()
 
     def draw_menu(main_globals, mouse_pos):
         screen = main_globals['screen']
         screen.fill((0, 0, 0))
         if main_globals['menu_bg_can_animate']:
-            target_x = main_globals['screen_w'] - main_globals['menu_background'].get_width()
+            target_x = main_globals['screen'].get_width() - main_globals['menu_background'].get_width()
             if main_globals['menu_bg_x'] > target_x:
                 main_globals['menu_bg_x'] -= 10
             else:
@@ -353,7 +354,7 @@ def loader3(main_globals):
             main_globals['flash_alpha'] += main_globals['flash_speed']
             if main_globals['flash_alpha'] > 255:
                 main_globals['flash_alpha'] = 255
-            flash_surface = pygame.Surface((main_globals['screen_w'], main_globals['screen_h']))
+            flash_surface = pygame.Surface((main_globals['screen'].get_width(), main_globals['screen'].get_height()))
             flash_surface.fill((255, 255, 255))
             flash_surface.set_alpha(255 - main_globals['flash_alpha'])
             screen.blit(flash_surface, (0, 0))
@@ -391,7 +392,7 @@ def loader3(main_globals):
         # screen.blit(main_globals['thx'], (540, 0)) # i got the coordinates right first try btw
 
         # no problem man
-        screen.blit(main_globals['thx'], (main_globals['screen_w'] // 2, 0))
+        screen.blit(main_globals['thx'], (main_globals['screen'].get_width() // 2, 0))
 
         to_menu_color = (70, 70, 70) if to_menu.collidepoint(mouse_pos) else (40, 40, 40)
         pygame.draw.rect(screen, to_menu_color, to_menu)
@@ -413,31 +414,31 @@ def loader3(main_globals):
 
         # liners (credits edition)
         liner_y = 85
-        liner = pygame.Rect(50, liner_y, main_globals['screen_w'] / 2 - 100, 2)
+        liner = pygame.Rect(50, liner_y, main_globals['screen'].get_width() / 2 - 100, 2)
         pygame.draw.rect(screen, (40, 40, 40), liner)
         liner_y += 100
-        liner = pygame.Rect(50, liner_y, main_globals['screen_w'] / 2 - 100, 2)
+        liner = pygame.Rect(50, liner_y, main_globals['screen'].get_width() / 2 - 100, 2)
         pygame.draw.rect(screen, (40, 40, 40), liner)
 
         liner_y += 50
-        liner = pygame.Rect(50, liner_y, main_globals['screen_w'] / 2 - 100, 2)
+        liner = pygame.Rect(50, liner_y, main_globals['screen'].get_width() / 2 - 100, 2)
         pygame.draw.rect(screen, (40, 40, 40), liner)
         liner_y += 100
-        liner = pygame.Rect(50, liner_y, main_globals['screen_w'] / 2 - 100, 2)
+        liner = pygame.Rect(50, liner_y, main_globals['screen'].get_width() / 2 - 100, 2)
         pygame.draw.rect(screen, (40, 40, 40), liner)
 
         liner_y += 50
-        liner = pygame.Rect(50, liner_y, main_globals['screen_w'] / 2 - 100, 2)
+        liner = pygame.Rect(50, liner_y, main_globals['screen'].get_width() / 2 - 100, 2)
         pygame.draw.rect(screen, (40, 40, 40), liner)
         liner_y += 50
-        liner = pygame.Rect(50, liner_y, main_globals['screen_w'] / 2 - 100, 2)
+        liner = pygame.Rect(50, liner_y, main_globals['screen'].get_width() / 2 - 100, 2)
         pygame.draw.rect(screen, (40, 40, 40), liner)
 
         liner_y += 50
-        liner = pygame.Rect(50, liner_y, main_globals['screen_w'] / 2 - 100, 2)
+        liner = pygame.Rect(50, liner_y, main_globals['screen'].get_width() / 2 - 100, 2)
         pygame.draw.rect(screen, (40, 40, 40), liner)
         liner_y += 100
-        liner = pygame.Rect(50, liner_y, main_globals['screen_w'] / 2 - 100, 2)
+        liner = pygame.Rect(50, liner_y, main_globals['screen'].get_width() / 2 - 100, 2)
         pygame.draw.rect(screen, (40, 40, 40), liner)
 
     def draw_settings(main_globals, mouse_pos):
@@ -451,19 +452,19 @@ def loader3(main_globals):
         screen.blit(font.render("settings", True, (255, 255, 255)), (20, 20))
         # liners
         liner_y = 85
-        liner = pygame.Rect(100, liner_y, main_globals['screen_w'] - 150, 2)
+        liner = pygame.Rect(100, liner_y, main_globals['screen'].get_width() - 150, 2)
         pygame.draw.rect(screen, (40, 40, 40), liner)
         liner_y += 50
-        liner = pygame.Rect(100, liner_y, main_globals['screen_w'] - 150, 2)
+        liner = pygame.Rect(100, liner_y, main_globals['screen'].get_width() - 150, 2)
         pygame.draw.rect(screen, (40, 40, 40), liner)
         liner_y += 50
-        liner = pygame.Rect(100, liner_y, main_globals['screen_w'] - 150, 2)
+        liner = pygame.Rect(100, liner_y, main_globals['screen'].get_width() - 150, 2)
         pygame.draw.rect(screen, (40, 40, 40), liner)
         liner_y += 50
-        liner = pygame.Rect(100, liner_y, main_globals['screen_w'] - 150, 2)
+        liner = pygame.Rect(100, liner_y, main_globals['screen'].get_width() - 150, 2)
         pygame.draw.rect(screen, (40, 40, 40), liner)
         liner_y += 50
-        liner = pygame.Rect(100, liner_y, main_globals['screen_w'] - 150, 2)
+        liner = pygame.Rect(100, liner_y, main_globals['screen'].get_width() - 150, 2)
         pygame.draw.rect(screen, (40, 40, 40), liner)
 
         # music slider
@@ -480,7 +481,7 @@ def loader3(main_globals):
             main_globals['music_volume'] = volume
 
         screen.blit(setting_font.render("music volume", True, (255, 255, 255)), (100, 100))
-        screen.blit(setting_font.render(f"{int(volume * 100)}%", True, (255, 255, 255)), (main_globals['screen_w'] // 2 + 20, 100))
+        screen.blit(setting_font.render(f"{int(volume * 100)}%", True, (255, 255, 255)), (main_globals['screen'].get_width() // 2 + 20, 100))
 
         # return
         to_menu_color = (70, 70, 70) if to_menu.collidepoint(mouse_pos) else (40, 40, 40)
@@ -498,31 +499,31 @@ def loader3(main_globals):
         screen.blit(text_surf, text_rect.topleft)
 
         # resolution
-        # resolution_index = main_globals['resolution_index']
-        # step = main_globals['frame_slider_base'].width / (len(main_globals['resolutions'])-1)
+        resolution_index = main_globals['resolution_index']
+        step = main_globals['resolution_slider_base'].width / (len(main_globals['resolutions']) - 1)
 
-        # if main_globals['dragging_resolution_slider']:
-        #     relative_x = mouse_pos[0] - main_globals['resolution_slider_base'].x
-        #     resolution_index = round(relative_x / step)
-        #     resolution_index = max(0, min(resolution_index, len(main_globals['resolutions'])-1))
-        #     main_globals['resolution_index'] = resolution_index
+        if main_globals['dragging_resolution_slider']:
+            relative_x = mouse_pos[0] - main_globals['resolution_slider_base'].x
+            resolution_index = round(relative_x / step)
+            resolution_index = max(0, min(resolution_index, len(main_globals['resolutions']) - 1))
+            main_globals['resolution_index'] = resolution_index
 
-        # handle_width = 15
-        # handle_height = main_globals['resolution_slider_base'].height + 15
-        # handle_x = main_globals['resolution_slider_base'].x + resolution_index * step - handle_width // 2
-        # handle_y = main_globals['resolution_slider_base'].y - 7 # y offset
-        # handle_rect = pygame.Rect(handle_x, handle_y, handle_width, handle_height)
+        handle_width = 15
+        handle_height = main_globals['resolution_slider_base'].height + 15
+        handle_x = main_globals['resolution_slider_base'].x + resolution_index * step - handle_width // 2
+        handle_y = main_globals['resolution_slider_base'].y - 7  # y offset
+        handle_rect = pygame.Rect(handle_x, handle_y, handle_width, handle_height)
 
-        # screen.blit(setting_font.render("resolution", True, (255, 255, 255)), (100, 200))
-        # resolution_color = (120, 120, 120) if handle_rect.collidepoint(mouse_pos) else (70, 70, 70)
-        # pygame.draw.rect(screen, (40, 40, 40), main_globals['resolution_slider_base'])
-        # res = main_globals['resolutions'][resolution_index]
-        # res_text = f"{res[0]}x{res[1]}"
-        # screen.blit(setting_font.render(res_text, True, (255, 255, 255)), (main_globals['screen_w'] // 2 + 20, 200))
-        # pygame.draw.rect(screen, resolution_color, handle_rect)
-        # main_globals['resolution_slider'] = handle_rect
-        # if res != main_globals['resolution']:
-        #     draw_apply_button(main_globals, main_globals['screen_w'] // 2 - 120, 200, "resolution")
+        screen.blit(setting_font.render("resolution", True, (255, 255, 255)), (100, 200))
+        resolution_color = (120, 120, 120) if handle_rect.collidepoint(mouse_pos) else (70, 70, 70)
+        pygame.draw.rect(screen, (40, 40, 40), main_globals['resolution_slider_base'])
+        res = main_globals['resolutions'][resolution_index]
+        res_text = f"{res[0]}x{res[1]}"
+        screen.blit(setting_font.render(res_text, True, (255, 255, 255)), (main_globals['screen'].get_width() // 2 + 20, 200))
+        pygame.draw.rect(screen, resolution_color, handle_rect)
+        main_globals['resolution_slider'] = handle_rect
+        if main_globals['resolution'] != res:
+            draw_apply_button(main_globals, main_globals['screen'].get_width() // 2 - 120, 190, "resolution")
 
         # framerate cap
         frame_cap_index = main_globals['frame_cap_index']
@@ -545,11 +546,11 @@ def loader3(main_globals):
         pygame.draw.rect(screen, (40, 40, 40), main_globals['frame_slider_base'])
         frame = main_globals['frame_caps'][frame_cap_index]
         frame_text = f"{frame} fps"
-        screen.blit(setting_font.render(frame_text, True, (255, 255, 255)), (main_globals['screen_w'] // 2 + 20, 250))
+        screen.blit(setting_font.render(frame_text, True, (255, 255, 255)), (main_globals['screen'].get_width() // 2 + 20, 250))
         pygame.draw.rect(screen, framerate_color, handle_rect)
         main_globals['frame_slider'] = handle_rect
         if frame != main_globals['max_fps']:
-            draw_apply_button(main_globals, main_globals['screen_w'] // 2 - 120, 242, "framerate")
+            draw_apply_button(main_globals, main_globals['screen'].get_width() // 2 - 120, 242, "framerate")
 
     def draw_dead(main_globals, mouse_pos):
         screen = main_globals['screen']

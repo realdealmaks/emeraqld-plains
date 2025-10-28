@@ -150,7 +150,12 @@ yeah i totally didnt forget half of it
 rework loading almost completely
 make enemies only take 1 set of damages from a single slash
 
+finally get back to making resolution work
+-> make resolution work
+https://tenor.com/view/sisyphus-rock-mp4-transparent-color-gif-11114772717737196968
 
 # 28 10 / ma
 add collision but it's fucked
 shkkubya please fix
+
+# 

@@ -58,8 +58,8 @@ main_globals = {
     'player_health_images': [pygame.Surface((50, 50)) for i in range(3)], 'vignette': pygame.Surface((1080, 750), pygame.SRCALPHA), 'menu_background': pygame.Surface((200, 200)),
     'menu_bg_x': 0, 'menu_bg_can_animate': True, 'flash_active': False, 'flash_alpha': 0, 'flash_speed': 10, 'play_button': pygame.Rect(100, 100, 100, 50), 'settings_button': pygame.Rect(100, 200, 100, 50),
     'dragging_music_slider': False, 'music_slider': pygame.Rect(100, 300, 200, 20), 'to_menu': pygame.Rect(50, 50, 100, 50), 'camera_x': 0, 'camera_y': 0, 'camera_speed': 0.1,
-    'current_frame': 0, 'frame_timer': 0, 'frame_delay': 5, 'frames': [pygame.Surface((32, 32))], 'game_stage': "", 'facing_left': False, 'mouse_pos': pygame.mouse.get_pos(),
-    'mouse_pressed': pygame.mouse.get_pressed()[0], 'moving_up': False, 'moving_down': False, 'moving_left': False, 'moving_right': False, 'developer_tools': True, 'player': None,
+    'current_frame': 0, 'frame_timer': 0, 'frame_delay': 5, 'frames': [pygame.Surface((32, 32))], 'game_stage': "", 'facing_left': False,
+    'moving_up': False, 'moving_down': False, 'moving_left': False, 'moving_right': False, 'developer_tools': True, 'player': None,
     'musicswitcher': None, 'faded_in': False
 }
 
@@ -256,13 +256,11 @@ main.space = space
 space.gravity = (0, 500)
 
 time.sleep(0.3)
-screen = pygame.display.set_mode((main.screen_w, main.screen_h)) # retish the balish
-main.screen = screen # regalishes it to the main globas zalish
 
 print("started")
 # loop setup
 clock = pygame.time.Clock() # makes some clocks and sets the titles
-pygame.display.set_caption(' naganou" :)))') # change to naganou? :))) # sure man
+pygame.display.set_caption(' naganou :)))') # change to naganou? :))) # sure man
 
 main.walkable_mask = main.make_initial_walkable_surface(main.tilemap, main_globals) # makes the initial walkable surface
 # makes some game loops
@@ -270,6 +268,12 @@ running = True
 while running:
     main.space.step(main.dt)
     main.virtual_screen.fill((0, 0, 0))
+    real_mx, real_my = pygame.mouse.get_pos()
+    mouse_pos = pygame.mouse.get_pos()
+    main.mouse_pos = (
+        real_mx * virtual_w / screen.get_width(),
+        real_my * virtual_h / screen.get_height()
+    )
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -337,7 +341,6 @@ while running:
         # mouse button down
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
-                main.mouse_pos = pygame.mouse.get_pos()
                 if main.game_stage == "in menu": # IF IN MENU
                     if main.play_button.collidepoint(main.mouse_pos):
                         main.player.respawn()
@@ -378,7 +381,6 @@ while running:
                             main.player.attack(main_globals)
                             # print("player attacked") annoys me that it says it even if its on cd so i moved it
 
-        main.mouse_pos = pygame.mouse.get_pos()
         main.mouse_pressed = pygame.mouse.get_pressed()[0]
 
         # mouse button up
@@ -417,13 +419,17 @@ while running:
         virtual_accumulator -= virtual_dt
         steps += 1
 
-    screen.blit(pygame.transform.scale(main.virtual_screen, (screen_w, screen_h)), (0, 0))
+    if main.resolution != resolution:
+        resolution = main.resolution
+        screen = pygame.display.set_mode(resolution)
+
+    screen.blit(pygame.transform.scale(main.screen, resolution), (0, 0))
 
     loop_fps = clock.tick(main.max_fps)
     pygame.display.flip()
 
     if main.developer_tools:
         vfps = int(1 / virtual_dt)
-        pygame.display.set_caption(f"fps: {int(clock.get_fps())} / {main.max_fps}, vfps: {vfps}, mouse pos: {pygame.mouse.get_pos()}, player pos: {main_globals['player'].x, main_globals['player'].y}")
+        pygame.display.set_caption(f"fps: {int(clock.get_fps())} / {main.max_fps}, vfps: {vfps}, mouse pos: {pygame.mouse.get_pos()}, vmouse pos: {int(main.mouse_pos[0]), int(main.mouse_pos[1])}, player pos: {main_globals['player'].x, main_globals['player'].y}")
 
 pygame.quit()
