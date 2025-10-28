@@ -147,4 +147,6 @@ add text on loading
 finished loading once more
 yeah i totally didnt forget half of it
 
-# 
+# 28 10 / ma
+add collision but it's fucked
+shkkubya please fix
