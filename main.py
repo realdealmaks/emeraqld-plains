@@ -71,7 +71,7 @@ def draw_loading_screen(step, total, loading_phase, context):
     # fade in
     if loading_phase == "fade_in":
         print("fading in")
-        pygame.time.wait(1*1000)
+        pygame.time.wait(int(1*1000)) # i never forgot you 😢
         splash_alpha = 0
         while splash_alpha < 255:
             splash_alpha += 5
@@ -177,10 +177,31 @@ def draw_loading_screen(step, total, loading_phase, context):
         target_bar_h = 0
         if bar_risen:
             while bar_h > target_bar_h:
-                if text_faded:
+                while text_faded:
                     text_alpha -= 5
-                    if text_alpha >= 0:
+                    if text_alpha <= 0:
                         text_alpha = 0
+                        text_faded = False
+
+                    screen.fill((0, 0, 0))
+                    screen.blit(splash_image, (screen_w // 2 - splash_image.get_width() // 2, screen_h // 2 - splash_image.get_height() // 2, ))
+                    pygame.draw.rect(screen, bar_color, (bar_x, bar_y, bar_w, bar_h)) # 100% bar
+
+                    angle = (pygame.time.get_ticks() // 5) % 360
+                    rotated_icon = pygame.transform.rotate(loading_icon, angle)
+                    rotated_rect = rotated_icon.get_rect(center=(50, screen_h - 70))
+                    rotated_icon.set_alpha(text_alpha)
+                    screen.blit(rotated_icon, rotated_rect.topleft)
+
+                    temp_font = pygame.font.SysFont(None, 34)
+                    text = temp_font.render("finalizing", True, (255, 255, 255))
+                    text_rect = text.get_rect(topleft=(loading_icon.get_width() + 20, screen_h - 60))
+                    text.set_alpha(text_alpha)
+                    screen.blit(text, text_rect)
+
+                    pygame.display.update()
+                    pygame.time.wait(int(0.02*1000))
+
                 bar_h -= 2 # speed
                 bar_y = screen_h - bar_h
                 screen.fill((0, 0, 0))
