@@ -32,6 +32,7 @@ def enemy(main_globals):
         def draw(self, type):
             if self.alive:
                 screen.blit(self.images[type], (self.x - main_globals['camera_x'], self.y - main_globals['camera_y']))
+                self.rect.topleft = (self.x - main_globals['camera_x'], self.y - main_globals['camera_y'])
             elif not self.alive:
                 # death animation and break loop
                 # why the fuck does every enemy have a death animation

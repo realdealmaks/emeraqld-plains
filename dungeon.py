@@ -63,8 +63,9 @@ def dungeon(main_globals):
                         # actually i will question it, stop calling random every damn frame
                         upper = random.randrange(2, 6)
                         for i in range(1, upper): # adds x through y
-                            enemy_x = tile_center_x - enemy_size // 2
-                            enemy_y = tile_center_y - enemy_size // 2
+                            deviation = random.randrange(50, 300)
+                            enemy_x = tile_center_x - enemy_size // 2 + random.choice((deviation, -deviation))
+                            enemy_y = tile_center_y - enemy_size // 2 + random.choice((deviation, -deviation))
                             new_enemy = main_globals['Enemy'](main_globals, enemy_x, enemy_y, random.choice([0, 1]))
                             # or just change choice for the type you want
                             enemy_list.append(new_enemy)
@@ -100,6 +101,14 @@ def dungeon(main_globals):
         # it did actually fit here, but i moved it because i wanted to draw slashes over bobbers
         for enemy in enemy_list:
             enemy.move()
+        
+        for enemy in enemy_list: # collision
+            if 'active_slashes' in main_globals and main_globals['active_slashes']:
+                active_slashes = main_globals['active_slashes']
+                for slash_img, slash_rect, expiry in active_slashes:
+                    if pygame.Rect.colliderect(enemy.rect, slash_rect):
+                        enemy.damaged(20)
+                        # print(f"enemy damaged for 20, remaining health is {enemy.health}")
 
         for enemy in enemy_list:
             enemy.draw(enemy.type)
