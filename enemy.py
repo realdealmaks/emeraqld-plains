@@ -31,6 +31,7 @@ def enemy(main_globals):
 
         def draw(self, type):
             if self.alive:
+                screen = main_globals['screen']
                 screen.blit(self.images[type], (self.x - main_globals['camera_x'], self.y - main_globals['camera_y']))
                 self.rect.topleft = (self.x - main_globals['camera_x'], self.y - main_globals['camera_y'])
             elif not self.alive:
