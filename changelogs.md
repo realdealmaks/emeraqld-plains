@@ -158,4 +158,6 @@ https://tenor.com/view/sisyphus-rock-mp4-transparent-color-gif-11114772717737196
 add collision but it's fucked
 shkkubya please fix
 
-# 
+update 2154 hours collision works with weapons not with mask yet
+bad guys spawn spread out (and not too close to each other) but still cannot move or collide with mask or attack
+

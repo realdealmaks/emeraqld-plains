@@ -1,5 +1,5 @@
 # this file is for loading the dungeon
-import pygame, random
+import pygame, random, math
 from pygame import mixer as mx
 
 def dungeon(main_globals):
@@ -54,21 +54,40 @@ def dungeon(main_globals):
 
                 elif tile_type == 3: # okay...
                     ts = main_globals['tile_size'] + main_globals['tile_offset']
-                    if main_globals['groups_spawned'] > sum(i.count(3) for i in tilemap): # not dIh
+                    if main_globals['groups_spawned'] >= sum(i.count(3) for i in tilemap): # not dIh
                         pass
                     else:
                         tile_center_x = col_idx * ts + main_globals['tile_size'] // 2
                         tile_center_y = row_idx * ts + main_globals['tile_size'] // 2
                         # i dont know what this is for and im not going to question it \/
+                        '''upper limit :D'''
                         # actually i will question it, stop calling random every damn frame
-                        upper = random.randrange(2, 6)
+                        upper = random.randrange(2, 10)
+                        previous_coords = []
+                        min_distance = 10
                         for i in range(1, upper): # adds x through y
-                            deviation = random.randrange(50, 300)
-                            enemy_x = tile_center_x - enemy_size // 2 + random.choice((deviation, -deviation))
-                            enemy_y = tile_center_y - enemy_size // 2 + random.choice((deviation, -deviation))
-                            new_enemy = main_globals['Enemy'](main_globals, enemy_x, enemy_y, random.choice([0, 1]))
-                            # or just change choice for the type you want
-                            enemy_list.append(new_enemy)
+                            attempts = 0
+                            max_attempts = 500 # give him some tries
+                            while attempts < max_attempts:    
+                                deviation = random.randrange(50, 300)
+                                enemy_x = tile_center_x - enemy_size // 2 + random.choice((deviation, -deviation))
+                                enemy_y = tile_center_y - enemy_size // 2 + random.choice((deviation, -deviation))
+
+                                # check from the previous cocks
+                                too_close = False
+                                for (px, py) in previous_coords:
+                                    if math.isclose(enemy_x, px, abs_tol=min_distance) and math.isclose(enemy_y, py, abs_tol=min_distance):
+                                        too_close = True
+                                        break
+
+                                if not too_close:
+                                    new_enemy = main_globals['Enemy'](main_globals, enemy_x, enemy_y, random.choice([0, 1]))
+                                    enemy_list.append(new_enemy)
+                                    previous_coords.append((enemy_x, enemy_y))
+                                    break  # valid position found
+                                attempts += 1
+                        print(f"spawned enemy group {main_globals['groups_spawned']} on tile with x {row_idx} and y {col_idx}")
+                        print(previous_coords)
                         main_globals['groups_spawned'] += 1
 
                 elif tile_type == 88:

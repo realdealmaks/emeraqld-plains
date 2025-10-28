@@ -9,6 +9,7 @@ okay so new plan for this since it isnt a db, we can still just
 store game data in here and everything like score and shit can just go to
 database
 """
+# okay
 
 def connector(main_globals):
     default_data = {
