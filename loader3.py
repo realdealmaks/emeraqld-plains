@@ -396,6 +396,13 @@ def loader3(main_globals):
             text_surf = main_globals['font'].render("Credits", True, (255, 255, 255))
             text_rect = text_surf.get_rect(center=main_globals['credits_button'].center)
             screen.blit(text_surf, text_rect.topleft)
+            # battle pass button :kekw:
+            bp_color = (70, 70, 70) if main_globals['bp_button'].collidepoint(mouse_pos) else (40, 40, 40)
+            #pygame.draw.rect(screen, bp_color, main_globals['bp_button'])
+            text_surf = main_globals['font'].render("Battle Pass", True, (255, 255, 255))
+            text_rect = text_surf.get_rect(center=main_globals['bp_button'].center)
+            #screen.blit(text_surf, text_rect.topleft)
+            #uncomment if you dare
 
     def draw_credits(main_globals, mouse_pos):
         screen = main_globals['screen']
@@ -581,7 +588,21 @@ def loader3(main_globals):
         to_menu_color = (70, 70, 70) if to_menu.collidepoint(mouse_pos) else (40, 40, 40)
         pygame.draw.rect(screen, to_menu_color, to_menu)
         text_surf = font.render("To menu", True, (255, 255, 255))
-        screen.blit(text_surf, to_menu.topleft)
+        text_rect = text_surf.get_rect(center=main_globals['to_menu'].center)
+        screen.blit(text_surf, text_rect.topleft)
+
+    def draw_battle_pass(main_globals, mouse_pos):
+        screen = main_globals['screen']
+        font = main_globals['font']
+        buy_button = main_globals['buy_button']
+        buy_button_color = (70, 70, 70) if buy_button.collidepoint(mouse_pos) else (40, 40, 40)
+        text_surf = font.render("14.99€", True, (255, 255, 255))
+        text_rect = text_surf.get_rect(center=main_globals['buy_button'].center)
+
+        screen.fill((0, 0, 0))
+        screen.blit(pygame.image.load("assets/random images/battle_pass.png"), (0, 0))
+        pygame.draw.rect(screen, buy_button_color, buy_button)
+        screen.blit(text_surf, text_rect.topleft)
 
     shop = Shop(main_globals)
 
@@ -593,6 +614,7 @@ def loader3(main_globals):
     main_globals['draw_credits'] = draw_credits
     main_globals['draw_shop'] = Shop.draw_shop
     main_globals['draw_dead'] = draw_dead
+    main_globals['draw_battle_pass'] = draw_battle_pass
     main_globals['musicswitcher'] = musicswitcher
     main_globals['get_camera_offset'] = get_camera_offset
     main_globals['draw_vignette'] = draw_vignette

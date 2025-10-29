@@ -64,22 +64,22 @@ def dungeon(main_globals):
                         # actually i will question it, stop calling random every damn frame
                         upper = random.randrange(2, 10)
                         previous_coords = []
-                        min_distance = 10
+                        min_distance = 100
                         for i in range(1, upper): # adds x through y
                             attempts = 0
                             max_attempts = 500 # give him some tries
                             while attempts < max_attempts:    
-                                deviation = random.randrange(50, 300)
+                                deviation = random.randrange(50, 200)
                                 enemy_x = tile_center_x - enemy_size // 2 + random.choice((deviation, -deviation))
                                 enemy_y = tile_center_y - enemy_size // 2 + random.choice((deviation, -deviation))
 
                                 # check from the previous cocks
+                                # on_walkable = rect_touches_color(main_globals['walkable_mask'], temporary_rect, (0, 255, 0))
                                 too_close = False
                                 for (px, py) in previous_coords:
                                     if math.isclose(enemy_x, px, abs_tol=min_distance) and math.isclose(enemy_y, py, abs_tol=min_distance):
                                         too_close = True
                                         break
-
                                 if not too_close:
                                     new_enemy = main_globals['Enemy'](main_globals, enemy_x, enemy_y, random.choice([0, 1]))
                                     enemy_list.append(new_enemy)

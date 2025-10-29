@@ -172,4 +172,7 @@ i feel like i forgot something
 
 anyway here new font
 
-# 
+# 29 10 / bad deal
+
+add battle pass (lol)
+i think i did some shit for enemy spawning i forgot bro all this fentanyl is destroying my brain

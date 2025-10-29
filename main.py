@@ -365,6 +365,8 @@ while running:
                         main.game_stage = "in settings"
                     if main.credits_button.collidepoint(main.mouse_pos):
                         main.game_stage = "in credits"
+                    if main.bp_button.collidepoint(main.mouse_pos):
+                        main.game_stage = "in battle pass"
                 if main.game_stage == "in credits": # IF IN CREDITS
                     if main.to_menu.collidepoint(main.mouse_pos):
                         main.game_stage = "in menu"
@@ -388,11 +390,15 @@ while running:
                     if main.to_menu.collidepoint(main.mouse_pos):
                         main.game_stage = "in menu"
                         mx.music.pause()
+                if main.game_stage == "in battle pass": # kek
+                    if main.to_menu.collidepoint(main.mouse_pos):
+                        pygame.quit()
                 if main.player is not None:
                     if main.game_stage == "in dungeon":
                         if main.player.weapons != []:
                             main.player.attack(main_globals)
                             # print("player attacked") annoys me that it says it even if its on cd so i moved it
+                    
 
         main.mouse_pressed = pygame.mouse.get_pressed()[0]
 
