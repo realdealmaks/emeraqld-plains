@@ -181,3 +181,4 @@ add battle pass (lol)
 i think i did some shit for enemy spawning i forgot bro all this fentanyl is destroying my brain
 
 also enemies have some collision now with Enemy.collide() which is actually the first function in the enemy class somehow
+also add game icon so it's not just the regular python one
