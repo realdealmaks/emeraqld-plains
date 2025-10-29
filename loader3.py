@@ -250,7 +250,7 @@ def loader3(main_globals):
         offset_y = tile_y * (tile_size + main_globals['tile_offset']) + tile_size // 2 - main_globals['screen'].get_height() // 2
         return offset_x, offset_y
 
-    def make_initial_walkable_surface(tilemap, main_globals):
+    def make_initial_walkable_surface(tilemap, main_globals, bridging=True, counter=0):
         ts = main_globals['tile_size'] + main_globals['tile_offset']
         tile_size = main_globals['tile_size']
         mask = pygame.Surface((len(tilemap[0]) * ts, len(tilemap) * ts))
@@ -264,19 +264,23 @@ def loader3(main_globals):
                 if tile_type in main_globals['walkable_tiles']:
                     tx = col_idx * ts
                     ty = row_idx * ts
-                    # draw main tile
+                    # draw main tile in mask
                     pygame.draw.rect(mask, (0, 255, 0), (tx, ty, tile_size, tile_size))
 
-                    # horizontal bridge
-                    if col_idx + 1 < len(row) and tilemap[row_idx][col_idx + 1] in main_globals['walkable_tiles']:
-                        if main_globals['bridging'] == True:
-                            pygame.draw.rect(mask, (0, 255, 0), (tx + tile_size, ty + tile_size//2 - bridge_size//2,bridge_size, bridge_size))
+                    if bridging == True:
+                        # horizontal bridge
+                        if col_idx + 1 < len(row) and tilemap[row_idx][col_idx + 1] in main_globals['walkable_tiles']:
+                            if main_globals['bridging'] == True:
+                                pygame.draw.rect(mask, (0, 255, 0), (tx + tile_size, ty + tile_size//2 - bridge_size//2,bridge_size, bridge_size))
 
-                    # vertical bridge
-                    if row_idx + 1 < len(tilemap) and tilemap[row_idx + 1][col_idx] in main_globals['walkable_tiles']:
-                        if main_globals['bridging'] == True:
-                            pygame.draw.rect(mask, (0, 255, 0), (tx + tile_size//2 - bridge_size//2, ty + tile_size, bridge_size, bridge_size))
+                        # vertical bridge
+                        if row_idx + 1 < len(tilemap) and tilemap[row_idx + 1][col_idx] in main_globals['walkable_tiles']:
+                            if main_globals['bridging'] == True:
+                                pygame.draw.rect(mask, (0, 255, 0), (tx + tile_size//2 - bridge_size//2, ty + tile_size, bridge_size, bridge_size))
+
         main_globals['spawn_weapons'](main_globals)
+        if counter == 0:
+            main_globals['locked_mask'] = make_initial_walkable_surface(tilemap, main_globals, False, counter + 1) if counter == 0 else main_globals['locked_mask']
         return mask
 
     def rebuild_walkable_mask(main_globals):

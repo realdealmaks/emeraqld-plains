@@ -331,6 +331,9 @@ while running:
                         main.spawn_weapons(main_globals)
                     if event.key == pygame.K_r:
                         main.player.respawn()
+                    if event.key == pygame.K_o:
+                        main.player.locked = not main.player.locked
+                        print(f"is locked {main.player.locked}")
                     if event.key == pygame.K_b:
                         if not main.in_shop:
                             main.in_shop = True # just now for debugging use match state when actually doing the thing

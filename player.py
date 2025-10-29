@@ -18,11 +18,15 @@ def player(main_globals):
             self.main_globals = main_globals
             self.weapons = []
             self.wealth = 50000 # consider this debug money for now
+            self.locked = False
 
         def move(self, dx, dy):
             new_x = self.x + dx * self.speed * dt * 60
             new_y = self.y + dy * self.speed * dt * 60
-            mask = self.main_globals.get('walkable_mask')
+            if self.locked:
+                mask = self.main_globals.get('locked_mask')
+            else:
+                mask = self.main_globals.get('walkable_mask')
 
             # horizontal
             new_x = self.x + dx * self.speed
