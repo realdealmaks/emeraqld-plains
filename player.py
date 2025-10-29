@@ -2,6 +2,7 @@
 
 import random
 from pygame import mixer as mx
+import pygame
 
 def player(main_globals):
 
@@ -19,6 +20,9 @@ def player(main_globals):
             self.weapons = []
             self.wealth = 50000 # consider this debug money for now
             self.locked = False
+
+            size = self.main_globals['player_size']
+            self.rect = pygame.Rect(self.x, self.y, size, size)
 
         def move(self, dx, dy):
             new_x = self.x + dx * self.speed * dt * 60
@@ -52,6 +56,8 @@ def player(main_globals):
                 self.x = new_x
             if can_move_y:
                 self.y = new_y
+            if can_move_x or can_move_y:
+                self.rect.topleft = (self.x, self.y)
 
         def shake(self):
             dt = self.main_globals['dt']

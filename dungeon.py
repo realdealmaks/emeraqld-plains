@@ -119,7 +119,11 @@ def dungeon(main_globals):
         # hopefully this fits here
         # it did actually fit here, but i moved it because i wanted to draw slashes over bobbers
         for enemy in enemy_list:
-            enemy.move()
+            if not enemy.active:
+                if enemy.detect(player): enemy_list.remove(enemy)
+
+        for enemy in enemy_list:
+            if enemy.active: pass #enemy.move(player)
 
         if 'active_slashes' in main_globals and main_globals['active_slashes']:
             active_slashes = main_globals['active_slashes']

@@ -1,5 +1,5 @@
 # for bobbers
-import pygame
+import pygame, math
 
 def enemy(main_globals):
     screen = main_globals['screen']
@@ -14,6 +14,7 @@ def enemy(main_globals):
             self.alive = True
             self.speed = 0.8
             self.type = type
+            self.active = False
             self.images = [
                 pygame.transform.scale2x(main_globals['enemy_test_0'].convert_alpha()),
                 pygame.transform.scale2x(main_globals['enemy_test_1'].convert_alpha())
@@ -24,10 +25,22 @@ def enemy(main_globals):
             self.health -= damage
             if self.health <= 0:
                 self.alive = False
+        
+        def detect(self, player):
+            distance = math.dist((self.x, self.y), (player.x, player.y))
+            if distance <= 150:
+                self.active = True
+            return self.active
 
-        def move(self):
-            if self.alive:
-                pass
+        def move(self, player):
+            if self.active:
+                # find vector between the two
+                dx, dy = player.x - self.rect.x, player.y - self.rect.y
+                dist = math.hypot(dx, dy)
+                dx, dy = dx / dist, dy / dist  # idk what this does
+                # actually move
+                self.rect.x += dx * self.speed
+                self.rect.y += dy * self.speed
 
         def draw(self, type):
             if self.alive:
