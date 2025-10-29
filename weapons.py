@@ -16,7 +16,8 @@ def weapons(main_globals):
                     if any(math.isclose(w.x, center_x, abs_tol=1) and math.isclose(w.y, center_y, abs_tol=1) for w in main_globals['weapons_on_map']):
                         continue
                     # pick random
-                    weapon_name = random.choice(weapon_types)
+                    weapon_name = random.randint(0, len(weapon_types) - 1)
+                    weapon_name = weapon_types[weapon_name]
                     new_weapon = main_globals['Weapon'](weapon_name)
                     new_weapon.x = center_x
                     new_weapon.y = center_y
@@ -45,49 +46,58 @@ def weapons(main_globals):
                 print(f"player attacked with {self.name}")
                 self.last_attack_time = time.time()
                 mouse_pos = pygame.mouse.get_pos()
-                scaled_height = int(slash_img.get_height() * (self.range / 50))
-                scaled_slash = pygame.transform.scale(slash_img, (slash_img.get_width(), scaled_height))
 
-                player_cx = player.x + main_globals['player_size'] // 2
-                player_cy = player.y + main_globals['player_size'] // 2 + 20
+                # default slash
+                if self.name == "sword" or self.name == "axe":
+                    scaled_height = int(slash_img.get_height() * (self.range / 50))
+                    scaled_slash = pygame.transform.scale(slash_img, (slash_img.get_width(), scaled_height))
 
-                # angle to mouse
-                dx = mouse_pos[0] - (player_cx - main_globals['camera_x'])
-                dy = mouse_pos[1] - (player_cy - main_globals['camera_y'])
-                angle = math.degrees(math.atan2(-dy, dx))
+                    player_cx = player.x + main_globals['player_size'] // 2
+                    player_cy = player.y + main_globals['player_size'] // 2 + 20
 
-                # offset from player center
-                distance = self.range
-                offset_x = math.cos(math.radians(-angle)) * distance
-                offset_y = math.sin(math.radians(-angle)) * distance
+                    # angle to mouse
+                    dx = mouse_pos[0] - (player_cx - main_globals['camera_x'])
+                    dy = mouse_pos[1] - (player_cy - main_globals['camera_y'])
+                    angle = math.degrees(math.atan2(-dy, dx))
 
-                rotated_slash = pygame.transform.rotate(scaled_slash, angle)
-                slash_rect = rotated_slash.get_rect(center=(
-                    player_cx - main_globals['camera_x'] + offset_x,
-                    player_cy - main_globals['camera_y'] + offset_y
-                ))
+                    # offset from player center
+                    distance = self.range
+                    offset_x = math.cos(math.radians(-angle)) * distance
+                    offset_y = math.sin(math.radians(-angle)) * distance
 
-                # if main_globals['attack_counter'] == 1:
-                #     rotated_slash = pygame.transform.flip(rotated_slash, False, True)
-                # elif main_globals['attack_counter'] == 2:
-                #     pass # for now otherwise like a jab thing
-                # if main_globals['attack_counter'] >= 2:
-                #     main_globals['attack_counter'] = 0
+                    rotated_slash = pygame.transform.rotate(scaled_slash, angle)
+                    slash_rect = rotated_slash.get_rect(center=(
+                        player_cx - main_globals['camera_x'] + offset_x,
+                        player_cy - main_globals['camera_y'] + offset_y
+                    ))
 
-                mouse_x_world = mouse_pos[0] + main_globals['camera_x']
-                if mouse_x_world < player_cx:
-                    main_globals['facing_left'] = True
-                else:
-                    main_globals['facing_left'] = False
+                    # if main_globals['attack_counter'] == 1:
+                    #     rotated_slash = pygame.transform.flip(rotated_slash, False, True)
+                    # elif main_globals['attack_counter'] == 2:
+                    #     pass # for now otherwise like a jab thing
+                    # if main_globals['attack_counter'] >= 2:
+                    #     main_globals['attack_counter'] = 0
 
-                if 'active_slashes' not in main_globals:
-                    main_globals['active_slashes'] = []
-                main_globals['active_slashes'].append({
-                    'image': rotated_slash,
-                    'rect': slash_rect,
-                    'expiry': pygame.time.get_ticks() + 150,
-                    'hit_enemies': set() # enemies hit by this
-                })
+                    mouse_x_world = mouse_pos[0] + main_globals['camera_x']
+                    if mouse_x_world < player_cx:
+                        main_globals['facing_left'] = True
+                    else:
+                        main_globals['facing_left'] = False
+
+                    if 'active_slashes' not in main_globals:
+                        main_globals['active_slashes'] = []
+                    main_globals['active_slashes'].append({
+                        'image': rotated_slash,
+                        'rect': slash_rect,
+                        'expiry': pygame.time.get_ticks() + 150,
+                        'hit_enemies': set() # enemies hit by this
+                    })
+
+                # special attacks
+
+                # book
+                elif self.name == "book":
+                    pass
 
             else:
                 remaining = round(self.cooldown - (time.time() - self.last_attack_time), 2)
