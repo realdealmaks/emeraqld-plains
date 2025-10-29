@@ -6,8 +6,6 @@ import pygame
 
 def player(main_globals):
 
-    dt = main_globals['dt'] # the god of them all
-
     class Player:
         def __init__(self, main_globals, x, y):
             self.x = x
@@ -25,14 +23,17 @@ def player(main_globals):
             self.rect = pygame.Rect(self.x, self.y, size, size)
 
         def move(self, dx, dy):
+            dt = self.main_globals['dt']
             new_x = self.x + dx * self.speed * dt * 60
             new_y = self.y + dy * self.speed * dt * 60
+
+            # change mask depending on lock
             if self.locked:
                 mask = self.main_globals.get('locked_mask')
             else:
                 mask = self.main_globals.get('walkable_mask')
 
-            # horizontal
+            # horizontal movement
             new_x = self.x + dx * self.speed
             can_move_x = True
             for cy_offset in (25, self.main_globals['player_size'] + 25):
@@ -41,8 +42,8 @@ def player(main_globals):
                 if cx < 0 or cy < 0 or cx >= mask.get_width() or cy >= mask.get_height() or mask.get_at((int(cx), int(cy)))[:3] != (0, 255, 0):
                     can_move_x = False
                     break
-                
-            # vertical
+
+            # vertical movement
             new_y = self.y + dy * self.speed
             can_move_y = True
             for cx_offset in (6, self.main_globals['player_size'] - 6):
@@ -51,7 +52,8 @@ def player(main_globals):
                 if cx < 0 or cy < 0 or cx >= mask.get_width() or cy >= mask.get_height() or mask.get_at((int(cx), int(cy)))[:3] != (0, 255, 0):
                     can_move_y = False
                     break
-                
+
+            # actually move if 'it' can
             if can_move_x:
                 self.x = new_x
             if can_move_y:
@@ -59,7 +61,7 @@ def player(main_globals):
             if can_move_x or can_move_y:
                 self.rect.topleft = (self.x, self.y)
 
-        def shake(self):
+        def shake(self): # shakes the player around like a little baby in my arms
             dt = self.main_globals['dt']
             if self.shake_timer > 0:
                 self.shake_timer -= 1 * dt * 60
@@ -70,7 +72,7 @@ def player(main_globals):
             self.health -= amount
             self.shake_timer = 10
 
-            # spawn bloodes at players
+            # spawn blood particles at player
             blood_x = self.x + self.main_globals['player_size'] / 2
             blood_y = self.y + self.main_globals['player_size'] / 2
             new_particles = self.main_globals['spawn_blood_particles'](
@@ -81,6 +83,7 @@ def player(main_globals):
             if self.health <= 0:
                 self.die()
             else:
+                # note: this will never be fixes
                 """self.main_globals['hurt_sound'].play()
                 please fix this man"""
 
@@ -98,7 +101,7 @@ def player(main_globals):
             self.main_globals['blood_particles'] = []
             mx.music.rewind()
 
-        def effect(self, effect_type, number):
+        def effect(self, effect_type, number): # i dont know why this is seperate
             if effect_type == "heal":
                 player.health += number
                 if player.health > 100:

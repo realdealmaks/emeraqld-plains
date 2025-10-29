@@ -5,7 +5,8 @@ import pygame
 from PIL import Image
 from pygame import mixer as mx
 
-def loader2(main_globals):
+def loader2(main_globals): # oh boy oh boy is this not tasty and unorganised
+    # so i will leave it until next time o7
     main_globals['player_ded'] = pygame.image.load("assets/models/player/ded.png").convert_alpha()
     main_globals['tile_images'] = pygame.image.load("assets/useful images/tiles/tile600x600.png").convert_alpha()
     main_globals['vignette'] = pygame.image.load("assets/useful images/redvignette.png").convert_alpha()

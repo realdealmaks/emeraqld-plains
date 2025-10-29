@@ -2,7 +2,6 @@
 import pygame, math
 
 def enemy(main_globals):
-    screen = main_globals['screen']
 
     class Enemy():
         def __init__(self, main_globals, x, y, type):
@@ -25,14 +24,18 @@ def enemy(main_globals):
             self.health -= damage
             if self.health <= 0:
                 self.alive = False
-        
+                self.die()
+            else:
+                pass # here is damage animation
+                # which will probably just tint red
+
         def detect(self, player):
             distance = math.dist((self.x, self.y), (player.x, player.y))
             if distance <= 150:
                 self.active = True
             return self.active
 
-        def move(self, player):
+        def move(self, player): # ookay?
             if self.active:
                 # find vector between the two
                 dx, dy = player.x - self.rect.x, player.y - self.rect.y

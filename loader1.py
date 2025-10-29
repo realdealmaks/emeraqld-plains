@@ -3,7 +3,7 @@
 
 import pygame
 
-def loader1(main_globals):
+def loader1(main_globals): # same as loader2
     main_globals['tile_size'] = 600
     main_globals['currently_playing_index'] = 0 # 0 being the first track so it's insta loaded
     main_globals['player_size'] = 50

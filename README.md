@@ -14,7 +14,8 @@
         <picture>
             <img src="assets/useful images/splashimage.jpg" alt="" height="500" width="800">
         </picture>
-        <p><b>hi</b></p>
+        <p>hi</p>
+        <p><b>HELLO!!!!!!</b></p>
     </div>
     <hr>
     <p><b>A One™ Single Tear Production</b></p>
@@ -30,26 +31,28 @@ this code may give one major trauma, epileptic seizures, void your warranty, sum
 <p>¯\_(ツ)_/¯</p>
 
 # requirements and how to run
-- some python version (??)
-- hope sprinkled with some dreams
+- some outdated python version (??)
+- python gaming enterprise .co
+- hope sprinkled with some dreams and ...bacon??
 - useless libraries
 - luck
 
 ## FAQ
 Q: Why does it crash?
-A: Yes
+A: Why wouldnt it?
 
 # In game screenshots
 <body><img src="assets/random images/echo.png" alt"" height="200" width="400"></body>
 
 # Bugs
-There are none, its only features
+There are none, its only features (obviously)
 
 # Content
 Coming soon
 <img src="https://github.com/realdealmaks/emeraqld-plains/raw/main/assets/models/player/playergif.gif" alt="" width="200"/>
 <img src="assets/random images/prenos.jpg" alt="" height="100" width="200"/>
-
+<body><img src="assets/models/weapons/burningbook.png" alt"" height="100" width="100"></body>
+you (hopefully (soon))
 
 ## Stats
 [![Download](https://img.shields.io/github/v/release/realdealmaks/emeraqld-plains?label=Download&style=for-the-badge)](https://github.com/realdealmaks/emeraqld-plains/releases/latest/download/tishproject.py) [![Download](https://img.shields.io/github/v/release/realdealmaks/emeraqld-plains?label=Commits&style=for-the-badge)](https://github.com/realdealmaks/emeraqld-plains/releases/latest/commit/tishproject.py) [![Download](https://img.shields.io/github/v/release/realdealmaks/emeraqld-plains?label=Stars&style=for-the-badge)](https://github.com/realdealmaks/emeraqld-plains/releases/latest/star/tishproject.py)

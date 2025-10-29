@@ -33,26 +33,30 @@ def dungeon(main_globals):
                 if main_globals['walkable_mask'].get_at((x, y))[:3] == (0, 255, 0):
                     screen.blit(tile_surface, (x - camera_x, y - camera_y))
 
+        # tile checking systems
         for row_idx, row in enumerate(main_globals['tilemap']):
             for col_idx, tile_type in enumerate(row):
 
-                if tile_type == 99: # makes player spawn here 
+                if tile_type == 99: # makes player spawn here, its a spawn tile obviously
                     if main_globals['spawn_set'] == False:
                         ts = main_globals['tile_size'] + main_globals['tile_offset']
                         main_globals['spawn_x'] = col_idx * ts + (main_globals['tile_size'] - player_size) // 2
                         main_globals['spawn_y'] = row_idx * ts + (main_globals['tile_size'] - player_size) // 2
-                        if main_globals.get('player') is None:
+
+                        if main_globals.get('player') is None: # for new player
                             main_globals['player'] = main_globals['Player'](main_globals, main_globals['spawn_x'], main_globals['spawn_y'])
-                        else:
+                        else: # for existing player
                             main_globals['player'].x = main_globals['spawn_x']
                             main_globals['player'].y = main_globals['spawn_y']
                         main_globals['spawn_set'] = True
 
-                elif tile_type == 2:
+                elif tile_type == 2: # weapon tile
                     # fixed position because why would it not be
+                    # it shouldnt have been fixed
+                    # i dont think its even centered
                     screen.blit(main_globals['pedistal_image'], (col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_width() // 2, row_idx * ts - camera_y + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_height() // 2 + 50))
 
-                elif tile_type == 3: # okay...
+                elif tile_type == 3: # enemy spawn tile
                     ts = main_globals['tile_size'] + main_globals['tile_offset']
                     if main_globals['groups_spawned'] >= sum(i.count(3) for i in tilemap): # not dIh
                         pass
@@ -60,7 +64,7 @@ def dungeon(main_globals):
                         tile_center_x = col_idx * ts + main_globals['tile_size'] // 2
                         tile_center_y = row_idx * ts + main_globals['tile_size'] // 2
                         # i dont know what this is for and im not going to question it \/
-                        '''upper limit :D'''
+                        '''upper limit :D''' # ookay?
                         # actually i will question it, stop calling random every damn frame
                         upper = random.randrange(2, 10)
                         previous_coords = []
@@ -73,24 +77,25 @@ def dungeon(main_globals):
                                 enemy_x = tile_center_x - enemy_size // 2 + random.choice((deviation, -deviation))
                                 enemy_y = tile_center_y - enemy_size // 2 + random.choice((deviation, -deviation))
 
-                                # check from the previous cocks
+                                # check from the previous cocks # the previous WHAT
                                 # on_walkable = rect_touches_color(main_globals['walkable_mask'], temporary_rect, (0, 255, 0))
                                 too_close = False
                                 for (px, py) in previous_coords:
                                     if math.isclose(enemy_x, px, abs_tol=min_distance) and math.isclose(enemy_y, py, abs_tol=min_distance):
                                         too_close = True
-                                        break
+                                        break # too close to another guy
+
                                 if not too_close:
                                     new_enemy = main_globals['Enemy'](main_globals, enemy_x, enemy_y, random.choice([0, 1]))
                                     enemy_list.append(new_enemy)
                                     previous_coords.append((enemy_x, enemy_y))
                                     break  # valid position found
                                 attempts += 1
-                        print(f"spawned enemy group {main_globals['groups_spawned']} on tile with x {row_idx} and y {col_idx}")
-                        print(previous_coords)
+                        print(f"spawned group {main_globals['groups_spawned']} on ({row_idx}, {col_idx})")
+                        # print(previous_coords)
                         main_globals['groups_spawned'] += 1
 
-                elif tile_type == 88:
+                elif tile_type == 88: # shop tile
                     main_globals['shop'].stand_x = col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['shop_holder'].get_width() // 2
                     main_globals['shop'].stand_y = row_idx * ts - camera_y + main_globals['tile_size'] // 2 - main_globals['shop_holder'].get_height() // 2 + 50
                     screen.blit(main_globals['shop_holder'], (main_globals['shop'].stand_x, main_globals['shop'].stand_y))
@@ -101,6 +106,8 @@ def dungeon(main_globals):
                     if main_globals['pressed_f'] and main_globals['distance_to'](player, (main_globals['shop'].stand_x, main_globals['shop'].stand_y)) < main_globals['interact_distance']:
                         main_globals['game_stage'] = "shopping"
 
+        # drawing things on tiles
+
         # draw weapons
         for weapon in main_globals['weapons_on_map'][:]:
             weapon_image = main_globals['weapon_images'][weapon.name]
@@ -108,7 +115,7 @@ def dungeon(main_globals):
             draw_y = weapon.y - weapon_image.get_height() // 2 - camera_y
             weapon.draw(screen, draw_x, draw_y)
 
-            # interact image
+            # interact image for said weapon
             if main_globals['distance_to'](player, weapon) < main_globals['interact_distance']:
                 screen.blit(main_globals['interact_image'], (draw_x, draw_y + weapon_image.get_height()))
 
@@ -117,33 +124,37 @@ def dungeon(main_globals):
 
         # gets bobbers moving
         # hopefully this fits here
-        # it did actually fit here, but i moved it because i wanted to draw slashes over bobbers
+        # it did actually fit there, but i moved it here because i wanted to draw slashes over bobbers ;)
         for enemy in enemy_list:
             if not enemy.active:
                 if enemy.detect(player): enemy_list.remove(enemy)
 
+        # move enemies if they are active
         for enemy in enemy_list:
-            if enemy.active: pass #enemy.move(player)
+            if enemy.active: pass # enemy.move(player) # wat
 
+        # check if slash hits enemy
         if 'active_slashes' in main_globals and main_globals['active_slashes']:
             active_slashes = main_globals['active_slashes']
             for enemy in enemy_list:
-                if not enemy.alive:
+                if not enemy.alive: # skip if dead
                     continue
-                for slash in active_slashes:
+                for slash in active_slashes: # check if slash hits enemy ( for real ts time )
                     if pygame.Rect.colliderect(enemy.rect, slash['rect']):
                         if enemy not in slash['hit_enemies']:
                             enemy.damaged(20) # or use weapon damage eh?
-                            slash['hit_enemies'].add(enemy)
+                            slash['hit_enemies'].add(enemy) # add to list that the slash hit ( so it doesnt spam )
 
+        # draw bob
         for enemy in enemy_list:
             enemy.draw(enemy.type)
 
+        # draw slashes
         if 'active_slashes' in main_globals:
             now = pygame.time.get_ticks() # current time in ms
             still_active = []
             for slash in main_globals['active_slashes']:
-                if now < slash['expiry']:
+                if now < slash['expiry']: # if expired :(
                     screen.blit(slash['image'], slash['rect'])
                     still_active.append(slash)
             main_globals['active_slashes'] = still_active
@@ -163,12 +174,13 @@ def dungeon(main_globals):
         if main_globals['facing_left']:
             player_frame = pygame.transform.flip(player_frame, True, False)
 
+        # change player orientation? is it orientation? just change the way he is looking
         offset_x = (player_size * 3 - player_size) // 2
         offset_y = (player_size * 3 - player_size) // 2
         shake_x, shake_y = player.shake()
         draw_x = player.x - camera_x - offset_x + shake_x
         draw_y = player.y - camera_y - offset_y + shake_y
-        if facing_left:
+        if facing_left: # offset because the image is not centered
             draw_x += 30
         else:
             draw_x -= 30
@@ -178,7 +190,7 @@ def dungeon(main_globals):
         if len(player.weapons) > 0:
             weapon = player.weapons[0]
             weapon_image = main_globals['weapon_images'][weapon.name]
-            scale_fraction = 1.8
+            scale_fraction = 1.8 # scale by this much ( 1.0 is original )
             weapon_image = pygame.transform.scale(weapon_image, ((main_globals['player_size'] // 2) * scale_fraction, (main_globals['player_size'] // 2) * scale_fraction))
             weapon_image = pygame.transform.rotate(weapon_image, 65)
             weapon_image = pygame.transform.flip(weapon_image, True, False)
@@ -186,14 +198,14 @@ def dungeon(main_globals):
             weapon_x = draw_x + player_size + 40 # x offset
             weapon_y = draw_y + player_size // 2 + 36  # y offset
 
-            if facing_left:
+            if facing_left: # offset because of player offset
                 weapon_image = pygame.transform.flip(weapon_image, True, False)
                 weapon_x -= 90
 
             screen.blit(weapon_image, (weapon_x, weapon_y))
 
-        # draw bloodes
-        # this has to be here because player draws before
+        # draw blood particles
+        # this is here because we need to draw them over the player
         new_particles = []
         for body, shape, color, lifetime, max_lifetime in main_globals['blood_particles']:
             # stop at landing y
@@ -201,7 +213,7 @@ def dungeon(main_globals):
                 body.position = (body.position.x, body.landing_y)
                 body.velocity = (0, 0)
 
-            # fade out
+            # particle fade out
             alpha = max(0, min(255, int(255 * (lifetime / max_lifetime))))
             draw_color = (*color, alpha)
             pos = int(body.position.x - main_globals['camera_x']), int(body.position.y - main_globals['camera_y'])
@@ -213,11 +225,12 @@ def dungeon(main_globals):
             if lifetime > 0:
                 new_particles.append((body, shape, color, lifetime, max_lifetime))
             else:
-                # remove
+                # remove particle
                 main_globals['space'].remove(body, shape)
 
         main_globals['blood_particles'] = new_particles
 
+        # pausing of the game
         if is_paused == False:
             main_globals['draw_vignette'](main_globals, player)
             mx.music.unpause()
@@ -232,7 +245,8 @@ def dungeon(main_globals):
                 main_globals['facing_left'] = False
             player.move(dx, dy)
             main_globals['draw_hud'](main_globals, player)
-        else:
+
+        else: # if paused
             main_globals['draw_pause_menu'](main_globals)
 
     main_globals['draw_dungeon'] = draw_dungeon

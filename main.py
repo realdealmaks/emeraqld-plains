@@ -10,7 +10,8 @@ pygame.init()
 mx.init(frequency=44100, size=-16, channels=16, buffer=8192)
 screen_h, screen_w = 750, 1080
 screen = pygame.display.set_mode((screen_w, screen_h))
-pygame.display.set_icon(pygame.image.load("assets/models/player/naganou_icon.png"))
+# pygame.display.set_icon(pygame.image.load("assets/models/player/naganou_icon.png"))
+# please uncomment this before commit i dont have this image
 resolution = screen_w, screen_h
 
 virtual_fps = 0
@@ -63,6 +64,7 @@ main_globals = {
     'moving_up': False, 'moving_down': False, 'moving_left': False, 'moving_right': False, 'developer_tools': True, 'player': None,
     'musicswitcher': None, 'faded_in': False
 }
+# we could most probably delte 4/5 out of these but i dont care
 
 last_context = None
 loading_step = 0
@@ -137,7 +139,6 @@ def draw_loading_screen(step, total, context):
     rotated_icon.set_alpha(text_alpha)
     screen.blit(rotated_icon, rotated_rect.topleft)
 
-    # temp_font = pygame.font.SysFont(None, 34)
     temp_font = pygame.font.Font("assets/font/editundo.ttf", 34)
     if context == "finalizing":
         display_text = "finalizing"
@@ -179,6 +180,7 @@ def loading_bar_flicker(duration=0.5, steps=10, force_full=False):
     bar_color = normal
 
 start_time = time.time()
+# add files here to be loaded (must match name)
 modules_to_load = [
     ("stsw", "stager"),
     ("loader1", "variables"),
@@ -191,7 +193,7 @@ modules_to_load = [
     ("enemy", "logic")
 ]
 
-# prep
+# loading prep
 last_context = "preparing"
 bar_risen = False
 text_faded = False
@@ -202,7 +204,7 @@ while not bar_risen or text_alpha < 255:
     pygame.event.pump()
     pygame.time.wait(30)
 
-# initial
+# loading initial
 draw_loading_screen(loading_step, loading_steps, "starting")
 loaded_modules = []
 
@@ -219,7 +221,7 @@ for idx, (mod_name, context) in enumerate(modules_to_load, start=1):
         except Exception as e:
             print(f"error loading {mod_name}: {e}")
 
-# finalize
+# finalize loading
 loading_step = len(loaded_modules) + 1
 fade_out = True
 while splash_alpha > 0:
@@ -230,6 +232,7 @@ main_globals['game_stage'] = "in menu"
 total_time = time.time() - start_time
 print(f"took {total_time:.2f} seconds to load")
 
+# loads data from json with connector
 saved_data = main_globals['connector_instance'].get_data()
 for key, value in saved_data.items():
     if key in main_globals:
@@ -241,6 +244,7 @@ print("converted main_globals to mains, get ready to tish!")
 # dont use main_globals['🤖'] but instead use main.🤖
 # stupar ce to vidite me je res prevec motilo da je vse bilo v neumni barvi vsega drugega "" texta in nisem hotel kopirati main_globals[''] cisto povsod
 
+# redo getting data because they dont have the same names
 frame_caps = main.frame_caps
 main.frame_cap = main_globals.get('max_fps', 60)
 main.frame_cap_index = min(range(len(frame_caps)), key=lambda i: abs(frame_caps[i] - main.frame_cap))
@@ -255,6 +259,7 @@ music_volume = saved_data.get("music", 1)
 main.music_volume = music_volume
 mx.music.set_volume(music_volume)
 
+# virtual screen setup
 current_time = pygame.time.get_ticks() / 1000
 main.dt = current_time - main.prev_time
 main.prev_time = current_time
@@ -263,6 +268,7 @@ main.resolution = resolutions[main.resolution_index]
 
 main.player_gif(main_globals) # loads the player gif
 
+# start pymunk space
 main.space = space
 space.gravity = (0, 500)
 
@@ -273,12 +279,15 @@ print("started")
 clock = pygame.time.Clock() # makes some clocks and sets the titles
 pygame.display.set_caption(' naganou :)))') # change to naganou? :))) # sure man
 
-main.walkable_mask = main.make_initial_walkable_surface(main.tilemap, main_globals) # makes the initial walkable surface
+# makes the initial walkable surface along with what is made in it
+main.walkable_mask = main.make_initial_walkable_surface(main.tilemap, main_globals) 
+
 # makes some game loops
-running = True
+running = True # https://cdn.discordapp.com/emojis/1234577960414085271.webp?size=96
 while running:
-    main.space.step(main.dt)
+    main.space.step(main.dt) # physixx step for space/particles
     real_mx, real_my = pygame.mouse.get_pos()
+    # transform mouse coords to virtual if resolution mismatch
     mouse_pos = pygame.mouse.get_pos()
     main.mouse_pos = (
         real_mx * virtual_w / screen.get_width(),
@@ -288,9 +297,9 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
-            quit()
+            quit() # https://cdn.discordapp.com/emojis/1389247646593581206.webp?size=96
 
-        # key pressed
+        # key presses
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_w: 
                 main.moving_up = True
@@ -313,6 +322,8 @@ while running:
             if event.key == pygame.K_ESCAPE:
                 if main.is_paused == False: main.is_paused = True
                 else: main.is_paused = False
+
+            # testing binds
             if main.developer_tools == True:
                 if event.key == pygame.K_m:
                     if main.game_stage == "in dungeon":
@@ -344,7 +355,8 @@ while running:
                             main.in_shop = False
                             main.game_stage = "in dungeon"
                             print("dih")
-        # key released
+
+        # keys releases
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_w: main.moving_up = False
             if event.key == pygame.K_s: main.moving_down = False
@@ -354,10 +366,10 @@ while running:
         # mouse button down
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
-                if main.game_stage == "in menu": # IF IN MENU
+                if main.game_stage == "in menu": # IF IN MENU # really?
                     if main.play_button.collidepoint(main.mouse_pos):
                         main.player.respawn()
-                        main.player.effect("healfull", 0) # resets player health
+                        main.player.effect("healfull", 0) # resets player health # i think it resets without this # not it doesnt
                         main.musicswitcher(main_globals, 0)
                         main.game_stage = "in dungeon"
                         mx.music.unpause()
@@ -398,9 +410,8 @@ while running:
                         if main.player.weapons != []:
                             main.player.attack(main_globals)
                             # print("player attacked") annoys me that it says it even if its on cd so i moved it
-                    
 
-        main.mouse_pressed = pygame.mouse.get_pressed()[0]
+        main.mouse_pressed = pygame.mouse.get_pressed()[0] # hi
 
         # mouse button up
         if event.type == pygame.MOUSEBUTTONUP:
@@ -409,9 +420,10 @@ while running:
                 main.dragging_music_slider = False
                 main.dragging_resolution_slider = False
 
+    # hint timer
     if main.game_stage == "in dungeon":
         keys = pygame.key.get_pressed()
-        if any(keys): # any key
+        if any(keys): # any key press
             main_globals['last_input_time'] = pygame.time.get_ticks() / 1000 # ms to s
 
         mouse_buttons = pygame.mouse.get_pressed()
@@ -432,6 +444,7 @@ while running:
     virtual_accumulator += frame_time
     max_virtual_steps = 5
     steps = 0
+    # skip overflow frames ( if fps is below vfps (it always is))
     while virtual_accumulator >= virtual_dt and steps < max_virtual_steps:
         main.dt = virtual_dt
         main.match_state(main_globals, main.game_stage)
@@ -442,11 +455,13 @@ while running:
         resolution = main.resolution
         screen = pygame.display.set_mode(resolution)
 
+    # draw whatever is on virtual screen scaled to real screen
     screen.blit(pygame.transform.scale(main.screen, resolution), (0, 0))
 
     loop_fps = clock.tick(main.max_fps)
     pygame.display.flip()
 
+    # debug caption
     if main.developer_tools:
         vfps = int(1 / virtual_dt)
         pygame.display.set_caption(f"fps: {int(clock.get_fps())} / {main.max_fps}, vfps: {vfps}, mouse pos: {pygame.mouse.get_pos()}, vmouse pos: {int(main.mouse_pos[0]), int(main.mouse_pos[1])}, player pos: {main_globals['player'].x, main_globals['player'].y}")

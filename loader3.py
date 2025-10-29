@@ -15,19 +15,6 @@ def loader3(main_globals):
     bigfont = pygame.font.Font("assets/font/editundo.ttf", 48)
     setting_font = credits_font = pygame.font.Font("assets/font/editundo.ttf", 28)
 
-    """
-    def get_random_walkable_position(main_globals): # DID NOT WORK 
-        mask = main_globals['walkable_mask']
-        ts = main_globals['tile_size'] + main_globals['tile_offset']
-        mask_width, mask_height = mask.get_size()
-
-        while True:
-            x = random.randrange(0, mask_width, ts)
-            y = random.randrange(0, mask_height, ts)
-            if mask.get_at((x, y))[:3] == (0, 255, 0):
-                return x, y
-    """
-
     class Shop:
         def __init__(self, main_globals, x = None, y = None):
             self.image = main_globals['shop_holder']
@@ -72,7 +59,7 @@ def loader3(main_globals):
 
         return particles
 
-    def save(main_globals, **new_data):
+    def save(main_globals, **new_data): # save data to json
         connector = main_globals['connector_instance']
 
         data = connector.get_data()
@@ -83,51 +70,51 @@ def loader3(main_globals):
         print(f"saved {new_data}")
         return True
 
-    def draw_apply_button(main_globals, x, y, function):
-        # font = pygame.font.SysFont(None, 24)
+    def draw_apply_button(main_globals, x, y, function): # apply the changes to save data
         screen = main_globals['screen']
-        if main_globals['apply_button'] is not pygame.rect.Rect(x, y, 100, 40):
+        if main_globals['apply_button'] is not pygame.rect.Rect(x, y, 100, 40): # make it with x and y
             main_globals['apply_button'] = pygame.rect.Rect(x, y, 100, 40)
+
         pygame.draw.rect(screen, (70, 70, 70), main_globals['apply_button'])
         text_surf = font.render("Apply", True, (255, 255, 255))
         text_rect = text_surf.get_rect(center=main_globals['apply_button'].center)
         screen.blit(text_surf, text_rect)
 
         if main_globals['apply_button'].collidepoint(main_globals['mouse_pos']) and pygame.mouse.get_pressed()[0]:
-
-            if function == "resolution":
+            # apply the change if clicked
+            if function == "resolution": # changes resolution
                 new_res = main_globals['resolutions'][main_globals['resolution_index']]
                 main_globals['resolution'] = new_res
                 save(main_globals, resolution=new_res)
                 print(f"set resolution to {new_res}")
 
-            elif function == "framerate":
+            elif function == "framerate": # changes max fps of real screen
                 new_fps = main_globals['frame_caps'][main_globals['frame_cap_index']]
                 main_globals['max_fps'] = new_fps
                 save(main_globals, max_fps=new_fps)
                 print(f"set fps to {new_fps}")
 
-            elif function == "music":
+            elif function == "music": # changes music volume
                 new_volume = main_globals.get('volume_preview', main_globals.get('music_volume', mx.music.get_volume()))
                 main_globals['music_volume'] = new_volume
-                main_globals.pop('volume_preview', None)
+                main_globals.pop('volume_preview', None) # reset bar preview
                 mx.music.set_volume(new_volume)
                 save(main_globals, music=new_volume)
                 print(f"set music volume to {new_volume}")
 
-    # im not sure if they work or not but they are kind of useless rn
-    def draw_hints(main_globals):
+    def draw_hints(main_globals): # not really hints, just like keybinds but with a timer
         dt = main_globals['dt']
         screen = main_globals['screen']
         alpha = main_globals['hint_alpha']
         main_globals['hint_alpha'] = alpha
         block_size = main_globals['key_w_hint'].get_width()
 
-        if main_globals['idle_time'] >= main_globals['idle_threshold']:
+        if main_globals['idle_time'] >= main_globals['idle_threshold']: # if player is idle for long enough
             alpha = main_globals.get('hint_alpha', 0)
             alpha += dt * 255 / main_globals['hint_fade_duration']
             if alpha > 255:
                 alpha = 255
+            # really shoulda made a for loop for ts
             main_globals['hint_alpha'] = alpha
             main_globals['key_w_hint'].set_alpha(alpha)
             main_globals['key_a_hint'].set_alpha(alpha)
@@ -143,14 +130,14 @@ def loader3(main_globals):
             screen.blit(main_globals['key_e_hint'], (10 + block_size*2, main_globals['screen'].get_height() - block_size*2 - 10))
             # swap mouse image
             ticks = pygame.time.get_ticks() # ms
-            if (ticks // 1000) % 2 == 0: # every s
+            if (ticks // 1000) % 2 == 0: # s
                 screen.blit(main_globals['mouse_blank_hint'], (main_globals['screen'].get_width() - main_globals['mouse_blank_hint'].get_width() - 10, main_globals['screen'].get_height() - main_globals['mouse_blank_hint'].get_height() - 10))
             else:
                 screen.blit(main_globals['mouse_left_hint'], (main_globals['screen'].get_width() - main_globals['mouse_left_hint'].get_width() - 10, main_globals['screen'].get_height() - main_globals['mouse_left_hint'].get_height() - 10))
         else:
             main_globals['hint_alpha'] = 0
 
-    def weapon_info(main_globals):
+    def weapon_info(main_globals): # not used at all yet
         screen = main_globals['screen']
         screen_w = main_globals['screen'].get_width()
         screen_h = main_globals['screen'].get_height()
@@ -161,7 +148,7 @@ def loader3(main_globals):
         weapon_image = main_globals['weapon_images'][weapon.name]
         screen.blit(weapon_image, (info_bg_x + 20, info_bg_y + 20))
 
-    def new_mutation(main_globals, effect, number):
+    def new_mutation(main_globals, effect, number): # also not used at all yet
         screen = main_globals['screen']
         mutation_alpha = 0
         while mutation_alpha < 255:
@@ -186,15 +173,15 @@ def loader3(main_globals):
             pygame.display.flip()
         main_globals['mutation_image'].set_alpha(255)
 
-    def interact(main_globals, player, x, y, function):
-        if distance_to(player, (x, y)) < main_globals['interact_distance']:
+    def interact(main_globals, player, x, y, function): # interaction prompt
+        if distance_to(player, (x, y)) < main_globals['interact_distance']: # if player is within reach
             if main_globals['pressed_e'] and not main_globals['is_paused'] and function is not None:
                 function()
-                print(f"player interacted with something at ({x}, {y})")
-                main_globals['pressed_e'] = False
+                print(f"player interacted at ({x}, {y})")
+                main_globals['pressed_e'] = False # prevent spam
 
-    def distance_to(thing1, thing2):
-        def get_xy(thing):
+    def distance_to(thing1, thing2): # basically just math.isclose without math.isclose
+        def get_xy(thing): # kind of totally useless but i wont bother
             if hasattr(thing, "x") and hasattr(thing, "y"):
                 # if thing is player use center
                 if isinstance(thing, main_globals['Player']):
@@ -209,7 +196,7 @@ def loader3(main_globals):
         x2, y2 = get_xy(thing2)
         return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
 
-    def player_gif(main_globals):
+    def player_gif(main_globals): # makes the player gif to frames
         frames = []
         player_gif = main_globals['playergif']
         try:
@@ -231,18 +218,18 @@ def loader3(main_globals):
             mx.music.play(-1)
             main_globals['currently_playing_index'] = indexhere
 
-    def get_camera_offset(main_globals, player, tile_size):
+    def get_camera_offset(main_globals, player, tile_size): # offset of the camera depending on tile with player
         player_center_x = player.x + main_globals['player_size'] // 2
         player_center_y = player.y + main_globals['player_size'] // 2
 
         tile_x = player_center_x // (tile_size + main_globals['tile_offset'])
         tile_y = player_center_y // (tile_size + main_globals['tile_offset'])
-        # camera snaps to the center
+        # camera moves to the center of the tile
         offset_x = tile_x * (tile_size + main_globals['tile_offset']) + tile_size // 2 - main_globals['screen'].get_width() // 2
         offset_y = tile_y * (tile_size + main_globals['tile_offset']) + tile_size // 2 - main_globals['screen'].get_height() // 2
         return offset_x, offset_y
 
-    def make_initial_walkable_surface(tilemap, main_globals, bridging=True, counter=0):
+    def make_initial_walkable_surface(tilemap, main_globals, bridging=True, counter=0): # make the initial walkable mask as its own surface
         ts = main_globals['tile_size'] + main_globals['tile_offset']
         tile_size = main_globals['tile_size']
         mask = pygame.Surface((len(tilemap[0]) * ts, len(tilemap) * ts))
@@ -259,7 +246,7 @@ def loader3(main_globals):
                     # draw main tile in mask
                     pygame.draw.rect(mask, (0, 255, 0), (tx, ty, tile_size, tile_size))
 
-                    if bridging == True:
+                    if bridging == True: # for enabling bridges/pathing between tiles
                         # horizontal bridge
                         if col_idx + 1 < len(row) and tilemap[row_idx][col_idx + 1] in main_globals['walkable_tiles']:
                             if main_globals['bridging'] == True:
@@ -272,10 +259,11 @@ def loader3(main_globals):
 
         main_globals['spawn_weapons'](main_globals)
         if counter == 0:
-            main_globals['locked_mask'] = make_initial_walkable_surface(tilemap, main_globals, False, counter + 1) if counter == 0 else main_globals['locked_mask']
+            # cba to make a seperate mask so calls itself with a counter for looping
+            main_globals['locked_mask'] = make_initial_walkable_surface(tilemap, main_globals, False, counter + 1)
         return mask
 
-    def rebuild_walkable_mask(main_globals):
+    def rebuild_walkable_mask(main_globals): # rebuilds the mask if something changed
         print("rebuilding walkable mask")
         tilemap = main_globals['tilemap']
         ts = main_globals['tile_size'] + main_globals['tile_offset']
@@ -283,68 +271,72 @@ def loader3(main_globals):
         mask_height = len(tilemap) * ts
 
         new_mask = pygame.Surface((mask_width, mask_height))
-        new_mask.fill((0, 0, 0))
+        new_mask.fill((0, 0, 0)) # clear mask
 
         main_globals['walkable_mask'] = new_mask
 
+        # remake the mask
         main_globals['walkable_mask'] = main_globals['make_initial_walkable_surface'](tilemap, main_globals)
 
-    def update_tile(main_globals, col_idx, row_idx, new_tile_type):
+    def update_tile(main_globals, col_idx, row_idx, new_tile_type): # updates a specific tile
         # ex. update_tilemap(main_globals, 0, 0, 99)
-        # clear old tiles if new tile is a spawn tile
+        # update tilemap ( glogales, column index, row index, tile type )
 
         ts = main_globals['tile_size'] + main_globals['tile_offset']
         center_x = col_idx * ts + main_globals['tile_size'] // 2
         center_y = row_idx * ts + main_globals['tile_size'] // 2
 
-        if new_tile_type == 99:
+        if new_tile_type == 99: # clears other tiles if new tile is a spawn tile
             print("clearing tiles")
             for i in range(len(main_globals['tilemap'])):
                 for j in range(len(main_globals['tilemap'][0])):
                     main_globals['tilemap'][i][j] = 0
             main_globals['player'].respawn()
 
-        main_globals['weapons_on_map'] = [
+        main_globals['weapons_on_map'] = [ # remove all weapons that are not on the new tiles
         w for w in main_globals['weapons_on_map']
             if not (math.isclose(w.x, center_x, abs_tol=1) and math.isclose(w.y, center_y, abs_tol=1))
         ]
 
         print(f"updating tilemap with {col_idx, row_idx, new_tile_type}")
-        main_globals['tilemap'][row_idx][col_idx] = new_tile_type
-        main_globals['rebuild_walkable_mask'](main_globals)
+        main_globals['tilemap'][row_idx][col_idx] = new_tile_type # actually updates the tile
+        main_globals['rebuild_walkable_mask'](main_globals) # rebuilds it every time a tile is updated
+        # but i think it should be an argument like rebuild=False but wtv
         print(f"new tilemap: {main_globals['tilemap']}")
 
-    def draw_hud(main_globals, player):
-        if player.alive:
-            shake_x, shake_y = player.shake()
+    def draw_hud(main_globals, player): # top left images for symboling his health
+        if player.alive: # IS HE????????
+            shake_x, shake_y = player.shake() # reuse player shake for the hud
             screen = main_globals['screen']
-            pygame.draw.circle(screen, (20, 20, 20), (100, 100), 80)
+            pygame.draw.circle(screen, (20, 20, 20), (100, 100), 80) # i think we should remove the text
+            # and draw some gold coins over his face as wealth :D reply -> # 
             screen.blit(bigfont.render(str(player.health), True, (255, 255, 255)), (120, 200))
-            screen.blit(bigfont.render(str(player.wealth), True, (255, 215, 0)), (120, 250))
-            if player.health > 66:
+            screen.blit(bigfont.render(str(player.wealth), True, (255, 215, 0)), (120, 250)) # just realised man good job!!!!! wealth health
+            if player.health > 66: # jebo vam siks seven 🤖
                 screen.blit(main_globals['player_health_images'][0], (-50 + shake_x, -50 + shake_y))
             elif player.health > 33:
                 screen.blit(main_globals['player_health_images'][1], (-50 + shake_x, -50 + shake_y))
             else:
                 screen.blit(main_globals['player_health_images'][2], (-50 + shake_x, -50 + shake_y))
 
-    def draw_vignette(main_globals, player):
-        if player.alive:
+    def draw_vignette(main_globals, player): # if you dont know what 'vignette' means go away!
+        if player.alive: # you filthy hog
             max_alpha = 180
             vignette_alpha = max_alpha * (1 - player.health / 100)
             main_globals['vignette'].set_alpha(vignette_alpha)
             main_globals['screen'].blit(main_globals['vignette'], (0, 0))
 
-    def draw_pause_menu(main_globals):
+    def draw_pause_menu(main_globals): # the thing you see when paused
         screen = main_globals['screen']
         pygame.draw.rect(screen, (20, 20, 20), (main_globals['screen'].get_width() // 2 - main_globals['screen'].get_width() // 4, main_globals['screen'].get_height() // 2 - main_globals['screen'].get_height() // 4, main_globals['screen'].get_width() // 2, main_globals['screen'].get_height() // 2), 0)
         screen.blit(main_globals['font'].render("paused", True, (255, 255, 255)), (main_globals['screen'].get_width() // 2 - 60, main_globals['screen'].get_height() // 2 - 22))
         mx.music.pause()
 
-    def draw_menu(main_globals, mouse_pos):
+    def draw_menu(main_globals, mouse_pos): # main menu
         screen = main_globals['screen']
         screen.fill((0, 0, 0))
-        if main_globals['menu_bg_can_animate']:
+
+        if main_globals['menu_bg_can_animate']: # roll in on first launch
             target_x = main_globals['screen'].get_width() - main_globals['menu_background'].get_width()
             if main_globals['menu_bg_x'] > target_x:
                 main_globals['menu_bg_x'] -= 10
@@ -355,6 +347,7 @@ def loader3(main_globals):
 
         screen.blit(main_globals['menu_background'], (main_globals['menu_bg_x'], 0))
 
+        # flash at the first launch
         if main_globals['flash_active'] and main_globals['flash_alpha'] < 255:
             main_globals['flash_alpha'] += main_globals['flash_speed']
             if main_globals['flash_alpha'] > 255:
@@ -366,25 +359,35 @@ def loader3(main_globals):
         else:
             main_globals['flash_active'] = False
 
+        # if i finished showing off my skills ( animation )
         if main_globals['menu_bg_can_animate']== False and main_globals['flash_active'] == False:
+
+            # title
+            title_text = main_globals['font'].render("Title", True, (255, 255, 255))
+            title_rect = title_text.get_rect(topleft=(10, 5)) # for some reason top looks way bigger even if its same number
+            screen.blit(title_text, title_rect)
+
             # play button
             play_color = (70, 70, 70) if main_globals['play_button'].collidepoint(mouse_pos) else (40, 40, 40)
             pygame.draw.rect(screen, play_color, main_globals['play_button'])
             text_surf = main_globals['font'].render("Play", True, (255, 255, 255))
             text_rect = text_surf.get_rect(center=main_globals['play_button'].center)
             screen.blit(text_surf, text_rect.topleft)
+
             # settings button
             settings_color = (70, 70, 70) if main_globals['settings_button'].collidepoint(mouse_pos) else (40, 40, 40)
             pygame.draw.rect(screen, settings_color, main_globals['settings_button'])
             text_surf = main_globals['font'].render("Settings", True, (255, 255, 255))
             text_rect = text_surf.get_rect(center=main_globals['settings_button'].center)
             screen.blit(text_surf, text_rect.topleft)
+
             # kredits batten :robot:
             credits_color = (70, 70, 70) if main_globals['credits_button'].collidepoint(mouse_pos) else (40, 40, 40)
             pygame.draw.rect(screen, credits_color, main_globals['credits_button'])
             text_surf = main_globals['font'].render("Credits", True, (255, 255, 255))
             text_rect = text_surf.get_rect(center=main_globals['credits_button'].center)
             screen.blit(text_surf, text_rect.topleft)
+
             # battle pass button :kekw:
             bp_color = (70, 70, 70) if main_globals['bp_button'].collidepoint(mouse_pos) else (40, 40, 40)
             pygame.draw.rect(screen, bp_color, main_globals['bp_button'])
@@ -392,24 +395,25 @@ def loader3(main_globals):
             text_rect = text_surf.get_rect(center=main_globals['bp_button'].center)
             screen.blit(text_surf, text_rect.topleft)
             # uncomment if you dare
-            # i dared and its staying this way
+            # i dared and its staying this way ;)
 
-    def draw_credits(main_globals, mouse_pos):
+    def draw_credits(main_globals, mouse_pos): # cursed with 1% total fps
         screen = main_globals['screen']
         to_menu = main_globals['to_menu']
         font = main_globals['font']
-        # credits_font = pygame.font.SysFont(None, 34)
         screen.fill((0, 0, 0))
 
         screen.blit(font.render("credits", True, (255, 255, 255)), (20, 20))
         # screen.blit(main_globals['thx'], (540, 0)) # i got the coordinates right first try btw
+        # show off
 
         # no problem man
         screen.blit(main_globals['thx'], (main_globals['screen'].get_width() // 2, 0))
 
+        # return
         to_menu_color = (70, 70, 70) if to_menu.collidepoint(mouse_pos) else (40, 40, 40)
         pygame.draw.rect(screen, to_menu_color, to_menu)
-        text_surf = font.render("To menu", True, (255, 255, 255))
+        text_surf = font.render("return", True, (255, 255, 255))
         text_rect = text_surf.get_rect(center=main_globals['to_menu'].center)
         screen.blit(text_surf, text_rect.topleft)
 
@@ -459,10 +463,9 @@ def loader3(main_globals):
         music_slider = main_globals['music_slider']
         to_menu = main_globals['to_menu']
         font = main_globals['font']
-        # setting_font = pygame.font.SysFont(None, 34)
         screen.fill((0, 0, 0))
-
         screen.blit(font.render("settings", True, (255, 255, 255)), (20, 20))
+
         # liners
         liner_y = 85
         liner = pygame.Rect(100, liner_y, main_globals['screen'].get_width() - 150, 2)
@@ -540,7 +543,7 @@ def loader3(main_globals):
         if main_globals['resolution'] != res:
             draw_apply_button(main_globals, main_globals['screen'].get_width() // 2 - 120, 190, "resolution")
 
-        # framerate cap
+        # framerate cap slider
         frame_cap_index = main_globals['frame_cap_index']
         step = main_globals['frame_slider_base'].width / (len(main_globals['frame_caps'])-1)
 
@@ -579,7 +582,7 @@ def loader3(main_globals):
         pygame.draw.rect(screen, to_menu_color, to_menu)
         text_surf = font.render("To menu", True, (255, 255, 255))
         text_rect = text_surf.get_rect(center=main_globals['to_menu'].center)
-        screen.blit(text_surf, text_rect.topleft)
+        screen.blit(text_surf, text_rect.center)
 
     def draw_battle_pass(main_globals, mouse_pos):
         screen = main_globals['screen']
@@ -596,6 +599,7 @@ def loader3(main_globals):
 
     shop = Shop(main_globals)
 
+    # add functions to main globallers
     main_globals['player_gif'] = player_gif
     main_globals['draw_menu'] = draw_menu
     main_globals['draw_hud'] = draw_hud
@@ -621,8 +625,8 @@ def loader3(main_globals):
     main_globals['spawn_blood_particles'] = spawn_blood_particles
     main_globals['distance_to'] = distance_to
 
+    # add classes to main globall
     main_globals['shop'] = shop
     main_globals['Shop'] = Shop
-
 
     print("loader3 file loaded")
