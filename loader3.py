@@ -12,6 +12,9 @@ except ModuleNotFoundError as e:
 def loader3(main_globals):
 
     dt = main_globals['dt'] # the god of them all
+    font = pygame.font.Font("assets/font/editundo.ttf", 24)
+    bigfont = pygame.font.Font("assets/font/editundo.ttf", 48)
+    setting_font = credits_font = pygame.font.Font("assets/font/editundo.ttf", 34)
 
     """
     def get_random_walkable_position(main_globals): # DID NOT WORK 
@@ -93,7 +96,7 @@ def loader3(main_globals):
         return True
 
     def draw_apply_button(main_globals, x, y, function):
-        font = pygame.font.SysFont(None, 24)
+        # font = pygame.font.SysFont(None, 24)
         screen = main_globals['screen']
         if main_globals['apply_button'] is not pygame.rect.Rect(x, y, 100, 40):
             main_globals['apply_button'] = pygame.rect.Rect(x, y, 100, 40)
@@ -327,8 +330,8 @@ def loader3(main_globals):
             shake_x, shake_y = player.shake()
             screen = main_globals['screen']
             pygame.draw.circle(screen, (20, 20, 20), (100, 100), 80)
-            screen.blit(main_globals['font'].render(str(player.health), True, (255, 255, 255)), (120, 200))
-            screen.blit(main_globals['font'].render(str(player.wealth), True, (255, 215, 0)), (120, 250))
+            screen.blit(bigfont.render(str(player.health), True, (255, 255, 255)), (120, 200))
+            screen.blit(bigfont.render(str(player.wealth), True, (255, 215, 0)), (120, 250))
             if player.health > 66:
                 screen.blit(main_globals['player_health_images'][0], (-50 + shake_x, -50 + shake_y))
             elif player.health > 33:
@@ -398,7 +401,7 @@ def loader3(main_globals):
         screen = main_globals['screen']
         to_menu = main_globals['to_menu']
         font = main_globals['font']
-        credits_font = pygame.font.SysFont(None, 34)
+        # credits_font = pygame.font.SysFont(None, 34)
         screen.fill((0, 0, 0))
 
         screen.blit(font.render("credits", True, (255, 255, 255)), (20, 20))
@@ -459,7 +462,7 @@ def loader3(main_globals):
         music_slider = main_globals['music_slider']
         to_menu = main_globals['to_menu']
         font = main_globals['font']
-        setting_font = pygame.font.SysFont(None, 34)
+        # setting_font = pygame.font.SysFont(None, 34)
         screen.fill((0, 0, 0))
 
         screen.blit(font.render("settings", True, (255, 255, 255)), (20, 20))

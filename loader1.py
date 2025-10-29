@@ -21,7 +21,7 @@ def loader1(main_globals):
     main_globals['can_move_x'] = True
     main_globals['can_move_y'] = True
 
-    main_globals['font'] = pygame.font.SysFont(None, 48)
+    main_globals['font'] = pygame.font.Font("assets/font/editundo.ttf", 48)
     main_globals['is_paused'] = False
 
     main_globals['dragging_music_slider'] = False

@@ -54,7 +54,7 @@ class DictNamespace:
 # pre defines some variables
 main_globals = {
     'screen_w': 1080, 'screen_h': 750, 'screen': pygame.display.set_mode((1080, 750)), 'player_size': 32, 'tile_size': 600, 'musics': ["track1.mp3", "track2.mp3"],
-    'currently_playing_index': -1, 'hurt_sound': mx.Sound("assets/audio/sfx/hurt.mp3"), 'font': pygame.font.SysFont(None, 36), 
+    'currently_playing_index': -1, 'hurt_sound': mx.Sound("assets/audio/sfx/hurt.mp3"), 
     'player_health_images': [pygame.Surface((50, 50)) for i in range(3)], 'vignette': pygame.Surface((1080, 750), pygame.SRCALPHA), 'menu_background': pygame.Surface((200, 200)),
     'menu_bg_x': 0, 'menu_bg_can_animate': True, 'flash_active': False, 'flash_alpha': 0, 'flash_speed': 10, 'play_button': pygame.Rect(100, 100, 100, 50), 'settings_button': pygame.Rect(100, 200, 100, 50),
     'dragging_music_slider': False, 'music_slider': pygame.Rect(100, 300, 200, 20), 'to_menu': pygame.Rect(50, 50, 100, 50), 'camera_x': 0, 'camera_y': 0, 'camera_speed': 0.1,
@@ -136,7 +136,8 @@ def draw_loading_screen(step, total, context):
     rotated_icon.set_alpha(text_alpha)
     screen.blit(rotated_icon, rotated_rect.topleft)
 
-    temp_font = pygame.font.SysFont(None, 34)
+    # temp_font = pygame.font.SysFont(None, 34)
+    temp_font = pygame.font.Font("assets/font/editundo.ttf", 34)
     if context == "finalizing":
         display_text = "finalizing"
     elif context == "preparing":

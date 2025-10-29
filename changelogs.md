@@ -168,4 +168,8 @@ i think save is kind of broken from loader 3 same thing with hints
 anyway make resolution sync with settings
 music sync with settings
 
+i feel like i forgot something
+
+anyway here new font
+
 # 
