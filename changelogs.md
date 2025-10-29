@@ -172,6 +172,9 @@ i feel like i forgot something
 
 anyway here new font
 
+"fix" save by basically removing it
+fix hint
+
 # 29 10 / bad deal
 
 add battle pass (lol)

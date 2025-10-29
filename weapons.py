@@ -1,4 +1,4 @@
-# stsw - stage switcher
+# weapons file
 import pygame, random, math, time
 
 def weapons(main_globals):

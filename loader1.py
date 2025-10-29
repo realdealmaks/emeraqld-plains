@@ -43,7 +43,7 @@ def loader1(main_globals):
     main_globals['credits_button'] = pygame.Rect(50, main_globals['screen_h'] - 450, 200, 100)
     main_globals['bp_button'] = pygame.Rect(50, main_globals['screen_h'] - 600, 200, 100)
     main_globals['to_menu'] = pygame.Rect(main_globals['screen_w'] - 250, main_globals['screen_h'] - 150, 200, 100)
-    main_globals['buy_button'] = pygame.Rect(main_globals['screen_w'] - 250, main_globals['screen_h'] - 150, 200, 100)
+    main_globals['buy_button'] = pygame.Rect(20, main_globals['screen_h'] - 150, 200, 100)
     main_globals['hints_button'] = pygame.Rect(main_globals['screen_w'] - 400, 100 + 43, 75, 35)
     main_globals['resolution_slider_base'] = pygame.Rect(main_globals['screen_w'] - 400, 200 + 7, 300, 5)
     main_globals['frame_slider_base'] = pygame.Rect(main_globals['screen_w'] - 400, 250 + 7, 300, 5)

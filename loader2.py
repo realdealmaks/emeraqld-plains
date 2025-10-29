@@ -15,10 +15,14 @@ def loader2(main_globals):
     main_globals['enemy_test_0'] = pygame.image.load("assets/models/enemies/bobber0.png").convert_alpha()
     main_globals['enemy_test_1'] = pygame.image.load("assets/models/enemies/bobber1.png").convert_alpha()
     main_globals['thx'] = pygame.image.load("assets/useful images/thx.png")
-    main_globals['save_image'] = pygame.image.load("assets/useful images/save.png")
+    main_globals['save_image'] = pygame.image.load("assets/useful images/save.png").convert_alpha()
     main_globals['save_image'] = pygame.transform.scale2x(main_globals['save_image'])
     main_globals['floorboard'] = pygame.image.load('assets/useful images/tiles/image.png')
     main_globals['playergif'] = Image.open("assets/models/player/playergif.gif")
+
+    battlepass_image = pygame.image.load("assets/random images/battle_pass.png").convert_alpha()
+    battlepass_image = pygame.transform.scale(battlepass_image, main_globals['resolution'])
+    main_globals['battlepass_image'] = battlepass_image
 
     player_health_images = []
     for i in range(1, 4):

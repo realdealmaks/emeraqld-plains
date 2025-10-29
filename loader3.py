@@ -11,10 +11,9 @@ except ModuleNotFoundError as e:
 
 def loader3(main_globals):
 
-    dt = main_globals['dt'] # the god of them all
     font = pygame.font.Font("assets/font/editundo.ttf", 24)
     bigfont = pygame.font.Font("assets/font/editundo.ttf", 48)
-    setting_font = credits_font = pygame.font.Font("assets/font/editundo.ttf", 34)
+    setting_font = credits_font = pygame.font.Font("assets/font/editundo.ttf", 28)
 
     """
     def get_random_walkable_position(main_globals): # DID NOT WORK 
@@ -74,23 +73,12 @@ def loader3(main_globals):
         return particles
 
     def save(main_globals, **new_data):
-        pos = (main_globals['save_image'].get_width(), main_globals['screen'].get_height() - main_globals['save_image'].get_height())
-        screen = main_globals['screen']
         connector = main_globals['connector_instance']
 
         data = connector.get_data()
         data.update(new_data)
         connector.set_data(data)
         connector.save_data()
-
-        start = time.time()
-        duration = 1.0
-        while time.time() - start < duration:
-            angle = ((time.time() - start) * 720) % 360
-            rotated = pygame.transform.rotate(main_globals['save_image'], angle)
-            rect = rotated.get_rect(center=pos)
-            screen.blit(rotated, rect)
-            pygame.display.flip()
 
         print(f"saved {new_data}")
         return True
@@ -129,6 +117,7 @@ def loader3(main_globals):
 
     # im not sure if they work or not but they are kind of useless rn
     def draw_hints(main_globals):
+        dt = main_globals['dt']
         screen = main_globals['screen']
         alpha = main_globals['hint_alpha']
         main_globals['hint_alpha'] = alpha
@@ -398,11 +387,12 @@ def loader3(main_globals):
             screen.blit(text_surf, text_rect.topleft)
             # battle pass button :kekw:
             bp_color = (70, 70, 70) if main_globals['bp_button'].collidepoint(mouse_pos) else (40, 40, 40)
-            #pygame.draw.rect(screen, bp_color, main_globals['bp_button'])
-            text_surf = main_globals['font'].render("Battle Pass", True, (255, 255, 255))
+            pygame.draw.rect(screen, bp_color, main_globals['bp_button'])
+            text_surf = font.render("Battle Pass", True, (255, 255, 255))
             text_rect = text_surf.get_rect(center=main_globals['bp_button'].center)
-            #screen.blit(text_surf, text_rect.topleft)
-            #uncomment if you dare
+            screen.blit(text_surf, text_rect.topleft)
+            # uncomment if you dare
+            # i dared and its staying this way
 
     def draw_credits(main_globals, mouse_pos):
         screen = main_globals['screen']
@@ -600,7 +590,7 @@ def loader3(main_globals):
         text_rect = text_surf.get_rect(center=main_globals['buy_button'].center)
 
         screen.fill((0, 0, 0))
-        screen.blit(pygame.image.load("assets/random images/battle_pass.png"), (0, 0))
+        screen.blit(main_globals['battlepass_image'], (0, 0))
         pygame.draw.rect(screen, buy_button_color, buy_button)
         screen.blit(text_surf, text_rect.topleft)
 

@@ -277,7 +277,6 @@ main.walkable_mask = main.make_initial_walkable_surface(main.tilemap, main_globa
 running = True
 while running:
     main.space.step(main.dt)
-    main.virtual_screen.fill((0, 0, 0))
     real_mx, real_my = pygame.mouse.get_pos()
     mouse_pos = pygame.mouse.get_pos()
     main.mouse_pos = (
