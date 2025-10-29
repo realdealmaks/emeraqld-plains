@@ -61,7 +61,7 @@ def loader3(main_globals):
             body.landing_y = landing_y
             space.add(body, shape)
             # random lifetime in s
-            lifetime = random.uniform(2, 4)
+            lifetime = random.uniform(1, 2)
 
             # random red
             color = (200 + random.randint(-30, 30), 0, 0)
@@ -107,13 +107,22 @@ def loader3(main_globals):
             if function == "resolution":
                 new_res = main_globals['resolutions'][main_globals['resolution_index']]
                 main_globals['resolution'] = new_res
+                save(main_globals, resolution=new_res)
                 print(f"set resolution to {new_res}")
 
-            if function == "framerate":
+            elif function == "framerate":
                 new_fps = main_globals['frame_caps'][main_globals['frame_cap_index']]
                 main_globals['max_fps'] = new_fps
                 save(main_globals, max_fps=new_fps)
                 print(f"set fps to {new_fps}")
+
+            elif function == "music":
+                new_volume = main_globals.get('volume_preview', main_globals.get('music_volume', mx.music.get_volume()))
+                main_globals['music_volume'] = new_volume
+                main_globals.pop('volume_preview', None)
+                mx.music.set_volume(new_volume)
+                save(main_globals, music=new_volume)
+                print(f"set music volume to {new_volume}")
 
     # im not sure if they work or not but they are kind of useless rn
     def draw_hints(main_globals):
@@ -469,7 +478,7 @@ def loader3(main_globals):
 
         # music slider
         pygame.draw.rect(screen, (120, 120, 120), music_slider)
-        volume = main_globals.get('music_volume', mx.music.get_volume())
+        volume = main_globals.get('volume_preview', main_globals.get('music_volume', mx.music.get_volume()))
         filled_width = int(music_slider.width * volume)
         filled_rect = pygame.Rect(music_slider.x, music_slider.y, filled_width, music_slider.height)
         pygame.draw.rect(screen, (180, 180, 180), filled_rect)
@@ -477,8 +486,10 @@ def loader3(main_globals):
         if main_globals['dragging_music_slider']:
             relative_x = mouse_pos[0] - music_slider.x
             volume = max(0.0, min(1.0, relative_x / music_slider.width))
-            mx.music.set_volume(volume)
-            main_globals['music_volume'] = volume
+            main_globals['volume_preview'] = volume
+
+        if 'volume_preview' in main_globals and main_globals['volume_preview'] != main_globals.get('music_volume', mx.music.get_volume()):
+            draw_apply_button(main_globals, main_globals['screen'].get_width() // 2 - 120, 90, "music")
 
         screen.blit(setting_font.render("music volume", True, (255, 255, 255)), (100, 100))
         screen.blit(setting_font.render(f"{int(volume * 100)}%", True, (255, 255, 255)), (main_globals['screen'].get_width() // 2 + 20, 100))

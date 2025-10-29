@@ -110,13 +110,13 @@ def loader1(main_globals):
     main_globals['virtual_screen'] = main_globals['screen']
     main_globals['max_fps'] = 0
 
-    main_globals['resolution'] = (1080, 750)
+    main_globals['resolution'] = main_globals.get('resolution', (1080, 750)) # default to
     resolutions = [(420, 800), (1920, 1080), (2560, 1440), (3840, 2160), (1280, 720), (1280, 1024), (1600, 900), (1920, 1200), (2560, 1600), (800, 600), (1080, 750), (1024, 2048)]
     resolutions.sort()
     main_globals['resolutions'] = resolutions
-    for i in range(len(resolutions)):
-        if resolutions[i] == main_globals['resolution']:
-            main_globals['resolution_index'] = i
+    closest_index = min(range(len(resolutions)), key=lambda i: abs(resolutions[i][0] - main_globals['resolution'][0]) + abs(resolutions[i][1] - main_globals['resolution'][1]))
+    main_globals['resolution_index'] = closest_index
+    main_globals['resolution'] = resolutions[closest_index]
 
     frame_caps = [10, 15, 20, 25, 30, 40, 60, 75, 120]
     frame_caps.sort()

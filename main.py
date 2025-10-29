@@ -239,16 +239,25 @@ print("converted main_globals to mains, get ready to tish!")
 # dont use main_globals['🤖'] but instead use main.🤖
 # stupar ce to vidite me je res prevec motilo da je vse bilo v neumni barvi vsega drugega "" texta in nisem hotel kopirati main_globals[''] cisto povsod
 
-frame_caps = main_globals['frame_caps']
-main_globals['frame_cap'] = main_globals.get('max_fps', 60)
-main_globals['frame_cap_index'] = min(range(len(frame_caps)), key=lambda i: abs(frame_caps[i] - main_globals['frame_cap']))
-main_globals['frame_cap'] = frame_caps[main_globals['frame_cap_index']]
+frame_caps = main.frame_caps
+main.frame_cap = main_globals.get('max_fps', 60)
+main.frame_cap_index = min(range(len(frame_caps)), key=lambda i: abs(frame_caps[i] - main.frame_cap))
+main.frame_cap = frame_caps[main.frame_cap_index]
+
+resolutions = main.resolutions
+main.resolution = main_globals.get('resolution', (1080, 750))
+main.resolution_index = min(range(len(resolutions)), key=lambda i: abs(resolutions[i][0] - main.resolution[0]))
+main.resolution = resolutions[main.resolution_index]
+
+music_volume = saved_data.get("music", 1)
+main.music_volume = music_volume
+mx.music.set_volume(music_volume)
 
 current_time = pygame.time.get_ticks() / 1000
 main.dt = current_time - main.prev_time
 main.prev_time = current_time
 main.screen = virtual_screen
-main.resolution = resolution
+main.resolution = resolutions[main.resolution_index]
 
 main.player_gif(main_globals) # loads the player gif
 

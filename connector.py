@@ -13,8 +13,9 @@ database
 
 def connector(main_globals):
     default_data = {
-            "music": 100,
-            "max_fps": 25
+            "music": 1.0,
+            "max_fps": 60,
+            "resolution": (1080, 750)
     }
 
     class Connector:

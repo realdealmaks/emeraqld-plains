@@ -161,5 +161,11 @@ shkkubya please fix
 update 2154 hours collision works with weapons not with mask yet
 bad guys spawn spread out (and not too close to each other) but still cannot move or collide with mask or attack
 
-ok i broke something and now they are gone
-ok they're back (gracias smahuy)
+# 29 10 / shit
+
+i think save is kind of broken from loader 3 same thing with hints
+
+anyway make resolution sync with settings
+music sync with settings
+
+# 
