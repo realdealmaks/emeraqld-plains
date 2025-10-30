@@ -365,13 +365,18 @@ while running:
         # mouse button down
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
+                if main.game_stage == "choosing mode":
+                    if main.mode1button.collidepoint(main.mouse_pos):
+                        main_globals['transition_active'] = True
+                        main_globals['transition_side'] = 'left'
+                        main_globals['selected_mode'] = 1
+                    if main.mode2button.collidepoint(main.mouse_pos):
+                        main_globals['transition_active'] = True
+                        main_globals['transition_side'] = 'right'
+                        main_globals['selected_mode'] = 2
                 if main.game_stage == "in menu": # IF IN MENU # really?
                     if main.play_button.collidepoint(main.mouse_pos):
-                        main.player.respawn()
-                        main.player.effect("healfull", 0) # resets player health # i think it resets without this # not it doesnt
-                        main.musicswitcher(main_globals, 0)
-                        main.game_stage = "in dungeon"
-                        mx.music.unpause()
+                        main.game_stage = "choosing mode"
                     if main.settings_button.collidepoint(main.mouse_pos):
                         main.game_stage = "in settings"
                     if main.credits_button.collidepoint(main.mouse_pos):

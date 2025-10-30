@@ -78,6 +78,12 @@ def loader1(main_globals):
     main_globals['flash_alpha'] = 0
     main_globals['flash_active'] = False
     main_globals['flash_speed'] = 1
+    main_globals['mode1_scale'] = 1.0
+    main_globals['mode2_scale'] = 1.0
+    main_globals['mode1_dim'] = 150
+    main_globals['mode2_dim'] = 150
+    main_globals['mode1_btn_size'] = [200, 50]
+    main_globals['mode2_btn_size'] = [200, 50]
 
     # game variables
     main_globals['game_stage'] = ""
@@ -111,6 +117,18 @@ def loader1(main_globals):
     main_globals['frame_slider'] = pygame.Rect(0,0,0,0)
     main_globals['resolution_slider'] = pygame.Rect(0,0,0,0)
     main_globals['apply_button'] = pygame.Rect(0,0,0,0)
+
+    # mode varchagles
+    main_globals['mode1button'] = pygame.Rect(main_globals['screen'].get_width() * 3 // 4 - 200 // 2, main_globals['screen'].get_height() // 2, *(200, 50))
+    main_globals['mode2button'] = pygame.Rect(main_globals['screen'].get_width() * 3 // 4 - 200 // 2, main_globals['screen'].get_height() // 2, *(200, 50))
+    main_globals['transition_active'] = False
+    main_globals['transition_side'] = 'left'
+    main_globals['transition_progress'] = 0.0
+    main_globals['transition_speed'] = 2.2
+    main_globals['selected_mode'] = None
+    main_globals['transition_phase'] = 'in'
+    main_globals['transition_hold_duration'] = 2.0
+    main_globals['transition_hold_timer'] = 0.0
 
     # virtual setup
     main_globals['prev_time'] = pygame.time.get_ticks() / 1000

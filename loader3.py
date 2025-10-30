@@ -15,6 +15,156 @@ def loader3(main_globals):
     bigfont = pygame.font.Font("assets/font/editundo.ttf", 48)
     setting_font = credits_font = pygame.font.Font("assets/font/editundo.ttf", 28)
 
+    def draw_mode_selection(main_globals, mouse_pos):
+        screen = main_globals['screen']
+        screen.fill((0, 0, 0))
+        dt = main_globals['dt']
+
+        base_size = (200, 50)
+        hover_size = (220, 60)
+        anim_speed = 0.1
+        hover_scale = 1.1
+        shrink_scale = 0.9
+
+        button1 = main_globals['mode1button']
+        button2 = main_globals['mode2button']
+        hover1 = button1.collidepoint(mouse_pos)
+        hover2 = button2.collidepoint(mouse_pos)
+
+        for key, value in [
+            ('mode1_scale', 1.0),
+            ('mode2_scale', 1.0),
+            ('mode1_dim', 150),
+            ('mode2_dim', 150),
+            ('mode1_btn_size', list(base_size)),
+            ('mode2_btn_size', list(base_size))
+        ]:
+            if key not in main_globals:
+                main_globals[key] = value
+
+        if hover1:
+            target_scale1, target_scale2 = hover_scale, shrink_scale
+            target_dim1, target_dim2 = 0, 150
+        elif hover2:
+            target_scale1, target_scale2 = shrink_scale, hover_scale
+            target_dim1, target_dim2 = 150, 0
+        else:
+            target_scale1 = target_scale2 = 1.0
+            target_dim1 = target_dim2 = 150
+
+        main_globals['mode1_scale'] += (target_scale1 - main_globals['mode1_scale']) * anim_speed
+        main_globals['mode2_scale'] += (target_scale2 - main_globals['mode2_scale']) * anim_speed
+        main_globals['mode1_dim'] += (target_dim1 - main_globals['mode1_dim']) * anim_speed
+        main_globals['mode2_dim'] += (target_dim2 - main_globals['mode2_dim']) * anim_speed
+
+        bg1 = pygame.transform.scale(
+            main_globals['mode1img'],
+            (int(main_globals['mode1img'].get_width() * main_globals['mode1_scale']),
+             int(main_globals['mode1img'].get_height() * main_globals['mode1_scale']))
+        )
+        bg2 = pygame.transform.scale(
+            main_globals['mode2img'],
+            (int(main_globals['mode2img'].get_width() * main_globals['mode2_scale']),
+             int(main_globals['mode2img'].get_height() * main_globals['mode2_scale']))
+        )
+
+        bg1_pos = (0, 0)
+        bg2_pos = (screen.get_width() - bg2.get_width(), 0)
+
+        screen.blit(bg1, bg1_pos)
+        if main_globals['mode1_dim'] > 0:
+            dim1 = pygame.Surface(bg1.get_size(), pygame.SRCALPHA)
+            dim1.fill((0, 0, 0, int(main_globals['mode1_dim'])))
+            screen.blit(dim1, bg1_pos)
+
+        screen.blit(bg2, bg2_pos)
+        if main_globals['mode2_dim'] > 0:
+            dim2 = pygame.Surface(bg2.get_size(), pygame.SRCALPHA)
+            dim2.fill((0, 0, 0, int(main_globals['mode2_dim'])))
+            screen.blit(dim2, bg2_pos)
+
+        for key, target in [('mode1_btn_size', hover_size if hover1 else base_size),
+                            ('mode2_btn_size', hover_size if hover2 else base_size)]:
+            curr = main_globals[key]
+            curr[0] += (target[0] - curr[0]) * anim_speed
+            curr[1] += (target[1] - curr[1]) * anim_speed
+
+        button1.width, button1.height = map(int, main_globals['mode1_btn_size'])
+        button1.topleft = (screen.get_width() // 4 - base_size[0] // 2, screen.get_height() // 2)
+        color1 = (70, 70, 70) if hover1 else (40, 40, 40)
+        pygame.draw.rect(screen, color1, button1, border_radius=8)
+        text_surf1 = main_globals['font'].render("1", True, (255, 255, 255))
+        screen.blit(text_surf1, text_surf1.get_rect(center=button1.center))
+
+        button2.width, button2.height = map(int, main_globals['mode2_btn_size'])
+        button2.left = screen.get_width() * 3 // 4 - base_size[0] // 2
+        if hover2:
+            button2.left -= button2.width - base_size[0]
+        button2.top = screen.get_height() // 2
+        color2 = (70, 70, 70) if hover2 else (40, 40, 40)
+        pygame.draw.rect(screen, color2, button2, border_radius=8)
+        text_surf2 = main_globals['font'].render("2", True, (255, 255, 255))
+        screen.blit(text_surf2, text_surf2.get_rect(center=button2.center))
+
+    def transition_to_dungeon(main_globals, screen):
+        if not main_globals.get('transition_active', False):
+            return
+
+        dt = main_globals['dt']
+
+        for key, default in [
+            ('transition_phase', 'in'),
+            ('transition_progress', 0.0),
+            ('transition_hold_timer', 0.0)
+        ]:
+            if key not in main_globals:
+                main_globals[key] = default
+
+        phase = main_globals['transition_phase']
+        speed = main_globals.get('transition_speed', 2.2)
+
+        if phase == "in":
+            main_globals['transition_progress'] += speed * dt
+            if main_globals['transition_progress'] >= 1.0:
+                main_globals['transition_progress'] = 1.0
+                main_globals['transition_phase'] = "hold"
+                main_globals['transition_hold_timer'] = 0.0
+
+        elif phase == "hold":
+            main_globals['transition_hold_timer'] += dt
+            if main_globals['transition_hold_timer'] >= main_globals.get('transition_hold_duration', 0.5):
+                main_globals['transition_phase'] = "out"
+                main_globals['transition_progress'] = 1.0
+
+                selected_mode = main_globals.get('selected_mode')
+                if selected_mode == 1: # send to dungeon
+                    player = main_globals['player']
+                    player.respawn()
+                    player.effect("healfull", 0)
+                    main_globals['musicswitcher'](main_globals, 0)
+                    main_globals['game_stage'] = "in dungeon"
+                    mx.music.unpause()
+                elif selected_mode == 2: # send to yo mama hous
+                    pass
+
+        elif phase == "out":
+            main_globals['transition_progress'] -= speed * dt
+            if main_globals['transition_progress'] <= 0.0:
+                main_globals['transition_progress'] = 0.0
+                main_globals['transition_active'] = False
+                main_globals['transition_phase'] = "in" # reset ...for next time
+
+        screen_width, screen_height = screen.get_size()
+        progress = main_globals['transition_progress']
+        side = main_globals.get('transition_side', 'left')
+
+        if side == 'left':
+            rect = pygame.Rect(0, 0, int(screen_width * progress), screen_height)
+        else:
+            rect = pygame.Rect(screen_width - int(screen_width * progress), 0, int(screen_width * progress), screen_height)
+
+        pygame.draw.rect(screen, (0, 0, 0), rect)
+
     class Shop:
         def __init__(self, main_globals, x = None, y = None):
             self.image = main_globals['shop_holder']
@@ -623,6 +773,8 @@ def loader3(main_globals):
     main_globals['save'] = save
     main_globals['spawn_blood_particles'] = spawn_blood_particles
     main_globals['distance_to'] = distance_to
+    main_globals['draw_mode_selection'] = draw_mode_selection
+    main_globals['draw_transition'] = transition_to_dungeon
 
     # add classes to main globall
     main_globals['shop'] = shop
