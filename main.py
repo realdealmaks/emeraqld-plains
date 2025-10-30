@@ -10,8 +10,7 @@ pygame.init()
 mx.init(frequency=44100, size=-16, channels=16, buffer=8192)
 screen_h, screen_w = 750, 1080
 screen = pygame.display.set_mode((screen_w, screen_h))
-# pygame.display.set_icon(pygame.image.load("assets/models/player/naganou_icon.png"))
-# please uncomment this before commit i dont have this image
+pygame.display.set_icon(pygame.image.load("assets/models/player/naganou_icon.png"))
 resolution = screen_w, screen_h
 
 virtual_fps = 0

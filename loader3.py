@@ -249,13 +249,11 @@ def loader3(main_globals):
                     if bridging == True: # for enabling bridges/pathing between tiles
                         # horizontal bridge
                         if col_idx + 1 < len(row) and tilemap[row_idx][col_idx + 1] in main_globals['walkable_tiles']:
-                            if main_globals['bridging'] == True:
-                                pygame.draw.rect(mask, (0, 255, 0), (tx + tile_size, ty + tile_size//2 - bridge_size//2,bridge_size, bridge_size))
+                            pygame.draw.rect(mask, (0, 255, 0), (tx + tile_size, ty + tile_size//2 - bridge_size//2,bridge_size, bridge_size))
 
                         # vertical bridge
                         if row_idx + 1 < len(tilemap) and tilemap[row_idx + 1][col_idx] in main_globals['walkable_tiles']:
-                            if main_globals['bridging'] == True:
-                                pygame.draw.rect(mask, (0, 255, 0), (tx + tile_size//2 - bridge_size//2, ty + tile_size, bridge_size, bridge_size))
+                            pygame.draw.rect(mask, (0, 255, 0), (tx + tile_size//2 - bridge_size//2, ty + tile_size, bridge_size, bridge_size))
 
         main_globals['spawn_weapons'](main_globals)
         if counter == 0:
