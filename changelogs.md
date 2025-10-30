@@ -180,7 +180,7 @@ fix hint
 add battle pass (lol)
 i think i did some shit for enemy spawning i forgot bro all this fentanyl is destroying my brain
 
-also enemies have some collision now with Enemy.collide() which is actually the first function in the enemy class somehow
+also enemies have some detection now with Enemy.detect() which is actually the first function in the enemy class somehow
 
 # 30 10 / good snugy
 
@@ -190,4 +190,7 @@ start organising files
 tommorow organising files
 (ended at 13:11:51)
 
-# 
+# 30 10 / makus
+
+finish enemies
+also weapons should actually do their dict defined damage now (see loader2)

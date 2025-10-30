@@ -11,14 +11,20 @@ def enemy(main_globals):
             self.size = main_globals['enemy_size']
             self.health = 50
             self.alive = True
-            self.speed = 0.8
+            self.speed = 0.9
             self.type = type
             self.active = False
+            self.cooldown = 1500 # ms, 1 1/2 seconds
+            self.damage = 10 # why not right?
+            self.last_attack_time = 0
             self.images = [
                 pygame.transform.scale2x(main_globals['enemy_test_0'].convert_alpha()),
                 pygame.transform.scale2x(main_globals['enemy_test_1'].convert_alpha())
             ]
             self.rect = self.images[0].get_rect()
+            self.stagger_duration = 500  # ms, 1/2 seconds
+            self.stagger_end_time = 0    # when stagger ends
+            self.is_staggered = False
 
         def damaged(self, damage):
             self.health -= damage
@@ -26,24 +32,49 @@ def enemy(main_globals):
                 self.alive = False
                 self.die()
             else:
-                pass # here is damage animation
-                # which will probably just tint red
+                self.is_staggered = True
+                self.stagger_end_time = pygame.time.get_ticks() + self.stagger_duration
 
         def detect(self, player):
             distance = math.dist((self.x, self.y), (player.x, player.y))
             if distance <= 150:
                 self.active = True
             return self.active
+        
+        def attack(self, player):
+            now = pygame.time.get_ticks()
+            distance = math.dist((self.x, self.y), (player.x, player.y))
+            if distance <= 40 and now - self.last_attack_time >= self.cooldown:
+                player.damaged(self.damage)
+                self.last_attack_time = now
 
         def move(self, player): # ookay?
-            if self.active:
-                # find vector between the two
-                dx, dy = player.x - self.rect.x, player.y - self.rect.y
-                dist = math.hypot(dx, dy)
-                dx, dy = dx / dist, dy / dist  # idk what this does
-                # actually move
-                self.rect.x += dx * self.speed
-                self.rect.y += dy * self.speed
+            if not self.active or not self.alive:
+                return
+            else:
+                if self.is_staggered:
+                    # check if stagger has ended
+                    if pygame.time.get_ticks() >= self.stagger_end_time:
+                        self.is_staggered = False
+                    else:
+                        return
+                target_x = player.x
+                target_y = player.y
+
+                dx = target_x - self.x
+                dy = target_y - self.y
+
+                # normalise some shit apparently this is important
+                distance = math.hypot(dx, dy)
+                if distance == 25:
+                    return  # bro is already here
+
+                dx /= distance
+                dy /= distance
+
+                # move
+                self.x += dx * self.speed
+                self.y += dy * self.speed
 
         def draw(self, type):
             if self.alive:

@@ -32,6 +32,9 @@ def dungeon(main_globals):
             for x in range(0, mask_width, ts):
                 if main_globals['walkable_mask'].get_at((x, y))[:3] == (0, 255, 0):
                     screen.blit(tile_surface, (x - camera_x, y - camera_y))
+        
+        if 'enemy_groups' not in main_globals:
+            main_globals['enemy_groups'] = []
 
         # tile checking systems
         for row_idx, row in enumerate(main_globals['tilemap']):
@@ -69,6 +72,7 @@ def dungeon(main_globals):
                         upper = random.randrange(2, 10)
                         previous_coords = []
                         min_distance = 100
+                        hemorrhoids_in_tile = []
                         for i in range(1, upper): # adds x through y
                             attempts = 0
                             max_attempts = 500 # give him some tries
@@ -88,11 +92,17 @@ def dungeon(main_globals):
                                 if not too_close:
                                     new_enemy = main_globals['Enemy'](main_globals, enemy_x, enemy_y, random.choice([0, 1]))
                                     enemy_list.append(new_enemy)
+                                    hemorrhoids_in_tile.append(new_enemy)
                                     previous_coords.append((enemy_x, enemy_y))
                                     break  # valid position found
                                 attempts += 1
+                        
+                        main_globals['enemy_groups'].append({
+                            'tile_pos': (row_idx, col_idx),
+                            'enemies': hemorrhoids_in_tile,
+                            'active': True
+                        })
                         print(f"spawned group {main_globals['groups_spawned']} on ({row_idx}, {col_idx})")
-                        # print(previous_coords)
                         main_globals['groups_spawned'] += 1
 
                 elif tile_type == 88: # shop tile
@@ -125,13 +135,30 @@ def dungeon(main_globals):
         # gets bobbers moving
         # hopefully this fits here
         # it did actually fit there, but i moved it here because i wanted to draw slashes over bobbers ;)
-        for enemy in enemy_list:
-            if not enemy.active:
-                if enemy.detect(player): enemy_list.remove(enemy)
+        player_locked = False
+        for group in main_globals['enemy_groups']:
+            if not group['active']:
+                continue  # skip if group was deactivated somehow (optional but did it anyway)
 
+            # check if ANY enemy in the group detects the player
+            group_should_activate = False
+            for enemy in group['enemies']:
+                if not enemy.active and enemy.detect(player):
+                    for e in group['enemies']:
+                        e.active = True
+                    # player_locked = True
+                    group_should_activate = True
+                    break
+
+            # if any enemy detects the player, activate the entire group
+            if group_should_activate:
+                for enemy in group['enemies']:
+                    enemy.active = True
+                player.locked = True
+                
         # move enemies if they are active
         for enemy in enemy_list:
-            if enemy.active: pass # enemy.move(player) # wat
+            if enemy.active: enemy.move(player)
 
         # check if slash hits enemy
         if 'active_slashes' in main_globals and main_globals['active_slashes']:
@@ -142,12 +169,27 @@ def dungeon(main_globals):
                 for slash in active_slashes: # check if slash hits enemy ( for real ts time )
                     if pygame.Rect.colliderect(enemy.rect, slash['rect']):
                         if enemy not in slash['hit_enemies']:
-                            enemy.damaged(20) # or use weapon damage eh?
+                            current_weapon = player.weapons
+                            damage = main_globals['weapon_stats'][current_weapon[0].name]['damage'] # or use weapon damage eh? # YES YES I KNOW!!
+                            enemy.damaged(damage)
+                            print(damage)
                             slash['hit_enemies'].add(enemy) # add to list that the slash hit ( so it doesnt spam )
+        
+        # check if all enemies in a group are dead, and unlock player if so
+        for group in main_globals['enemy_groups']:
+            # if every enemy in this group is dead
+            if all(not enemy.alive for enemy in group['enemies']):
+                if group['active']:
+                    group['active'] = False
+                    print(f"Group at {group['tile_pos']} cleared")
+                    player.locked = False  # unlock player once group is cleared
 
         # draw bob
         for enemy in enemy_list:
             enemy.draw(enemy.type)
+        
+        for enemy in enemy_list:
+            enemy.attack(player)
 
         # draw slashes
         if 'active_slashes' in main_globals:

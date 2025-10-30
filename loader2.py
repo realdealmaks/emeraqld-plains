@@ -97,8 +97,8 @@ def loader2(main_globals):
     }
 
     main_globals['weapon_stats'] = {
-        "sword": {"damage": 10, "range": 50, "cooldown": 0.6},
-        "axe": {"damage": 15, "range": 75, "cooldown": 1},
+        "sword": {"damage": 15, "range": 50, "cooldown": 0.6},
+        "axe": {"damage": 20, "range": 75, "cooldown": 1},
         "book": {"damage": 25, "range": 100, "cooldown": 2},
     }
 
