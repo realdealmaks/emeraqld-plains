@@ -132,13 +132,8 @@ def dungeon(main_globals):
                 # pick up weapon
                 main_globals['interact'](main_globals, player, weapon.x, weapon.y, lambda w=weapon: w.pickup(player))
 
-        # gets bobbers moving
-        # hopefully this fits here
-        # it did actually fit there, but i moved it here because i wanted to draw slashes over bobbers ;)
-        player_locked = False
+        # enemy groups
         for group in main_globals['enemy_groups']:
-            if not group['active']:
-                continue  # skip if group was deactivated somehow (optional but did it anyway)
 
             # check if ANY enemy in the group detects the player
             group_should_activate = False
@@ -146,7 +141,6 @@ def dungeon(main_globals):
                 if not enemy.active and enemy.detect(player):
                     for e in group['enemies']:
                         e.active = True
-                    # player_locked = True
                     group_should_activate = True
                     break
 
@@ -155,9 +149,9 @@ def dungeon(main_globals):
                 for enemy in group['enemies']:
                     enemy.active = True
                 player.locked = True
-                
+
         # move enemies if they are active
-        for enemy in enemy_list:
+        for enemy in enemy_list: 
             if enemy.active: enemy.move(player)
 
         # check if slash hits enemy
@@ -172,23 +166,20 @@ def dungeon(main_globals):
                             current_weapon = player.weapons
                             damage = main_globals['weapon_stats'][current_weapon[0].name]['damage'] # or use weapon damage eh? # YES YES I KNOW!!
                             enemy.damaged(damage)
-                            print(damage)
                             slash['hit_enemies'].add(enemy) # add to list that the slash hit ( so it doesnt spam )
-        
+
         # check if all enemies in a group are dead, and unlock player if so
         for group in main_globals['enemy_groups']:
             # if every enemy in this group is dead
             if all(not enemy.alive for enemy in group['enemies']):
                 if group['active']:
                     group['active'] = False
-                    print(f"Group at {group['tile_pos']} cleared")
+                    print(f"group at {group['tile_pos']} cleared")
                     player.locked = False  # unlock player once group is cleared
 
         # draw bob
         for enemy in enemy_list:
             enemy.draw(enemy.type)
-        
-        for enemy in enemy_list:
             enemy.attack(player)
 
         # draw slashes

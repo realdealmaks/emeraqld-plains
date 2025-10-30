@@ -22,8 +22,8 @@ def enemy(main_globals):
                 pygame.transform.scale2x(main_globals['enemy_test_1'].convert_alpha())
             ]
             self.rect = self.images[0].get_rect()
-            self.stagger_duration = 500  # ms, 1/2 seconds
-            self.stagger_end_time = 0    # when stagger ends
+            self.stagger_duration = 500 # ms, 1/2 seconds
+            self.stagger_end_time = 0 # when stagger ends
             self.is_staggered = False
 
         def damaged(self, damage):
@@ -40,7 +40,7 @@ def enemy(main_globals):
             if distance <= 150:
                 self.active = True
             return self.active
-        
+
         def attack(self, player):
             now = pygame.time.get_ticks()
             distance = math.dist((self.x, self.y), (player.x, player.y))
@@ -67,7 +67,7 @@ def enemy(main_globals):
                 # normalise some shit apparently this is important
                 distance = math.hypot(dx, dy)
                 if distance == 25:
-                    return  # bro is already here
+                    return # bro is already here
 
                 dx /= distance
                 dy /= distance

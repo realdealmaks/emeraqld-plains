@@ -572,6 +572,7 @@ def loader3(main_globals):
         screen = main_globals['screen']
         font = main_globals['font']
         to_menu = main_globals['to_menu']
+        screen.fill((0, 0, 0))
 
         screen.blit(font.render("ded", True, (255, 255, 255)), (20, 20))
         main_globals['musicswitcher'](main_globals, 1)
