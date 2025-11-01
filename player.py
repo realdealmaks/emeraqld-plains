@@ -94,12 +94,9 @@ def player(main_globals):
         def respawn(self):
             print("player respawning")
             main_globals['spawn_set'] = False
-            self.alive = True
             self.x = self.main_globals['spawn_x']
             self.y = self.main_globals['spawn_y']
-            self.weapons = []
             self.main_globals['blood_particles'] = []
-            mx.music.rewind()
 
         def effect(self, effect_type, number): # i dont know why this is seperate
             if effect_type == "heal":

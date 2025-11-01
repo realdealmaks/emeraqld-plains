@@ -37,20 +37,21 @@ def loader1(main_globals):
     88 = shop tile
     2 = weapon tile
     3 = enemy tile
+    98 = end tile
     """
     main_globals['tilemap'] = [
+        [0, 0, 0, 0, 88, 0, 0, 0, 0, 0,],
+        [0, 99, 1, 2, 98, 0, 0, 0, 0, 0,],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
-        [0, 99, 1, 1, 2, 88, 0, 0, 0, 0,],
-        [0, 3, 0, 2, 0, 0, 0, 0, 0, 0,],
-        [0, 1, 0, 2, 0, 0, 0, 0, 0, 0,],
-        [0, 0, 0, 2, 0, 0, 0, 0, 0, 0,],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
     ]
-    main_globals['walkable_tiles'] = [1, 2, 3, 4, 99, 88]  # tiles that can be walked on
+    main_globals['walkable_tiles'] = [1, 2, 3, 4, 99, 88, 98]  # tiles that can be walked on
     main_globals['in_shop'] = False
     main_globals['tile_size'] = 600
     main_globals['is_paused'] = False

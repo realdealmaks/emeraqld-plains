@@ -113,8 +113,25 @@ def dungeon(main_globals):
                     # interact with shop
                     if main_globals['distance_to'](player, (main_globals['shop'].stand_x, main_globals['shop'].stand_y)) < main_globals['interact_distance']:
                         screen.blit(main_globals['interact_image'], (main_globals['shop'].stand_x, main_globals['shop'].stand_y + 50))
-                    if main_globals['pressed_f'] and main_globals['distance_to'](player, (main_globals['shop'].stand_x, main_globals['shop'].stand_y)) < main_globals['interact_distance']:
-                        main_globals['game_stage'] = "shopping"
+                        if main_globals['pressed_e']:
+                            main_globals['game_stage'] = "shopping"
+
+                elif tile_type == 98: # end tile
+                    tile_center = type('', (), {
+                        'x': col_idx * ts + main_globals['tile_size'] // 2,
+                        'y': row_idx * ts + main_globals['tile_size'] // 2
+                    })()
+                    if main_globals['distance_to'](player, tile_center) < main_globals['interact_distance']:
+                        screen.blit(
+                            main_globals['interact_image'],
+                            (
+                                tile_center.x - camera_x - main_globals['interact_image'].get_width() // 2,
+                                tile_center.y - camera_y - main_globals['interact_image'].get_height() // 2
+                            )
+                        )
+                        if main_globals['pressed_e']:
+                            main_globals['remake_floor']()
+
 
         # drawing things on tiles
 

@@ -15,6 +15,83 @@ def loader3(main_globals):
     bigfont = pygame.font.Font("assets/font/editundo.ttf", 48)
     setting_font = credits_font = pygame.font.Font("assets/font/editundo.ttf", 28)
 
+    def remake_floor():
+        tilemap = main_globals['tilemap']
+        rows = len(tilemap)
+        cols = len(tilemap[0])
+        min_distance = 4  # minimum distance between start and end
+        min_straight = 1  # minimum distance before turning again
+        tile_choices = [1, 2, 3] # tiles the path can be filled with
+        tile_probs = [0.5, 0.1, 0.4] # in order * 100 in %
+
+        # pick start and end far enough apart
+        while True:
+            start_r = random.randint(0, rows - 1)
+            start_c = random.randint(0, cols - 1)
+            end_r = random.randint(0, rows - 1)
+            end_c = random.randint(0, cols - 1)
+            distance = abs(start_r - end_r) + abs(start_c - end_c)
+            if distance >= min_distance:
+                break
+
+        update_tile(main_globals, start_c, start_r, 99)
+        update_tile(main_globals, end_c, end_r, 98)
+
+        current_r, current_c = start_r, start_c
+        current_dir = 'r' if random.random() < 0.5 else 'c'
+        straight_count = 0
+
+        path_tiles = []
+
+        while (current_r, current_c) != (end_r, end_c):
+            dr = end_r - current_r
+            dc = end_c - current_c
+
+            can_turn = straight_count >= min_straight
+            if current_dir == 'r' and dc != 0:
+                step = 1 if dc > 0 else -1
+                current_c += step
+                straight_count += 1
+            elif current_dir == 'c' and dr != 0:
+                step = 1 if dr > 0 else -1
+                current_r += step
+                straight_count += 1
+            elif can_turn:
+                if current_dir == 'r' and dr != 0:
+                    step = 1 if dr > 0 else -1
+                    current_r += step
+                    current_dir = 'c'
+                    straight_count = 1
+                elif current_dir == 'c' and dc != 0:
+                    step = 1 if dc > 0 else -1
+                    current_c += step
+                    current_dir = 'r'
+                    straight_count = 1
+            else:
+                if current_dir == 'r' and dc == 0 and dr != 0:
+                    step = 1 if dr > 0 else -1
+                    current_r += step
+                    current_dir = 'c'
+                    straight_count = 1
+                elif current_dir == 'c' and dr == 0 and dc != 0:
+                    step = 1 if dc > 0 else -1
+                    current_c += step
+                    current_dir = 'r'
+                    straight_count = 1
+
+            if tilemap[current_r][current_c] not in (99, 98):
+                tile_value = random.choices(tile_choices, weights=tile_probs)[0]
+                path_tiles.append((current_r, current_c, tile_value))
+
+        # force at least 1 tile 2 or 3
+        if not any(tile[2] in (2, 3) for tile in path_tiles):
+            idx = random.randint(0, len(path_tiles) - 1)
+            r, c, _ = path_tiles[idx]
+            path_tiles[idx] = (r, c, random.choice([2, 3]))
+
+        for r, c, val in path_tiles:
+            update_tile(main_globals, c, r, val)
+
     def draw_mode_selection(main_globals, mouse_pos):
         screen = main_globals['screen']
         screen.fill((0, 0, 0))
@@ -152,6 +229,8 @@ def loader3(main_globals):
             if main_globals['transition_progress'] <= 0.0:
                 main_globals['transition_progress'] = 0.0
                 main_globals['transition_active'] = False
+                main_globals['player'].alive = True
+                main_globals['player'].locked = False
                 main_globals['transition_phase'] = "in" # reset ...for next time
 
         screen_width, screen_height = screen.get_size()
@@ -775,6 +854,7 @@ def loader3(main_globals):
     main_globals['distance_to'] = distance_to
     main_globals['draw_mode_selection'] = draw_mode_selection
     main_globals['draw_transition'] = transition_to_dungeon
+    main_globals['remake_floor'] = remake_floor
 
     # add classes to main globall
     main_globals['shop'] = shop
