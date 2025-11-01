@@ -203,4 +203,6 @@ i forgot what i did ima be real
 
 make """""""""""""automatic"""""""""""""" floor resetting
 
+adds some stairs
+
 #

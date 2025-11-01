@@ -121,14 +121,10 @@ def dungeon(main_globals):
                         'x': col_idx * ts + main_globals['tile_size'] // 2,
                         'y': row_idx * ts + main_globals['tile_size'] // 2
                     })()
+                    screen.blit(main_globals['stairs_image'], (tile_center.x - camera_x - main_globals['stairs_image'].get_width() // 2, tile_center.y - camera_y - main_globals['stairs_image'].get_height() // 2))
                     if main_globals['distance_to'](player, tile_center) < main_globals['interact_distance']:
-                        screen.blit(
-                            main_globals['interact_image'],
-                            (
-                                tile_center.x - camera_x - main_globals['interact_image'].get_width() // 2,
-                                tile_center.y - camera_y - main_globals['interact_image'].get_height() // 2
-                            )
-                        )
+                        screen.blit(main_globals['interact_image'],
+                            (tile_center.x - camera_x - main_globals['interact_image'].get_width() // 2, tile_center.y - camera_y - main_globals['interact_image'].get_height() // 2))
                         if main_globals['pressed_e']:
                             main_globals['remake_floor']()
 

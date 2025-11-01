@@ -54,6 +54,8 @@ def loader2(main_globals):
     main_globals['pedistal_image'] = pygame.transform.scale2x(main_globals['pedistal_image'])
     main_globals['floorboard'] = pygame.image.load('assets/useful images/tiles/image.png')
     main_globals['shop_holder'] = pygame.image.load("assets/useful images/shop_holder.png").convert_alpha()
+    main_globals['stairs_image'] = pygame.image.load("assets/useful images/stairs.png").convert_alpha()
+    main_globals['stairs_image'] = pygame.transform.scale2x(main_globals['stairs_image'])
 
     # audio
     main_globals['musics'] = ["assets/audio/music/testdroga.mp3", "assets/audio/music/game_over_loop.mp3"]
