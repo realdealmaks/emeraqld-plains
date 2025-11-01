@@ -194,3 +194,13 @@ tommorow organising files
 
 finish enemies
 also weapons should actually do their dict defined damage now (see loader2)
+
+# 31 10 / shit: the second
+
+i forgot what i did ima be real
+
+# 1 11 / one one one
+
+make """""""""""""automatic"""""""""""""" floor resetting
+
+#
