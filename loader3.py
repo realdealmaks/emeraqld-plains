@@ -1,5 +1,4 @@
 # this file is for classes and definitions
-from weapons import weapons
 
 # loader 3
 
