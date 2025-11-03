@@ -51,6 +51,7 @@ def loader1(main_globals):
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
     ]
+    main_globals['start_tilemap'] = main_globals['tilemap']
     main_globals['walkable_tiles'] = [1, 2, 3, 4, 99, 88, 98]  # tiles that can be walked on
     main_globals['in_shop'] = False
     main_globals['tile_size'] = 600

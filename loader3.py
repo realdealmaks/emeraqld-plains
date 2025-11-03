@@ -1,4 +1,6 @@
 # this file is for classes and definitions
+from weapons import weapons
+
 # loader 3
 
 # FOR YOUR OWN SAFETY ONLY KEEP 1 FUNCTION OPEN AT ONE TIME 👀👺
@@ -216,10 +218,12 @@ def loader3(main_globals):
                 selected_mode = main_globals.get('selected_mode')
                 if selected_mode == 1: # send to dungeon
                     player = main_globals['player']
+                    player.weapons = []
                     player.respawn()
                     player.effect("healfull", 0)
                     main_globals['musicswitcher'](main_globals, 0)
                     main_globals['game_stage'] = "in dungeon"
+                    main_globals['tilemap'] = main_globals['start_tilemap']
                     mx.music.unpause()
                 elif selected_mode == 2: # send to yo mama hous
                     pass
