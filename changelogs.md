@@ -205,4 +205,11 @@ make """""""""""""automatic"""""""""""""" floor resetting
 
 adds some stairs
 
-#
+# 3 11 / samble
+
+peppere for mvp ( dont softlock with book )
+make dungeon gen WAAAY faster and easier on the cpu ( from 5 fps to not dropping )
+fix fps drops with vignette alpha
+make the modes center https://tenor.com/view/ali-your-a-nice-guy-gif-928162953661809776
+use frame timed animations in some cases
+

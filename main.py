@@ -243,6 +243,13 @@ print("converted main_globals to mains, get ready to tish!")
 # dont use main_globals['🤖'] but instead use main.🤖
 # stupar ce to vidite me je res prevec motilo da je vse bilo v neumni barvi vsega drugega "" texta in nisem hotel kopirati main_globals[''] cisto povsod
 
+
+# dont change ts diddybludd
+main.developer_tools = False
+# well obvi unless you are a dev :(
+# https://tenor.com/en-GB/view/diddyblud-diddy-einstein-albert-einstein-calc-gif-9528529477851089865
+
+
 # redo getting data because they dont have the same names
 frame_caps = main.frame_caps
 main.frame_cap = main_globals.get('max_fps', 60)

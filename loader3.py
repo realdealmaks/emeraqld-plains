@@ -94,6 +94,11 @@ def loader3(main_globals):
         for r, c, val in path_tiles:
             update_tile(main_globals, c, r, val)
 
+        print("new tilemap is:")
+        for i in range(len(main_globals['tilemap'])):
+            print(main_globals['tilemap'][i])
+        main_globals['rebuild_walkable_mask'](main_globals)
+
     def draw_mode_selection(main_globals, mouse_pos):
         screen = main_globals['screen']
         screen.fill((0, 0, 0))
@@ -101,7 +106,7 @@ def loader3(main_globals):
 
         base_size = (200, 50)
         hover_size = (220, 60)
-        anim_speed = 0.1
+        anim_speed = 5.5
         hover_scale = 1.1
         shrink_scale = 0.9
 
@@ -131,10 +136,10 @@ def loader3(main_globals):
             target_scale1 = target_scale2 = 1.0
             target_dim1 = target_dim2 = 150
 
-        main_globals['mode1_scale'] += (target_scale1 - main_globals['mode1_scale']) * anim_speed
-        main_globals['mode2_scale'] += (target_scale2 - main_globals['mode2_scale']) * anim_speed
-        main_globals['mode1_dim'] += (target_dim1 - main_globals['mode1_dim']) * anim_speed
-        main_globals['mode2_dim'] += (target_dim2 - main_globals['mode2_dim']) * anim_speed
+        main_globals['mode1_scale'] += (target_scale1 - main_globals['mode1_scale']) * anim_speed * dt
+        main_globals['mode2_scale'] += (target_scale2 - main_globals['mode2_scale']) * anim_speed * dt
+        main_globals['mode1_dim'] += (target_dim1 - main_globals['mode1_dim']) * anim_speed * dt
+        main_globals['mode2_dim'] += (target_dim2 - main_globals['mode2_dim']) * anim_speed * dt
 
         bg1 = pygame.transform.scale(
             main_globals['mode1img'],
@@ -162,11 +167,10 @@ def loader3(main_globals):
             dim2.fill((0, 0, 0, int(main_globals['mode2_dim'])))
             screen.blit(dim2, bg2_pos)
 
-        for key, target in [('mode1_btn_size', hover_size if hover1 else base_size),
-                            ('mode2_btn_size', hover_size if hover2 else base_size)]:
+        for key, target in [('mode1_btn_size', hover_size if hover1 else base_size), ('mode2_btn_size', hover_size if hover2 else base_size)]:
             curr = main_globals[key]
-            curr[0] += (target[0] - curr[0]) * anim_speed
-            curr[1] += (target[1] - curr[1]) * anim_speed
+            curr[0] += (target[0] - curr[0]) * anim_speed * dt
+            curr[1] += (target[1] - curr[1]) * anim_speed * dt
 
         button1.width, button1.height = map(int, main_globals['mode1_btn_size'])
         button1.topleft = (screen.get_width() // 4 - base_size[0] // 2, screen.get_height() // 2)
@@ -186,6 +190,7 @@ def loader3(main_globals):
         screen.blit(text_surf2, text_surf2.get_rect(center=button2.center))
 
     def transition_to_dungeon(main_globals, screen):
+
         if not main_globals.get('transition_active', False):
             return
 
@@ -529,11 +534,8 @@ def loader3(main_globals):
             if not (math.isclose(w.x, center_x, abs_tol=1) and math.isclose(w.y, center_y, abs_tol=1))
         ]
 
-        print(f"updating tilemap with {col_idx, row_idx, new_tile_type}")
+        print(f"updating tilemap with {col_idx, row_idx} as type {new_tile_type}")
         main_globals['tilemap'][row_idx][col_idx] = new_tile_type # actually updates the tile
-        main_globals['rebuild_walkable_mask'](main_globals) # rebuilds it every time a tile is updated
-        # but i think it should be an argument like rebuild=False but wtv
-        print(f"new tilemap: {main_globals['tilemap']}")
 
     def draw_hud(main_globals, player): # top left images for symboling his health
         if player.alive: # IS HE????????
@@ -553,8 +555,12 @@ def loader3(main_globals):
     def draw_vignette(main_globals, player): # if you dont know what 'vignette' means go away!
         if player.alive: # you filthy hog
             max_alpha = 180
-            vignette_alpha = max_alpha * (1 - player.health / 100)
-            main_globals['vignette'].set_alpha(vignette_alpha)
+            try:
+                if main_globals['vignette'].get_alpha() != max_alpha * (1 - player.health / 100):
+                    vignette_alpha = max_alpha * (1 - player.health / 100)
+                    main_globals['vignette'].set_alpha(vignette_alpha)
+            except UnboundLocalError: # if it dont exists yet
+                vignette_alpha = max_alpha
             main_globals['screen'].blit(main_globals['vignette'], (0, 0))
 
     def draw_pause_menu(main_globals): # the thing you see when paused

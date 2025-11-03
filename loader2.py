@@ -46,8 +46,8 @@ def loader2(main_globals):
     main_globals['mode1img'] = pygame.image.load("assets/useful images/mode1.png").convert_alpha()
     main_globals['mode2img'] = pygame.image.load("assets/useful images/mode2.png").convert_alpha()
     w, h = main_globals['screen_w'] // 2, main_globals['screen_h']
-    main_globals['mode1img'] = pygame.transform.scale(main_globals['mode1img'], (int(w * 1.2), int(h * 1.2)))
-    main_globals['mode2img'] = pygame.transform.scale(main_globals['mode2img'], (int(w * 1.2), int(h * 1.2)))
+    main_globals['mode1img'] = pygame.transform.scale(main_globals['mode1img'], (w, int(h * 1.2)))
+    main_globals['mode2img'] = pygame.transform.scale(main_globals['mode2img'], (w, int(h * 1.2)))
 
     # dungeon assets
     main_globals['pedistal_image'] = pygame.image.load("assets/useful images/pedestal.png").convert_alpha()

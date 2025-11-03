@@ -53,7 +53,7 @@ def weapons(main_globals):
                 mouse_pos = pygame.mouse.get_pos()
 
                 # default slash
-                if self.name == "sword" or self.name == "axe":
+                if self.name == "sword" or self.name == "axe" or self.name == "book": # remove book later
                     scaled_height = int(slash_img.get_height() * (self.range / 50))
                     scaled_slash = pygame.transform.scale(slash_img, (slash_img.get_width(), scaled_height))
 
@@ -104,8 +104,10 @@ def weapons(main_globals):
                 # special attacks
 
                 # book
+                """
                 elif self.name == "book":
                     pass
+                """
 
             else: # if still on cooldown
                 remaining = round(self.cooldown - (time.time() - self.last_attack_time), 2)
