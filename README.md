@@ -21,7 +21,7 @@
     <p><b>A One™ Single Tear Production</b></p>
     <p>Powered by Tear(s) and Energy™ Drinks</p>
     <hr>
-<p>Presented to you by <a href="https://github.com/shmubster" target="_blank">Shramble OS [gen. one point two]</a> and <a href="https://github.com/realdealmaks" target="_blank">aRajeshIdiM India™ </a> </p>
+<p>Presented to you by <a href="https://github.com/shmubster" target="_blank">Shramble OS [gen. one point two]</a> and <a href="https://github.com/realdealmaks" target="_blank">aRajeshIdiM India™ </a> and even <a href="https://github.com/andropolis0" target="_blank">Andropolis(?) the furry</a> </p>
 <hr>
 
 ## DISCLAIMER
