@@ -535,6 +535,8 @@ def loader3(main_globals):
 
         print(f"updating tilemap with {col_idx, row_idx} as type {new_tile_type}")
         main_globals['tilemap'][row_idx][col_idx] = new_tile_type # actually updates the tile
+        if 'groups_spawned' in main_globals:
+            main_globals['groups_spawned'] = 0
 
     def draw_hud(main_globals, player): # top left images for symboling his health
         if player.alive: # IS HE????????
