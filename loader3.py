@@ -13,6 +13,7 @@ def loader3(main_globals):
     font = pygame.font.Font("assets/font/editundo.ttf", 24)
     bigfont = pygame.font.Font("assets/font/editundo.ttf", 48)
     setting_font = credits_font = pygame.font.Font("assets/font/editundo.ttf", 28)
+    smallfont = pygame.font.Font("assets/font/editundo.ttf", 22)
 
     def give_money(amount):  # some indicator for getting rich 🤑
         player = main_globals['player']
@@ -418,18 +419,35 @@ def loader3(main_globals):
         else:
             main_globals['hint_alpha'] = 0
 
-    def weapon_info(main_globals): # not used at all yet
+    def weapon_info(main_globals):
         screen = main_globals['screen']
+        weapons = main_globals['player'].weapons
         screen_w = main_globals['screen'].get_width()
         screen_h = main_globals['screen'].get_height()
-        info_bg_x = screen_w - main_globals['weapon_info_bg'].get_width()
-        info_bg_y = screen_h - main_globals['weapon_info_bg'].get_height()
-        screen.blit(main_globals['weapon_info_bg'], (info_bg_x, info_bg_y))
+        screen.blit(main_globals['weapon_frame'], (screen_w // 2 - main_globals['weapon_frame'].get_width() // 2, screen_h // 2 - main_globals['weapon_frame'].get_height() // 2))
+
+        if not weapons or weapons[0] is None:
+            # draw some hands or something
+            return
+
         weapon = main_globals['player'].weapons[0]
         weapon_image = main_globals['weapon_images'][weapon.name]
-        screen.blit(weapon_image, (info_bg_x + 20, info_bg_y + 20))
+        screen.blit(weapon_image, (screen_w // 2 - main_globals['weapon_frame'].get_width() // 2 + 35, screen_h // 2 - main_globals['weapon_frame'].get_height() // 2 + 30))
 
-    def new_mutation(main_globals, effect, number): # also not used at all yet
+        # stats
+        text = smallfont.render(weapon.name, True, (255, 255, 255))
+        screen.blit(text, (screen_w // 2 - text.get_width() // 2, screen_h // 2 - main_globals['weapon_frame'].get_height() // 2 + 20))
+
+        text = smallfont.render(str(weapon.damage), True, (255, 255, 255))
+        screen.blit(text, (screen_w // 2 - text.get_width() // 2, screen_h // 2 - main_globals['weapon_frame'].get_height() // 2 + 50))
+
+        text = smallfont.render(str(weapon.range), True, (255, 255, 255))
+        screen.blit(text, (screen_w // 2 - text.get_width() // 2, screen_h // 2 - main_globals['weapon_frame'].get_height() // 2 + 80))
+
+        text = smallfont.render(str(weapon.cooldown), True, (255, 255, 255))
+        screen.blit(text, (screen_w // 2 - text.get_width() // 2, screen_h // 2 - main_globals['weapon_frame'].get_height() // 2 + 110))
+
+    def new_mutation(main_globals, effect, number): # not used at all yet
         screen = main_globals['screen']
         mutation_alpha = 0
         while mutation_alpha < 255:
@@ -609,9 +627,9 @@ def loader3(main_globals):
 
     def draw_pause_menu(main_globals): # the thing you see when paused
         screen = main_globals['screen']
-        pygame.draw.rect(screen, (20, 20, 20), (main_globals['screen'].get_width() // 2 - main_globals['screen'].get_width() // 4, main_globals['screen'].get_height() // 2 - main_globals['screen'].get_height() // 4, main_globals['screen'].get_width() // 2, main_globals['screen'].get_height() // 2), 0)
-        screen.blit(main_globals['font'].render("paused", True, (255, 255, 255)), (main_globals['screen'].get_width() // 2 - 60, main_globals['screen'].get_height() // 2 - 22))
+        screen.blit(main_globals['font'].render("paused", True, (255, 255, 255)), (main_globals['screen'].get_width() // 2 - 60, main_globals['screen'].get_height() // 4 - 22))
         mx.music.pause()
+        weapon_info(main_globals)
 
     def draw_menu(main_globals, mouse_pos): # main menu
         screen = main_globals['screen']

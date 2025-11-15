@@ -219,3 +219,6 @@ use frame timed animations in some cases
 add money counter and add moneys
 get some fps
 
+add some info icba to finish it tho
+
+# 
