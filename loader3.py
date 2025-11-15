@@ -1,8 +1,6 @@
-# this file is for classes and definitions
+# this file is for random parts of the game
 
 # loader 3
-
-# FOR YOUR OWN SAFETY ONLY KEEP 1 FUNCTION OPEN AT ONE TIME 👀👺
 
 try:
     import math, random, pygame, pymunk, pathfinding, time
@@ -15,6 +13,24 @@ def loader3(main_globals):
     font = pygame.font.Font("assets/font/editundo.ttf", 24)
     bigfont = pygame.font.Font("assets/font/editundo.ttf", 48)
     setting_font = credits_font = pygame.font.Font("assets/font/editundo.ttf", 28)
+
+    def give_money(amount):  # some indicator for getting rich 🤑
+        player = main_globals['player']
+
+        if main_globals['money_texts']:
+            existing = main_globals['money_texts'][0]
+            existing['amount'] += amount
+            existing['text'] = font.render("+" + str(existing['amount']), True, (255, 255, 0))
+            existing['timer'] = 2.0 # reset timer
+        else:
+            main_globals['money_texts'] = [{
+                'amount': amount,
+                'text': font.render("+" + str(amount), True, (255, 255, 0)),
+                'timer': 2.0
+            }]
+
+        print(f"player got {amount} money")
+        player.effect("money", amount)
 
     def remake_floor():
         tilemap = main_globals['tilemap']
@@ -35,9 +51,11 @@ def loader3(main_globals):
             if distance >= min_distance:
                 break
 
+        # mark start and end
         update_tile(main_globals, start_c, start_r, 99)
         update_tile(main_globals, end_c, end_r, 98)
 
+        # r = hoRizontal c = vertiCal
         current_r, current_c = start_r, start_c
         current_dir = 'r' if random.random() < 0.5 else 'c'
         straight_count = 0
@@ -80,6 +98,7 @@ def loader3(main_globals):
                     current_dir = 'r'
                     straight_count = 1
 
+            # make tile in the path a random one
             if tilemap[current_r][current_c] not in (99, 98):
                 tile_value = random.choices(tile_choices, weights=tile_probs)[0]
                 path_tiles.append((current_r, current_c, tile_value))
@@ -90,6 +109,7 @@ def loader3(main_globals):
             r, c, _ = path_tiles[idx]
             path_tiles[idx] = (r, c, random.choice([2, 3]))
 
+        # update tilemap
         for r, c, val in path_tiles:
             update_tile(main_globals, c, r, val)
 
@@ -108,6 +128,12 @@ def loader3(main_globals):
         anim_speed = 5.5
         hover_scale = 1.1
         shrink_scale = 0.9
+
+        main_globals.setdefault('mode1_scaled', main_globals['mode1img'])
+        main_globals.setdefault('mode2_scaled', main_globals['mode2img'])
+
+        main_globals.setdefault('mode1_last_size', main_globals['mode1img'].get_size())
+        main_globals.setdefault('mode2_last_size', main_globals['mode2img'].get_size())
 
         button1 = main_globals['mode1button']
         button2 = main_globals['mode2button']
@@ -140,16 +166,32 @@ def loader3(main_globals):
         main_globals['mode1_dim'] += (target_dim1 - main_globals['mode1_dim']) * anim_speed * dt
         main_globals['mode2_dim'] += (target_dim2 - main_globals['mode2_dim']) * anim_speed * dt
 
-        bg1 = pygame.transform.scale(
-            main_globals['mode1img'],
-            (int(main_globals['mode1img'].get_width() * main_globals['mode1_scale']),
-             int(main_globals['mode1img'].get_height() * main_globals['mode1_scale']))
+        new_size1 = (
+            int(main_globals['mode1img'].get_width() * main_globals['mode1_scale']),
+            int(main_globals['mode1img'].get_height() * main_globals['mode1_scale'])
         )
-        bg2 = pygame.transform.scale(
-            main_globals['mode2img'],
-            (int(main_globals['mode2img'].get_width() * main_globals['mode2_scale']),
-             int(main_globals['mode2img'].get_height() * main_globals['mode2_scale']))
+        new_size2 = (
+            int(main_globals['mode2img'].get_width() * main_globals['mode2_scale']),
+            int(main_globals['mode2img'].get_height() * main_globals['mode2_scale'])
         )
+
+        new_size1 = (max(1, new_size1[0]), max(1, new_size1[1]))
+        new_size2 = (max(1, new_size2[0]), max(1, new_size2[1]))
+
+        if new_size1 != main_globals['mode1_last_size']:
+            main_globals['mode1_scaled'] = pygame.transform.smoothscale(
+                main_globals['mode1img'], new_size1
+            )
+            main_globals['mode1_last_size'] = new_size1
+
+        if new_size2 != main_globals['mode2_last_size']:
+            main_globals['mode2_scaled'] = pygame.transform.smoothscale(
+                main_globals['mode2img'], new_size2
+            )
+            main_globals['mode2_last_size'] = new_size2
+
+        bg1 = main_globals['mode1_scaled']
+        bg2 = main_globals['mode2_scaled']
 
         bg1_pos = (0, 0)
         bg2_pos = (screen.get_width() - bg2.get_width(), 0)
@@ -271,7 +313,7 @@ def loader3(main_globals):
         # y where they stop
         landing_y = spawn_y + 30
 
-        for _ in range(amount):
+        for i in range(amount):
             # random size
             radius = random.randint(1, 2)
             body = pymunk.Body(1, pymunk.moment_for_circle(1, 0, radius))
@@ -351,20 +393,22 @@ def loader3(main_globals):
             alpha += dt * 255 / main_globals['hint_fade_duration']
             if alpha > 255:
                 alpha = 255
+
             # really shoulda made a for loop for ts
+            # i did
             main_globals['hint_alpha'] = alpha
-            main_globals['key_w_hint'].set_alpha(alpha)
-            main_globals['key_a_hint'].set_alpha(alpha)
-            main_globals['key_s_hint'].set_alpha(alpha)
-            main_globals['key_d_hint'].set_alpha(alpha)
-            main_globals['key_e_hint'].set_alpha(alpha)
-            main_globals['mouse_left_hint'].set_alpha(alpha)
-            main_globals['mouse_blank_hint'].set_alpha(alpha)
-            screen.blit(main_globals['key_w_hint'], (10 + block_size, main_globals['screen'].get_height() - block_size*2 - 10))
-            screen.blit(main_globals['key_a_hint'], (10, main_globals['screen'].get_height() - block_size - 10))
-            screen.blit(main_globals['key_s_hint'], (10 + block_size, main_globals['screen'].get_height() - block_size - 10))
-            screen.blit(main_globals['key_d_hint'], (10 + block_size*2, main_globals['screen'].get_height() - block_size - 10))
-            screen.blit(main_globals['key_e_hint'], (10 + block_size*2, main_globals['screen'].get_height() - block_size*2 - 10))
+            hints = {
+                'key_w_hint': (10 + block_size, main_globals['screen'].get_height() - block_size*2 - 10),
+                'key_a_hint': (10, main_globals['screen'].get_height() - block_size - 10),
+                'key_s_hint': (10 + block_size, main_globals['screen'].get_height() - block_size - 10),
+                'key_d_hint': (10 + block_size*2, main_globals['screen'].get_height() - block_size - 10),
+                'key_e_hint': (10 + block_size*2, main_globals['screen'].get_height() - block_size*2 - 10),
+            }
+
+            for key, pos in hints.items():
+                main_globals[key].set_alpha(alpha)
+                screen.blit(main_globals[key], pos)
+
             # swap mouse image
             ticks = pygame.time.get_ticks() # ms
             if (ticks // 1000) % 2 == 0: # s
@@ -543,7 +587,6 @@ def loader3(main_globals):
             shake_x, shake_y = player.shake() # reuse player shake for the hud
             screen = main_globals['screen']
             pygame.draw.circle(screen, (20, 20, 20), (100, 100), 80) # i think we should remove the text
-            # and draw some gold coins over his face as wealth :D reply -> # 
             screen.blit(bigfont.render(str(player.health), True, (255, 255, 255)), (120, 200))
             screen.blit(bigfont.render(str(player.wealth), True, (255, 215, 0)), (120, 250)) # just realised man good job!!!!! wealth health
             if player.health > 66: # jebo vam siks seven 🤖
@@ -866,6 +909,7 @@ def loader3(main_globals):
     main_globals['draw_mode_selection'] = draw_mode_selection
     main_globals['draw_transition'] = transition_to_dungeon
     main_globals['remake_floor'] = remake_floor
+    main_globals['give_money'] = give_money
 
     # add classes to main globall
     main_globals['shop'] = shop

@@ -1,4 +1,5 @@
-# weapons file
+# weapon logic file
+
 import pygame, random, math, time
 
 def weapons(main_globals):

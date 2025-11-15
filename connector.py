@@ -1,8 +1,8 @@
-import json
-import os
-
 # connector
 # this file is for storing data
+
+import json
+import os
 
 """
 okay so new plan for this since it isnt a db, we can still just

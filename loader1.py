@@ -1,4 +1,5 @@
 # this file is for variables
+
 # loader 1
 
 import pygame
@@ -52,16 +53,17 @@ def loader1(main_globals):
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
     ]
     main_globals['start_tilemap'] = main_globals['tilemap']
-    main_globals['walkable_tiles'] = [1, 2, 3, 4, 99, 88, 98]  # tiles that can be walked on
+    main_globals['walkable_tiles'] = [1, 2, 3, 4, 99, 88, 98] # tiles that can be walked on
     main_globals['in_shop'] = False
     main_globals['tile_size'] = 600
     main_globals['is_paused'] = False
     main_globals['tile_offset'] = 50
+    main_globals['money_texts'] = []
 
     # camera
     main_globals['camera_x'] = 0
     main_globals['camera_y'] = 0
-    main_globals['camera_speed'] = 0.1  # lower = slower
+    main_globals['camera_speed'] = 0.1 # lower = slower
 
     # enemy variables
     main_globals['enemy_size'] = 50

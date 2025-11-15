@@ -1,3 +1,4 @@
+# for switching the game state
 # stsw - stage switcher
 
 def stsw(main_globals):

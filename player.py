@@ -1,4 +1,4 @@
-# this file is for loading player
+# this file is for loading player logic
 
 import random
 from pygame import mixer as mx
@@ -16,7 +16,7 @@ def player(main_globals):
             self.shake_timer = 0
             self.main_globals = main_globals
             self.weapons = []
-            self.wealth = 50000 # consider this debug money for now
+            self.wealth = 0 # broke ass bitch
             self.locked = False
 
             size = self.main_globals['player_size']
@@ -105,6 +105,8 @@ def player(main_globals):
                     player.health = 100
             elif effect_type == "healfull":
                 player.health = 100
+            elif effect_type == "money":
+                player.wealth += number
 
         def attack(self, main_globals):
             if len(self.weapons) != 0:

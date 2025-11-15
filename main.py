@@ -245,7 +245,7 @@ print("converted main_globals to mains, get ready to tish!")
 
 
 # dont change ts diddybludd
-main.developer_tools = False
+main.developer_tools = True
 # well obvi unless you are a dev :(
 # https://tenor.com/en-GB/view/diddyblud-diddy-einstein-albert-einstein-calc-gif-9528529477851089865
 

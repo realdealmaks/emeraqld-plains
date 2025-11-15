@@ -1,4 +1,5 @@
 # for bobbers
+
 import pygame, math
 
 def enemy(main_globals):
@@ -9,7 +10,10 @@ def enemy(main_globals):
             self.x = x
             self.y = y
             self.size = main_globals['enemy_size']
-            self.health = 50
+            if type == 0:
+                self.health = 40
+            elif type == 1:
+                self.health = 60
             self.alive = True
             self.speed = 0.9
             self.type = type
@@ -89,6 +93,14 @@ def enemy(main_globals):
         def die(self):
             if self in self.main_globals['enemy_list']:
                 self.main_globals['enemy_list'].remove(self)
+
+                # give money to super jew
+                ammount = 0
+                if self.type == 0:
+                    ammount = 10
+                elif self.type == 1:
+                    ammount = 15
+                main_globals['give_money'](ammount)
 
     enemy = Enemy(main_globals, main_globals['spawn_x'], main_globals['spawn_y'], main_globals['enemy_type'])
 

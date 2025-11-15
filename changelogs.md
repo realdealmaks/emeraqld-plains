@@ -213,3 +213,9 @@ fix fps drops with vignette alpha
 make the modes center https://tenor.com/view/ali-your-a-nice-guy-gif-928162953661809776
 use frame timed animations in some cases
 
+
+# 15 11 / sambles indianos
+
+add money counter and add moneys
+get some fps
+

@@ -276,6 +276,12 @@ def dungeon(main_globals):
 
         main_globals['blood_particles'] = new_particles
 
+        for item in main_globals['money_texts']:
+            screen.blit(item['text'], (130, 300))
+            item['timer'] -= main_globals['dt']
+            if item['timer'] <= 0:
+                main_globals['money_texts'].remove(item)
+
         # pausing of the game
         if is_paused == False:
             main_globals['draw_vignette'](main_globals, player)
