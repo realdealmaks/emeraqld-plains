@@ -117,4 +117,4 @@ def player(main_globals):
     main_globals['player'] = player
     main_globals['Player'] = Player 
 
-    print("player file loaded")
+    print("player, " , end = "")

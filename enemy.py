@@ -107,4 +107,4 @@ def enemy(main_globals):
     main_globals['enemy'] = enemy
     main_globals['Enemy'] = Enemy
 
-    print("enemy file loaded")
+    print("enemy, ", end = "")

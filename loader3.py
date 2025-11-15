@@ -22,16 +22,13 @@ def loader3(main_globals):
             existing = main_globals['money_texts'][0]
             existing['amount'] += amount
             existing['text'] = font.render("+" + str(existing['amount']), True, (255, 255, 0))
-            existing['timer'] = 2.0 # reset timer
+            existing['timer'] = 3.0 # reset timer
         else:
             main_globals['money_texts'] = [{
                 'amount': amount,
                 'text': font.render("+" + str(amount), True, (255, 255, 0)),
-                'timer': 2.0
+                'timer': 3.0
             }]
-
-        print(f"player got {amount} money")
-        player.effect("money", amount)
 
     def remake_floor():
         tilemap = main_globals['tilemap']
@@ -476,7 +473,7 @@ def loader3(main_globals):
         if distance_to(player, (x, y)) < main_globals['interact_distance']: # if player is within reach
             if main_globals['pressed_e'] and not main_globals['is_paused'] and function is not None:
                 function()
-                print(f"player interacted at ({x}, {y})")
+                print(f"player interacted at ({x}, {y}), ", end="")
                 main_globals['pressed_e'] = False # prevent spam
 
     def distance_to(thing1, thing2): # basically just math.isclose without math.isclose
@@ -595,7 +592,7 @@ def loader3(main_globals):
             if not (math.isclose(w.x, center_x, abs_tol=1) and math.isclose(w.y, center_y, abs_tol=1))
         ]
 
-        print(f"updating tilemap with {col_idx, row_idx} as type {new_tile_type}")
+        print(f"updating tilemap with {col_idx, row_idx} as type {new_tile_type}, ", end="")
         main_globals['tilemap'][row_idx][col_idx] = new_tile_type # actually updates the tile
         if 'groups_spawned' in main_globals:
             main_globals['groups_spawned'] = 0
@@ -933,4 +930,4 @@ def loader3(main_globals):
     main_globals['shop'] = shop
     main_globals['Shop'] = Shop
 
-    print("loader3 file loaded")
+    print("loader3, ", end = "")

@@ -1,7 +1,8 @@
-# main python script
+# speedloader for testings
 try:
     import random, pygame, pymunk, time, importlib.util
     from pygame import mixer as mx
+    import threading
 except ModuleNotFoundError as e:
     print(f"you are missing module {e.name} man")
 
@@ -22,7 +23,7 @@ virtual_clock = pygame.time.Clock()
 virtual_w = 1080
 virtual_h = 750
 virtual_screen = pygame.Surface((virtual_w, virtual_h))
-dt = dt = virtual_clock.tick(vfps_max) / 1000
+dt = virtual_clock.tick(vfps_max) / 1000
 prev_time = pygame.time.get_ticks() / 1000
 max_fps = 60
 
@@ -52,13 +53,16 @@ class DictNamespace:
     def __setitem__(self, k, v):
         self._d[k] = v
 
+start_time = time.time()
+
+# pre defines some variables
 main_globals = {
     'screen_w': 1080, 'screen_h': 750, 'screen': pygame.display.set_mode((1080, 750))
 }
 
-last_context = None
+last_context = "preparing"
 loading_step = 0
-loading_steps = 11
+loading_steps = 0
 bar_risen = False
 bar_h = 0
 splash_alpha = 0
@@ -66,7 +70,6 @@ text_alpha = 0
 text_faded = False
 bar_color = (0, 170, 0)
 fade_out = False
-fade_speed = 5
 splash_image = pygame.image.load("assets/useful images/splashimage.jpg").convert_alpha()
 loading_icon = pygame.image.load("assets/useful images/save.png")
 loading_icon = pygame.transform.scale2x(loading_icon)
@@ -89,7 +92,7 @@ def draw_loading_screen(step, total, context):
             splash_alpha = 255
 
     if fade_out and splash_alpha > 0:
-        splash_alpha -= fade_speed
+        splash_alpha -= 5
         if splash_alpha < 0:
             splash_alpha = 0
 
@@ -115,11 +118,10 @@ def draw_loading_screen(step, total, context):
 
     if fade_out:
         if text_alpha > 0:
-            text_alpha -= fade_speed
+            text_alpha -= 5
             if text_alpha < 0:
                 text_alpha = 0
 
-    # straight bars yo
     pygame.draw.rect(screen, (80, 80, 80), (0, screen_h - bar_h, bar_w, target_bar_h))
     pygame.draw.rect(screen, bar_color, (0, screen_h - bar_h, (bar_w / total) * step if total else 0, target_bar_h))
 
@@ -130,48 +132,15 @@ def draw_loading_screen(step, total, context):
     screen.blit(rotated_icon, rotated_rect.topleft)
 
     temp_font = pygame.font.Font("assets/font/editundo.ttf", 34)
-    if context == "finalizing":
-        display_text = "finalizing"
-    elif context == "preparing":
-        display_text = "preparing"
-    else:
-        display_text = f"loading {context}..."
+    display_text = f"loading {context}..." if context not in ("preparing", "finalizing") else context
     text = temp_font.render(display_text, True, (255, 255, 255))
     text_rect = text.get_rect(topleft=(loading_icon.get_width() + 20, screen_h - 60))
     text.set_alpha(text_alpha)
     screen.blit(text, text_rect)
 
-    if not fade_out and bar_risen and not text_faded:
-        text_alpha += 5
-        if text_alpha >= 255:
-            text_alpha = 255
-            text_faded = True
-
     pygame.display.flip()
 
-def loading_bar_flicker(duration=0.5, steps=10, force_full=False):
-    global bar_color, loading_step
-    normal = (0, 170, 0)
-    bright = (0, 255, 0)
-    white = (255, 255, 255)
-
-    for i in range(steps):
-        t = i / steps
-        bar_color = tuple(int(white[j] + t * (bright[j] - white[j])) for j in range(3))
-        draw_loading_screen(loading_steps if force_full else loading_step, loading_steps, last_context)
-        pygame.time.wait(int((duration / (2 * steps)) * 1000))
-
-    for i in range(steps):
-        t = i / steps
-        bar_color = tuple(int(bright[j] + t * (normal[j] - bright[j])) for j in range(3))
-        draw_loading_screen(loading_steps if force_full else loading_step, loading_steps, last_context)
-        pygame.time.wait(int((duration / (2 * steps)) * 1000))
-
-    bar_color = normal
-
-start_time = time.time()
-
-# add files here to be loaded (must match name)
+# modules to load
 modules_to_load = [
     ("stsw", "stager"),
     ("loader1", "variables"),
@@ -183,43 +152,54 @@ modules_to_load = [
     ("player", "logic"),
     ("enemy", "logic")
 ]
+loading_steps = len(modules_to_load)
 
-# loading prep
-last_context = "preparing"
-bar_risen = False
-text_faded = False
-fade_out = False
+loading_done = False
+loading_error = None
+loaded_modules = []
 
 print("loading: ", end="")
 
-while not bar_risen or text_alpha < 255:
-    draw_loading_screen(0, loading_steps, "preparing")
-    pygame.event.pump()
-    pygame.time.wait(30)
+def loader():
+    global loading_done, loading_error, loaded_modules, loading_step, last_context
 
-# loading initial
-draw_loading_screen(loading_step, loading_steps, "starting")
-loaded_modules = []
+    try:
+        for idx, (mod_name, context) in enumerate(modules_to_load, start=1):
+            loading_step = idx
+            last_context = context
 
-for idx, (mod_name, context) in enumerate(modules_to_load, start=1):
-    loading_step = idx
-    draw_loading_screen(idx, len(modules_to_load), context)
-    loading_bar_flicker()
-    if mod_name is not None:
-        mod = load_into_globals(f"{mod_name}.py")
-        loaded_modules.append((mod, mod_name))
-        loader_func = getattr(mod, mod_name, None)
-        try:
-            loader_func(main_globals)
-        except Exception as e:
-            print(f"error loading {mod_name}: {e}")
+            # load module into globals
+            mod = load_into_globals(f"{mod_name}.py")
+            loaded_modules.append((mod, mod_name))
 
-# finalize loading
-loading_step = len(loaded_modules) + 1
+            loader_func = getattr(mod, mod_name, None)
+            if loader_func:
+                loader_func(main_globals)
+
+        loading_done = True
+    except Exception as e:
+        loading_error = e
+        loading_done = True
+
+draw_loading_screen(0, loading_steps, last_context)
+pygame.event.pump()
+
+thread = threading.Thread(target=loader, daemon=True)
+thread.start()
+
+while not loading_done:
+    draw_loading_screen(loading_step, loading_steps, last_context)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            raise SystemExit
+
+if loading_error:
+    raise loading_error
+
 fade_out = True
 while splash_alpha > 0:
-    draw_loading_screen(loading_step, len(loaded_modules) + 1, "finalizing")
-    pygame.time.wait(20)
+    draw_loading_screen(loading_step, loading_steps, "finalizing")
 
 main_globals['game_stage'] = "in menu"
 total_time = time.time() - start_time
@@ -230,7 +210,7 @@ saved_data = main_globals['connector_instance'].get_data()
 for key, value in saved_data.items():
     if key in main_globals:
         main_globals[key] = value
-print(f"loaded saved data: {saved_data}")
+print(f"loaded data: {saved_data}")
 
 main = DictNamespace(main_globals) # converts some globals
 print("ready, ", end="")
@@ -239,7 +219,7 @@ print("ready, ", end="")
 
 
 # dont change ts diddybludd
-main.developer_tools = False
+main.developer_tools = True
 # well obvi unless you are a dev :(
 # https://tenor.com/en-GB/view/diddyblud-diddy-einstein-albert-einstein-calc-gif-9528529477851089865
 

@@ -102,7 +102,7 @@ def dungeon(main_globals):
                             'enemies': hemorrhoids_in_tile,
                             'active': True
                         })
-                        print(f"spawned group {main_globals['groups_spawned']} on ({row_idx}, {col_idx})")
+                        print(f"spawned group {main_globals['groups_spawned']} on ({row_idx}, {col_idx}), ", end="")
                         main_globals['groups_spawned'] += 1
 
                 elif tile_type == 88: # shop tile
@@ -187,7 +187,7 @@ def dungeon(main_globals):
             if all(not enemy.alive for enemy in group['enemies']):
                 if group['active']:
                     group['active'] = False
-                    print(f"group at {group['tile_pos']} cleared")
+                    print(f"group at {group['tile_pos']} cleared, ", end="")
                     player.locked = False  # unlock player once group is cleared
 
         # draw bob
@@ -279,8 +279,10 @@ def dungeon(main_globals):
         for item in main_globals['money_texts']:
             screen.blit(item['text'], (130, 300))
             item['timer'] -= main_globals['dt']
-            if item['timer'] <= 0:
+            if item['timer'] <= 0 or player.locked == False:
                 main_globals['money_texts'].remove(item)
+                player.effect("money", item['amount'])
+                print(f"player got {item['amount']} moneys, ", end="")
 
         # pausing of the game
         if is_paused == False:
@@ -303,4 +305,4 @@ def dungeon(main_globals):
 
     main_globals['draw_dungeon'] = draw_dungeon
 
-    print("dungeon file loaded")
+    print("dungeon, ", end = "")

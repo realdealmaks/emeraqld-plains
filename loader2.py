@@ -115,4 +115,4 @@ def loader2(main_globals):
         "book": {"damage": 25, "range": 100, "cooldown": 2},
     }
 
-    print("loader2 file loaded")
+    print("loader2, ", end = "")

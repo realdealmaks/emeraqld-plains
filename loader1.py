@@ -164,4 +164,4 @@ def loader1(main_globals):
     main_globals['blood_particles'] = []
     main_globals['space'] = None # set in main
 
-    print("loader1 file loaded")
+    print("loader1, ", end = "")

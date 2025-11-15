@@ -25,8 +25,7 @@ def weapons(main_globals):
                     new_weapon.x = center_x
                     new_weapon.y = center_y
                     main_globals['weapons_on_map'].append(new_weapon)
-                    print(f"spawned {weapon_name} on ({row_idx}, {col_idx})")
-                    # print(f"weapons on map: {main_globals['weapons_on_map']}") too many prints
+                    print(f"spawned {weapon_name} on ({row_idx}, {col_idx}), ", end="")
 
     class Weapon():
         def __init__(self, name):
@@ -49,7 +48,7 @@ def weapons(main_globals):
         def attack(self, player, main_globals):
             slash_img = main_globals['slash_image']
             if self.can_attack():
-                print(f"player attacked with {self.name}")
+                print(f"player attacked with {self.name}, ", end="")
                 self.last_attack_time = time.time()
                 mouse_pos = pygame.mouse.get_pos()
 
@@ -112,7 +111,7 @@ def weapons(main_globals):
 
             else: # if still on cooldown
                 remaining = round(self.cooldown - (time.time() - self.last_attack_time), 2)
-                print(f"{self.name} is on cooldown for {remaining} more seconds")
+                print(f"{self.name} is on cooldown for {remaining} more seconds, ", end="")
 
         def pickup(self, player):
             if len(player.weapons) > 0:
@@ -120,13 +119,13 @@ def weapons(main_globals):
                 old_weapon.x = self.x
                 old_weapon.y = self.y
                 main_globals['weapons_on_map'].append(old_weapon) # swap weapons
-                print(f"player dropped {old_weapon.name}")
+                print(f"player dropped {old_weapon.name}, ", end="")
             player.weapons.append(self)
 
             if self in main_globals['weapons_on_map']:
                 main_globals['weapons_on_map'].remove(self)
 
-            print(f"player picked up {self.name}")
+            print(f"player picked up {self.name}, ", end="")
 
         def draw(self, screen, x, y):
             screen.blit(main_globals['weapon_images'][self.name], (x, y))
@@ -134,4 +133,4 @@ def weapons(main_globals):
     main_globals['spawn_weapons'] = spawn_weapons
     main_globals['Weapon'] = Weapon
 
-    print("weapons file loaded")
+    print("weapons, ", end = "")

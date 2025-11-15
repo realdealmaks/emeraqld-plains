@@ -28,4 +28,4 @@ def stsw(main_globals):
 
     main_globals['match_state'] = match_state
 
-    print("stsw (stager) file loaded")
+    print("stager, ", end = "")

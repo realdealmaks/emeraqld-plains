@@ -57,7 +57,7 @@ def connector(main_globals):
 
     main_globals['connector_instance'] = Connector(default_data=default_data)
 
-    print("connector file loaded")
+    print("connector, ", end = "")
 
 # test to see if the file gets written anything
 test = False
