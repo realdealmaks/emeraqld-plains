@@ -287,10 +287,12 @@ while running:
                 main.moving_down = True
             if event.key == pygame.K_a:
                 main.moving_left = True
-                main.facing_left = True
+                if not main.is_paused:
+                    main.facing_left = True
             if event.key == pygame.K_d: 
                 main.moving_right = True
-                main.facing_left = False
+                if not main.is_paused:
+                    main.facing_left = False
             if event.key == pygame.K_e:
                 main.pressed_e = True
             else:

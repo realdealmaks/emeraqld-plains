@@ -223,4 +223,8 @@ add some info icba to finish it tho
 
 jaz razkazujem hitrost ( in svoj penis ampak ok )
 
+# 16 11 / sambles indijangos
+
+updated the pause
+
 # 

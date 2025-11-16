@@ -84,9 +84,17 @@ def loader2(main_globals):
         main_globals[f"mouse_{mouse_hints[i]}_hint"] = pygame.transform.scale(main_globals[f"mouse_{mouse_hints[i]}_hint"], (mouse_w * 3.5, mouse_h * 3.5))
 
     # weapone sectione
-    main_globals['weapon_frame'] = pygame.image.load("assets/models/weapons/weaponFrame.png").convert_alpha()
+    main_globals['weapon_frame'] = pygame.image.load("assets/models/weapons/stats/weaponFrame.png").convert_alpha()
     main_globals['weapon_frame'] = pygame.transform.scale2x(main_globals['weapon_frame'])
     main_globals['weapon_frame'] = pygame.transform.scale2x(main_globals['weapon_frame'])
+
+    damage_stat = pygame.image.load(f"assets/models/weapons/stats/damage.png").convert_alpha()
+    damage_stat = pygame.transform.scale(damage_stat, (int(damage_stat.get_width() * 1.2), int(damage_stat.get_height() * 1.2)))
+    range_stat = pygame.image.load(f"assets/models/weapons/stats/reach.png").convert_alpha()
+    range_stat = pygame.transform.scale(range_stat, (int(range_stat.get_width() * 1.2), int(range_stat.get_height() * 1.2)))
+    cooldown_stat = pygame.image.load(f"assets/models/weapons/stats/cooldown.png").convert_alpha()
+
+    main_globals['weapon_stat_images'] = [damage_stat, range_stat, cooldown_stat]
 
     sword_image = pygame.image.load("assets/models/weapons/sword.png").convert_alpha()
     w, h = sword_image.get_size()

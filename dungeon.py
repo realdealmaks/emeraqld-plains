@@ -163,10 +163,6 @@ def dungeon(main_globals):
                     enemy.active = True
                 player.locked = True
 
-        # move enemies if they are active
-        for enemy in enemy_list: 
-            if enemy.active: enemy.move(player)
-
         # check if slash hits enemy
         if 'active_slashes' in main_globals and main_globals['active_slashes']:
             active_slashes = main_globals['active_slashes']
@@ -193,7 +189,6 @@ def dungeon(main_globals):
         # draw bob
         for enemy in enemy_list:
             enemy.draw(enemy.type)
-            enemy.attack(player)
 
         # draw slashes
         if 'active_slashes' in main_globals:
@@ -204,17 +199,6 @@ def dungeon(main_globals):
                     screen.blit(slash['image'], slash['rect'])
                     still_active.append(slash)
             main_globals['active_slashes'] = still_active
-
-        # animate player
-        frame_timer += 1
-        if frame_timer >= frame_delay:
-            frame_timer = 0
-            if main_globals['moving_up'] or main_globals['moving_down'] or main_globals['moving_left'] or main_globals['moving_right']:
-                current_frame = (current_frame + 1) % len(frames)
-            else:
-                current_frame = 1
-        main_globals['frame_timer'] = frame_timer
-        main_globals['current_frame'] = current_frame
 
         player_frame = pygame.transform.scale(frames[current_frame], (player_size * 3, player_size * 3))
         if main_globals['facing_left']:
@@ -276,16 +260,36 @@ def dungeon(main_globals):
 
         main_globals['blood_particles'] = new_particles
 
-        for item in main_globals['money_texts']:
-            screen.blit(item['text'], (130, 300))
-            item['timer'] -= main_globals['dt']
-            if item['timer'] <= 0 or player.locked == False:
-                main_globals['money_texts'].remove(item)
-                player.effect("money", item['amount'])
-                print(f"player got {item['amount']} moneys, ", end="")
-
         # pausing of the game
-        if is_paused == False:
+        if not is_paused:
+
+            # enemy attack
+            for enemy in enemy_list:
+                enemy.attack(player)
+
+            # animate player
+            frame_timer += 1
+            if frame_timer >= frame_delay:
+                frame_timer = 0
+                if main_globals['moving_up'] or main_globals['moving_down'] or main_globals['moving_left'] or main_globals['moving_right']:
+                    current_frame = (current_frame + 1) % len(frames)
+                else:
+                    current_frame = 1
+            main_globals['frame_timer'] = frame_timer
+            main_globals['current_frame'] = current_frame
+
+            # move enemies if they are active
+            for enemy in enemy_list: 
+                if enemy.active: enemy.move(player)
+
+            for item in main_globals['money_texts']:
+                screen.blit(item['text'], (130, 300))
+                item['timer'] -= main_globals['dt']
+                if item['timer'] <= 0 or player.locked == False:
+                    main_globals['money_texts'].remove(item)
+                    player.effect("money", item['amount'])
+                    print(f"player got {item['amount']} moneys, ", end="")
+
             main_globals['draw_vignette'](main_globals, player)
             mx.music.unpause()
             dx = dy = 0
