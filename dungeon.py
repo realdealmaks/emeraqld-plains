@@ -163,20 +163,6 @@ def dungeon(main_globals):
                     enemy.active = True
                 player.locked = True
 
-        # check if slash hits enemy
-        if 'active_slashes' in main_globals and main_globals['active_slashes']:
-            active_slashes = main_globals['active_slashes']
-            for enemy in enemy_list:
-                if not enemy.alive: # skip if dead
-                    continue
-                for slash in active_slashes: # check if slash hits enemy ( for real ts time )
-                    if pygame.Rect.colliderect(enemy.rect, slash['rect']):
-                        if enemy not in slash['hit_enemies']:
-                            current_weapon = player.weapons
-                            damage = main_globals['weapon_stats'][current_weapon[0].name]['damage'] # or use weapon damage eh? # YES YES I KNOW!!
-                            enemy.damaged(damage)
-                            slash['hit_enemies'].add(enemy) # add to list that the slash hit ( so it doesnt spam )
-
         # check if all enemies in a group are dead, and unlock player if so
         for group in main_globals['enemy_groups']:
             # if every enemy in this group is dead
@@ -203,6 +189,62 @@ def dungeon(main_globals):
         player_frame = pygame.transform.scale(frames[current_frame], (player_size * 3, player_size * 3))
         if main_globals['facing_left']:
             player_frame = pygame.transform.flip(player_frame, True, False)
+
+        # check if slash hits enemy
+        if 'active_slashes' in main_globals and main_globals['active_slashes']:
+            active_slashes = main_globals['active_slashes']
+            for enemy in enemy_list:
+                if not enemy.alive: # skip if dead
+                    continue
+                for slash in active_slashes: # check if slash hits enemy ( for real ts time )
+                    if pygame.Rect.colliderect(enemy.rect, slash['rect']):
+                        if enemy not in slash['hit_enemies']:
+                            current_weapon = player.weapons
+                            damage = main_globals['weapon_stats'][current_weapon[0].name]['damage'] # or use weapon damage eh? # YES YES I KNOW!!
+                            enemy.damaged(damage)
+                            slash['hit_enemies'].add(enemy) # add to list that the slash hit ( so it doesnt spam )
+
+        # draw special attacks
+        if 'active_special_attacks' in main_globals:
+            now = pygame.time.get_ticks()
+            still_active = []
+
+            for special_attack in main_globals['active_special_attacks']:
+                # is it still alive
+                if now < special_attack['expiry']:
+                    screen.blit(special_attack['image'], special_attack['rect'])
+
+                    # if delay is done spawn another
+                    if not special_attack.get("spawned") and now >= special_attack["next_spawn"]:
+                        # copy it
+                        new_attack = {
+                            'image': special_attack['image'],
+                            'rect': special_attack['rect'],
+                            'expiry': pygame.time.get_ticks() + special_attack['expiry'],
+                            'hits': special_attack['hits'],
+                            'hit_enemies': set(),
+                            'delay': special_attack['delay'],
+                            'effect': special_attack['effect'],
+                            'spawned': False
+                        }
+
+                        still_active.append(new_attack)
+                        special_attack["spawned"] = True # dont spam
+
+                    still_active.append(special_attack)
+
+            main_globals['active_special_attacks'] = still_active
+
+        # check if special attacks hit an enemy
+        if 'active_special_attacks' in main_globals and main_globals['active_special_attacks']:
+            active_special_attacks = main_globals['active_special_attacks']
+            for enemy in enemy_list:
+                if not enemy.alive: # skip if dead
+                    continue
+                for special_attack in active_special_attacks:
+                    if pygame.Rect.colliderect(enemy.rect, special_attack['rect']):
+                        if enemy not in special_attack['hit_enemies']:
+                            special_attack['hit_enemies'].add(enemy)
 
         # change player orientation? is it orientation? just change the way he is looking
         offset_x = (player_size * 3 - player_size) // 2

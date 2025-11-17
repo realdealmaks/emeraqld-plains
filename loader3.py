@@ -386,7 +386,7 @@ def loader3(main_globals):
         main_globals['hint_alpha'] = alpha
         block_size = main_globals['key_w_hint'].get_width()
 
-        if main_globals['idle_time'] >= main_globals['idle_threshold']: # if player is idle for long enough
+        if main_globals['idle_time'] >= main_globals['idle_threshold'] or main_globals['is_paused']: # if player is idle for long enough
             alpha = main_globals.get('hint_alpha', 0)
             alpha += dt * 255 / main_globals['hint_fade_duration']
             if alpha > 255:
@@ -410,8 +410,10 @@ def loader3(main_globals):
             # swap mouse image
             ticks = pygame.time.get_ticks() # ms
             if (ticks // 1000) % 2 == 0: # s
+                main_globals['mouse_blank_hint'].set_alpha(alpha)
                 screen.blit(main_globals['mouse_blank_hint'], (main_globals['screen'].get_width() - main_globals['mouse_blank_hint'].get_width() - 10, main_globals['screen'].get_height() - main_globals['mouse_blank_hint'].get_height() - 10))
             else:
+                main_globals['mouse_left_hint'].set_alpha(alpha)
                 screen.blit(main_globals['mouse_left_hint'], (main_globals['screen'].get_width() - main_globals['mouse_left_hint'].get_width() - 10, main_globals['screen'].get_height() - main_globals['mouse_left_hint'].get_height() - 10))
         else:
             main_globals['hint_alpha'] = 0

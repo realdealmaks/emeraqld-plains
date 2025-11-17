@@ -110,6 +110,7 @@ def loader2(main_globals):
     main_globals['slash_image'] = pygame.transform.scale(main_globals['slash_image'], (50, 50))
 
     main_globals['active_slash'] = None
+    main_globals['active_special_attack'] = None
 
     main_globals['weapon_images'] = {
         "sword": sword_image,

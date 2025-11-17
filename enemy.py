@@ -18,6 +18,7 @@ def enemy(main_globals):
             self.speed = 0.9
             self.type = type
             self.active = False
+            self.facing_left = False
             self.cooldown = 1500 # ms, 1 1/2 seconds
             self.damage = 10 # why not right?
             self.last_attack_time = 0
@@ -76,15 +77,47 @@ def enemy(main_globals):
                 dx /= distance
                 dy /= distance
 
+                if distance > 40: # so he doesnt spam >:(
+                    if dx < 0:
+                        self.facing_left = True
+                    else:
+                        self.facing_left = False
+
                 # move
                 self.x += dx * self.speed
                 self.y += dy * self.speed
 
+            # collision with other naganous
+            for other in self.main_globals['enemy_list']:
+                if other is self:
+                    continue
+
+                dx2 = self.x - other.x
+                dy2 = self.y - other.y
+                dist = math.hypot(dx2, dy2)
+                min_dist = self.size // 1.6 # space between them
+
+                if dist < min_dist and dist > 0:
+                    overlap = min_dist - dist
+                    dx2 /= dist
+                    dy2 /= dist
+
+                    # push both
+                    self.x += dx2 * overlap * 0.5
+                    self.y += dy2 * overlap * 0.5
+                    other.x -= dx2 * overlap * 0.5
+                    other.y -= dy2 * overlap * 0.5
+
         def draw(self, type):
             if self.alive:
                 screen = main_globals['screen']
-                screen.blit(self.images[type], (self.x - main_globals['camera_x'], self.y - main_globals['camera_y']))
+                img = self.images[type]
+                if self.facing_left:
+                    img = pygame.transform.flip(img, True, False)
+
+                screen.blit(img, (self.x - main_globals['camera_x'], self.y - main_globals['camera_y']))
                 self.rect.topleft = (self.x - main_globals['camera_x'], self.y - main_globals['camera_y'])
+
             elif not self.alive:
                 # death animation and break loop
                 # why the fuck does every enemy have a death animation

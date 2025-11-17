@@ -227,4 +227,10 @@ jaz razkazujem hitrost ( in svoj penis ampak ok )
 
 updated the pause
 
+# 17 11 / same guy
+
+start to try to make special attacks
+make bob face both directions (wow 1d)
+make bob collide with other bob so no stack
+
 # 
