@@ -53,25 +53,25 @@ def weapons(main_globals):
                 self.last_attack_time = time.time()
                 mouse_pos = main_globals['mouse_pos']
 
+                # get player center
+                player_cx = player.x + main_globals['player_size'] // 2
+                player_cy = player.y + main_globals['player_size'] // 2 + 20
+
+                # angle to mouse
+                dx = mouse_pos[0] - (player_cx - main_globals['camera_x'])
+                dy = mouse_pos[1] - (player_cy - main_globals['camera_y'])
+                angle = math.degrees(math.atan2(-dy, dx))
+
+                # offset from player center
+                distance = self.range
+                offset_x = math.cos(math.radians(-angle)) * distance
+                offset_y = math.sin(math.radians(-angle)) * distance
+
                 # default slash attack
                 # would need organising and restructure but wtv
                 if self.name == "sword" or self.name == "axe":
                     scaled_height = int(slash_img.get_height() * (self.range / 50))
                     scaled_slash = pygame.transform.scale(slash_img, (slash_img.get_width(), scaled_height))
-
-                    # get player center
-                    player_cx = player.x + main_globals['player_size'] // 2
-                    player_cy = player.y + main_globals['player_size'] // 2 + 20
-
-                    # angle to mouse
-                    dx = mouse_pos[0] - (player_cx - main_globals['camera_x'])
-                    dy = mouse_pos[1] - (player_cy - main_globals['camera_y'])
-                    angle = math.degrees(math.atan2(-dy, dx))
-
-                    # offset from player center
-                    distance = self.range
-                    offset_x = math.cos(math.radians(-angle)) * distance
-                    offset_y = math.sin(math.radians(-angle)) * distance
 
                     rotated_slash = pygame.transform.rotate(scaled_slash, angle)
                     slash_rect = rotated_slash.get_rect(center=(
@@ -105,32 +105,12 @@ def weapons(main_globals):
 
         def special_attack(self, player, main_globals, type):
             if type == "book":
-                mouse_pos = main_globals['mouse_pos']
-
-                # get player center
-                player_cx = player.x + main_globals['player_size'] // 2
-                player_cy = player.y + main_globals['player_size'] // 2 + 20
-
-                # angle to mouse
-                dx = mouse_pos[0] - (player_cx - main_globals['camera_x'])
-                dy = mouse_pos[1] - (player_cy - main_globals['camera_y'])
-                angle = math.degrees(math.atan2(-dy, dx))
-
-                # offset from player center
-                distance = self.range
-                offset_x = math.cos(math.radians(-angle)) * distance
-                offset_y = math.sin(math.radians(-angle)) * distance
-
-                attack_rect = main_globals['weapon_images'][type].get_rect(center=(
-                    player_cx - main_globals['camera_x'] + offset_x,
-                    player_cy - main_globals['camera_y'] + offset_y
-                ))
 
                 expiry = 1000 # ms
                 hit_amount = 3
                 delay = 1000 # ms
                 effect = None
-                attack_image = main_globals['weapon_images'][type]
+                attack_image = main_globals['special_attack_images'][type]
                 attack_rect = attack_image.get_rect(center=(
                     player.x + main_globals['player_size'] // 2 - main_globals['camera_x'],
                     player.y + main_globals['player_size'] // 2 - main_globals['camera_y']
@@ -144,7 +124,30 @@ def weapons(main_globals):
                     'hit_enemies': set(),
                     'delay': delay,
                     'effect': effect,
-                    'spawned': False
+                    'spawned': False,
+                })
+
+            if type == "katana":
+
+                expiry = 600 # ms
+                hit_amount = 2
+                delay = 400 # ms
+                effect = None
+                attack_image = main_globals['special_attack_images'][type]
+                attack_rect = attack_image.get_rect(center=(
+                    player.x + main_globals['player_size'] // 2 - main_globals['camera_x'],
+                    player.y + main_globals['player_size'] // 2 - main_globals['camera_y']
+                ))
+
+                main_globals['active_special_attacks'].append({
+                    'image': attack_image,
+                    'rect': attack_rect,
+                    'expiry': pygame.time.get_ticks() + expiry,
+                    'hits': hit_amount,
+                    'hit_enemies': set(),
+                    'delay': delay,
+                    'effect': effect,
+                    'spawned': False,
                 })
 
         def pickup(self, player):

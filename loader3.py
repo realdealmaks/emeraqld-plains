@@ -15,9 +15,78 @@ def loader3(main_globals):
     setting_font = credits_font = pygame.font.Font("assets/font/editundo.ttf", 28)
     smallfont = pygame.font.Font("assets/font/editundo.ttf", 22)
 
-    def give_money(amount):  # some indicator for getting rich 🤑
-        player = main_globals['player']
+    def reset(main_globals):
+        main_globals['player'].health = 100
+        main_globals['player'].weapons = []
+        main_globals['tilemap'] = main_globals['start_tilemap']
+        main_globals['spawn_set'] = False
+        main_globals['player'].wealth = 0
+        main_globals['groups_spawned'] = 0
+        main_globals['enemy_list'] = []
+        main_globals['in_shop'] = False
+        main_globals['blood_particles'] = []
+        main_globals['money_texts'] = []
+        main_globals['Weapon'] = None
+        main_globals['facing_left'] = False
+        main_globals['make_initial_walkable_surface'](main_globals['tilemap'], main_globals)
+        main_globals['is_paused'] = False
 
+    def execute():
+        try:
+            main_globals['is_paused'] = True
+
+            cmd = input("> ")
+
+            while cmd not in ["q", "quit", "exit", "x"]:
+                if cmd == "help":
+                    print("\nbranching commands:\n"
+                            "weapon -> weapon name\n"
+                            "money -> amount\n"
+                            "health -> amount\n"
+
+                            "\nregular commands:\n"
+                            "rebuild - rebuild floor\n"
+                            "reset - reset dungeon\n"
+                            "stage -> stage name\n"
+                            "respawn - respawn player\n")
+
+                elif cmd == "weapon":
+                    weapon_name = input(">> name: ")
+                    new_weapon = main_globals['Weapon'](weapon_name)
+                    main_globals['player'].weapon = new_weapon
+                    main_globals['player'].weapons = [new_weapon]
+                    print("set")
+
+                elif cmd == "money":
+                    main_globals['give_money'](int(input(">> amount: "))), print("set")
+
+                elif cmd == "health":
+                    main_globals['player'].health = int(input(">> amount: ")), print("set")
+
+                elif cmd == "rebuild":
+                    main_globals['remake_floor'](), print("done")
+
+                elif cmd == "reset":
+                    main_globals['reset'](main_globals), print("done")
+
+                elif cmd == "stage":
+                    main_globals['game_stage'] = input(">> stage: "), print("done")
+
+                elif cmd == "respawn":
+                    main_globals['player'].respawn(), print("done")
+
+                else:
+                    print("invalid")
+
+                cmd = input("> ")
+
+            main_globals['is_paused'] = False
+
+        except Exception as e:
+            main_globals['is_paused'] = False
+            print(e)
+
+    def give_money(amount):  # some indicator for getting rich 🤑
         if main_globals['money_texts']:
             existing = main_globals['money_texts'][0]
             existing['amount'] += amount
@@ -927,6 +996,8 @@ def loader3(main_globals):
     main_globals['draw_transition'] = transition_to_dungeon
     main_globals['remake_floor'] = remake_floor
     main_globals['give_money'] = give_money
+    main_globals['execute'] = execute
+    main_globals['reset'] = reset
 
     # add classes to main globall
     main_globals['shop'] = shop

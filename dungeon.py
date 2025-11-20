@@ -215,7 +215,7 @@ def dungeon(main_globals):
                     screen.blit(special_attack['image'], special_attack['rect'])
 
                     # if delay is done spawn another
-                    if not special_attack.get("spawned") and now >= special_attack["next_spawn"]:
+                    if not special_attack.get("spawned") and now >= special_attack["delay"]:
                         # copy it
                         new_attack = {
                             'image': special_attack['image'],
@@ -225,11 +225,10 @@ def dungeon(main_globals):
                             'hit_enemies': set(),
                             'delay': special_attack['delay'],
                             'effect': special_attack['effect'],
-                            'spawned': False
+                            'spawned': True
                         }
 
                         still_active.append(new_attack)
-                        special_attack["spawned"] = True # dont spam
 
                     still_active.append(special_attack)
 
@@ -273,6 +272,10 @@ def dungeon(main_globals):
             if facing_left: # offset because of player offset
                 weapon_image = pygame.transform.flip(weapon_image, True, False)
                 weapon_x -= 90
+
+            if weapon.name in main_globals['dual_wields']:
+                weapon_y -= 15
+                screen.blit(weapon_image, (weapon_x - weapon_image.get_width() // 2.7, weapon_y))
 
             screen.blit(weapon_image, (weapon_x, weapon_y))
 

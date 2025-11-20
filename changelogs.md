@@ -233,4 +233,9 @@ start to try to make special attacks
 make bob face both directions (wow 1d)
 make bob collide with other bob so no stack
 
+# 20 11 / always one
+
+do some rot ass shit to weapons yesterday, it doesnt work
+add a "qol" feature(s) only to superloader though idrc abt reg loader
+
 # 

@@ -96,32 +96,45 @@ def loader2(main_globals):
 
     main_globals['weapon_stat_images'] = [damage_stat, range_stat, cooldown_stat]
 
+    # scale images
     sword_image = pygame.image.load("assets/models/weapons/sword.png").convert_alpha()
     w, h = sword_image.get_size()
     sword_image = pygame.transform.scale(sword_image, (int(w * 1.2), int(h * 1.2)))
+
     axe_image = pygame.image.load("assets/models/weapons/axe.png").convert_alpha()
     w, h = axe_image.get_size()
     axe_image = pygame.transform.scale(axe_image, (int(w * 1.2), int(h * 1.2)))
+
     book_image = pygame.image.load("assets/models/weapons/burningbook.png").convert_alpha()
     w, h = book_image.get_size()
     book_image = pygame.transform.scale(book_image, (int(w * 2.2), int(h * 2.2)))
+
+    katana_image = pygame.image.load("assets/models/weapons/katana.png").convert_alpha()
+    w, h = katana_image.get_size()
+    katana_image = pygame.transform.scale(katana_image, (int(w * 0.7), int(h * 0.7)))
 
     main_globals['slash_image'] = pygame.image.load("assets/useful images/slash.png").convert_alpha()
     main_globals['slash_image'] = pygame.transform.scale(main_globals['slash_image'], (50, 50))
 
     main_globals['active_slash'] = None
-    main_globals['active_special_attack'] = None
+    main_globals['active_special_attacks'] = []
 
     main_globals['weapon_images'] = {
         "sword": sword_image,
         "axe": axe_image,
         "book": book_image,
+        "katana": katana_image,
+    }
+
+    main_globals['special_attack_images'] = {
+        "katana": main_globals['slash_image'],
     }
 
     main_globals['weapon_stats'] = {
         "sword": {"damage": 15, "range": 50, "cooldown": 0.6},
         "axe": {"damage": 20, "range": 75, "cooldown": 1},
         "book": {"damage": 25, "range": 100, "cooldown": 2},
+        "katana": {"damage": 5, "range": 60, "cooldown": 0.8},
     }
 
     print("loader2, ", end = "")

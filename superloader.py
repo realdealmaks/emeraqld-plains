@@ -220,6 +220,8 @@ print("ready, ", end="")
 
 # dont change ts diddybludd
 main.developer_tools = True
+dttv = 0
+print("developer, ", end="") if main.developer_tools else print("user, ", end="")
 # well obvi unless you are a dev :(
 # https://tenor.com/en-GB/view/diddyblud-diddy-einstein-albert-einstein-calc-gif-9528529477851089865
 
@@ -305,38 +307,19 @@ while running:
                 if main.is_paused == False: main.is_paused = True
                 else: main.is_paused = False
 
-            # testing binds
-            if main.developer_tools == True:
-                if event.key == pygame.K_m:
-                    if main.game_stage == "in dungeon":
-                        mx.music.pause()
-                        main.game_stage = "in menu"
-                if main.game_stage == "in dungeon":
-                    if event.key == pygame.K_h:
-                        main.player.damaged(10)
-                    if event.key == pygame.K_p:
-                        main.game_stage = "dead"
-                    if event.key == pygame.K_y:
-                        rand1 = random.randint(0, 9)
-                        rand2 = random.randint(0, 9)
-                        main.update_tile(main_globals, rand1, rand2, 99)
-                        main.update_tile(main_globals, rand1 + 1, rand2, 2)
-                        main.camera_x, main.camera_y = main.get_camera_offset(main_globals, main.player, main.tile_size)
-                        main.spawn_weapons(main_globals)
-                    if event.key == pygame.K_r:
-                        main.player.respawn()
-                    if event.key == pygame.K_o:
-                        main.player.locked = not main.player.locked
-                        print(f"is locked {main.player.locked}")
-                    if event.key == pygame.K_b:
-                        if not main.in_shop:
-                            main.in_shop = True # just now for debugging use match state when actually doing the thing
-                            main.game_stage = "shopping"
-                            print("in shop")
-                        else:
-                            main.in_shop = False
-                            main.game_stage = "in dungeon"
-                            print("dih")
+            key = event.unicode.lower()
+
+            if dttv < len("cmd") and key == "cmd"[dttv]:
+                dttv += 1
+            else:
+                dttv = 0
+
+            if main.developer_tools:
+                if dttv == len("cmd"):
+                    main.is_paused = True
+                    print("\ncommand:")
+                    main.execute()
+                    dttv = 0
 
         # keys releases
         if event.type == pygame.KEYUP:
