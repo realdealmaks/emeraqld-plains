@@ -62,6 +62,16 @@ def loader1(main_globals):
     main_globals['is_paused'] = False
     main_globals['tile_offset'] = 50
     main_globals['money_texts'] = []
+    main_globals['current_floor'] = 0
+    main_globals['best_floor'] = None # loaded data
+    main_globals['groups_cleared'] = 0
+    main_globals['deaths'] = 0
+    main_globals['enemies_killed'] = 0
+    main_globals['total_enemies_killed'] = 0
+    main_globals['most_groups_cleared'] = None # loaded data
+    main_globals['most_enemies_killed'] = None # loaded data
+    main_globals['richest_player'] = None # loaded data
+    main_globals['total_deaths'] = None # loaded data
 
     # camera
     main_globals['camera_x'] = 0

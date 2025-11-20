@@ -169,6 +169,10 @@ def dungeon(main_globals):
             if all(not enemy.alive for enemy in group['enemies']):
                 if group['active']:
                     group['active'] = False
+                    main_globals['groups_cleared'] += 1
+                    if main_globals['groups_cleared'] > main_globals['most_groups_cleared']:
+                        main_globals['most_groups_cleared'] = main_globals['groups_cleared']
+                        main_globals['save'](main_globals, most_groups_cleared=main_globals['most_groups_cleared'])
                     print(f"group at {group['tile_pos']} cleared, ", end="")
                     player.locked = False  # unlock player once group is cleared
 
@@ -358,6 +362,9 @@ def dungeon(main_globals):
                     main_globals['money_texts'].remove(item)
                     player.effect("money", item['amount'])
                     print(f"player got {item['amount']} moneys, ", end="")
+                    if player.wealth > main_globals['richest_player']:
+                        main_globals['richest_player'] = player.wealth
+                        main_globals['save'](main_globals, richest_player=main_globals['richest_player'])
 
             main_globals['draw_vignette'](main_globals, player)
             mx.music.unpause()

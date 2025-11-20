@@ -241,6 +241,8 @@ music_volume = saved_data.get("music", 1)
 main.music_volume = music_volume
 mx.music.set_volume(music_volume)
 
+main.deaths += main.total_deaths
+
 # virtual screen setup
 current_time = pygame.time.get_ticks() / 1000
 main.dt = current_time - main.prev_time

@@ -48,7 +48,12 @@ def loader3(main_globals):
                             "\nregular commands:\n"
                             "rebuild - rebuild floor\n"
                             "reset - reset dungeon\n"
-                            "respawn - respawn player\n")
+                            "respawn - respawn player\n"
+                            "ccache - clear data\n"
+
+                            "\nexit commands:\n"
+                            "quit, q, exit, x\n"
+                        )
 
                 elif cmd == "weapon":
                     weapon_name = input(">> name: ")
@@ -74,6 +79,10 @@ def loader3(main_globals):
 
                 elif cmd == "respawn":
                     main_globals['player'].respawn(), print("done")
+
+                elif cmd == "ccache":
+                    for i in main_globals['connector_instance'].data:
+                        main_globals['save'](main_globals, **{i: main_globals['connector_instance'].default_data[i]})
 
                 else:
                     print("invalid")
@@ -181,6 +190,10 @@ def loader3(main_globals):
             update_tile(main_globals, c, r, val)
 
         print("new tilemap is:")
+        main_globals['current_floor'] += 1 # save floors
+        if main_globals['current_floor'] > main_globals['best_floor']:
+            main_globals['best_floor'] = main_globals['current_floor']
+            save(main_globals, best_floor=main_globals['best_floor'])
         for i in range(len(main_globals['tilemap'])):
             print(main_globals['tilemap'][i])
         main_globals['rebuild_walkable_mask'](main_globals)
@@ -413,7 +426,7 @@ def loader3(main_globals):
         connector.set_data(data)
         connector.save_data()
 
-        print(f"saved {new_data}")
+        print(f"saved {new_data}, ", end="")
         return True
 
     def draw_apply_button(main_globals, x, y, function): # apply the changes to save data

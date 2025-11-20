@@ -89,6 +89,9 @@ def player(main_globals):
 
         def die(self):
             self.main_globals['game_stage'] = "dead"
+            main_globals['deaths'] += 1
+            if main_globals['deaths'] > main_globals['total_deaths']:
+                main_globals['save'](main_globals, total_deaths=main_globals['total_deaths'])
             print("player died")
 
         def respawn(self):

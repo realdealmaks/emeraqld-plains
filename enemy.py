@@ -135,6 +135,11 @@ def enemy(main_globals):
                     ammount = 15
                 main_globals['give_money'](ammount)
 
+                main_globals['enemies_killed'] += 1
+                if main_globals['most_enemies_killed'] < main_globals['enemies_killed']:
+                    main_globals['most_enemies_killed'] = main_globals['enemies_killed']
+                    main_globals['save'](main_globals, most_enemies_killed=main_globals['most_enemies_killed'])
+
     enemy = Enemy(main_globals, main_globals['spawn_x'], main_globals['spawn_y'], main_globals['enemy_type'])
 
     main_globals['enemy'] = enemy
