@@ -118,13 +118,12 @@ def weapons(main_globals):
 
                 main_globals['active_special_attacks'].append({
                     'image': attack_image,
-                    'rect': attack_rect,
+                    'rect': attack_rect.copy(),
                     'expiry': pygame.time.get_ticks() + expiry,
                     'hits': hit_amount,
                     'hit_enemies': set(),
                     'delay': delay,
                     'effect': effect,
-                    'spawned': False,
                 })
 
             if type == "katana":
@@ -139,15 +138,40 @@ def weapons(main_globals):
                     player.y + main_globals['player_size'] // 2 - main_globals['camera_y']
                 ))
 
+                mouse_pos = main_globals['mouse_pos']
+
+                # get player center
+                player_cx = player.x + main_globals['player_size'] // 2
+                player_cy = player.y + main_globals['player_size'] // 2 + 20
+
+                # angle to mouse
+                dx = mouse_pos[0] - (player_cx - main_globals['camera_x'])
+                dy = mouse_pos[1] - (player_cy - main_globals['camera_y'])
+                angle = math.degrees(math.atan2(-dy, dx))
+
+                # offset from player center
+                distance = self.range
+                offset_x = math.cos(math.radians(-angle)) * distance
+                offset_y = math.sin(math.radians(-angle)) * distance
+
+                scaled_height = int(attack_image.get_height() * (self.range / 50))
+                scaled_attack = pygame.transform.scale(attack_image, (attack_image.get_width(), scaled_height))
+                rotated_attack = pygame.transform.rotate(scaled_attack, angle)
+
+                attack_rect = rotated_attack.get_rect(center=(
+                    player_cx - main_globals['camera_x'] + offset_x,
+                    player_cy - main_globals['camera_y'] + offset_y
+                ))
+
                 main_globals['active_special_attacks'].append({
-                    'image': attack_image,
-                    'rect': attack_rect,
+                    'image': rotated_attack,
+                    'rect': attack_rect.copy(),
                     'expiry': pygame.time.get_ticks() + expiry,
                     'hits': hit_amount,
                     'hit_enemies': set(),
                     'delay': delay,
                     'effect': effect,
-                    'spawned': False,
+                    'next_spawn': pygame.time.get_ticks() + delay
                 })
 
         def pickup(self, player):

@@ -204,35 +204,33 @@ def dungeon(main_globals):
                             enemy.damaged(damage)
                             slash['hit_enemies'].add(enemy) # add to list that the slash hit ( so it doesnt spam )
 
-        # draw special attacks
         if 'active_special_attacks' in main_globals:
             now = pygame.time.get_ticks()
             still_active = []
 
             for special_attack in main_globals['active_special_attacks']:
-                # is it still alive
                 if now < special_attack['expiry']:
                     screen.blit(special_attack['image'], special_attack['rect'])
 
-                    # if delay is done spawn another
-                    if not special_attack.get("spawned") and now >= special_attack["delay"]:
-                        # copy it
+                    # spawn another
+                    if special_attack['hits'] > 0 and now >= special_attack["next_spawn"]:
                         new_attack = {
                             'image': special_attack['image'],
-                            'rect': special_attack['rect'],
-                            'expiry': pygame.time.get_ticks() + special_attack['expiry'],
-                            'hits': special_attack['hits'],
+                            'rect': special_attack['rect'].copy(),
+                            'expiry': now + (special_attack['expiry'] - now),
+                            'hits': special_attack['hits'] - 1,
                             'hit_enemies': set(),
-                            'delay': special_attack['delay'],
+                            'next_spawn': now + special_attack['delay'],
                             'effect': special_attack['effect'],
-                            'spawned': True
                         }
-
                         still_active.append(new_attack)
+
+                        special_attack['next_spawn'] = now + special_attack['delay']
 
                     still_active.append(special_attack)
 
             main_globals['active_special_attacks'] = still_active
+
 
         # check if special attacks hit an enemy
         if 'active_special_attacks' in main_globals and main_globals['active_special_attacks']:
@@ -243,7 +241,10 @@ def dungeon(main_globals):
                 for special_attack in active_special_attacks:
                     if pygame.Rect.colliderect(enemy.rect, special_attack['rect']):
                         if enemy not in special_attack['hit_enemies']:
-                            special_attack['hit_enemies'].add(enemy)
+                            current_weapon = player.weapons
+                            damage = main_globals['weapon_stats'][current_weapon[0].name]['damage']
+                            enemy.damaged(damage)
+                            special_attack['hit_enemies'].add(enemy) # add to list that the slash hit ( so it doesnt spam )
 
         # change player orientation? is it orientation? just change the way he is looking
         offset_x = (player_size * 3 - player_size) // 2
@@ -274,7 +275,6 @@ def dungeon(main_globals):
                 weapon_x -= 90
 
             if weapon.name in main_globals['dual_wields']:
-                weapon_y -= 15
                 screen.blit(weapon_image, (weapon_x - weapon_image.get_width() // 2.7, weapon_y))
 
             screen.blit(weapon_image, (weapon_x, weapon_y))
