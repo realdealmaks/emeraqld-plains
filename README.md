@@ -52,7 +52,9 @@ Coming soon
 <img src="https://github.com/realdealmaks/emeraqld-plains/raw/main/assets/models/player/playergif.gif" alt="" width="200"/>
 <img src="assets/random images/prenos.jpg" alt="" height="100" width="200"/>
 <body><img src="assets/models/weapons/burningbook.png" alt"" height="100" width="100"></body>
+
 you (hopefully (soon))
+![Yoonmin Flying Eagle](https://tenor.com/view/stan-twitter-floating-flying-yoonmin-flying-eagle-yoon-min-flying-stan-twitter-eagle-stan-twitter-funny-gif-2774635051463464151)
 
 ## Stats
 [![Download](https://img.shields.io/github/v/release/realdealmaks/emeraqld-plains?label=Download&style=for-the-badge)](https://github.com/realdealmaks/emeraqld-plains/releases/latest/download/tishproject.py) [![Download](https://img.shields.io/github/v/release/realdealmaks/emeraqld-plains?label=Commits&style=for-the-badge)](https://github.com/realdealmaks/emeraqld-plains/releases/latest/commit/tishproject.py) [![Download](https://img.shields.io/github/v/release/realdealmaks/emeraqld-plains?label=Stars&style=for-the-badge)](https://github.com/realdealmaks/emeraqld-plains/releases/latest/star/tishproject.py)
