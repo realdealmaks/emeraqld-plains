@@ -43,11 +43,11 @@ def loader3(main_globals):
                             "weapon -> weapon name\n"
                             "money -> amount\n"
                             "health -> amount\n"
+                            "stage -> stage name\n"
 
                             "\nregular commands:\n"
                             "rebuild - rebuild floor\n"
                             "reset - reset dungeon\n"
-                            "stage -> stage name\n"
                             "respawn - respawn player\n")
 
                 elif cmd == "weapon":

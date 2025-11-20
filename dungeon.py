@@ -204,47 +204,71 @@ def dungeon(main_globals):
                             enemy.damaged(damage)
                             slash['hit_enemies'].add(enemy) # add to list that the slash hit ( so it doesnt spam )
 
-        if 'active_special_attacks' in main_globals:
+        # draw special attacks
+        if 'active_special_attacks' in main_globals or 'active_special_children' in main_globals:
             now = pygame.time.get_ticks()
-            still_active = []
 
-            for special_attack in main_globals['active_special_attacks']:
-                if now < special_attack['expiry']:
+            # update parents
+            still_parents = []
+            for special_attack in main_globals.get('active_special_attacks', []):
+
+                # draw if visible
+                if special_attack.get('draw', True) and (special_attack['expiry'] == -1 or now < special_attack['expiry']):
                     screen.blit(special_attack['image'], special_attack['rect'])
 
-                    # spawn another
-                    if special_attack['hits'] > 0 and now >= special_attack["next_spawn"]:
-                        new_attack = {
-                            'image': special_attack['image'],
-                            'rect': special_attack['rect'].copy(),
-                            'expiry': now + (special_attack['expiry'] - now),
-                            'hits': special_attack['hits'] - 1,
-                            'hit_enemies': set(),
-                            'next_spawn': now + special_attack['delay'],
-                            'effect': special_attack['effect'],
-                        }
-                        still_active.append(new_attack)
+                # spawn next child
+                if special_attack.get('hits', 0) > 0 and now >= special_attack.get('next_spawn', 0):
+                    if special_attack.get('flip_next', True):
+                        child_image = special_attack.get('flipimage', special_attack['image'])
+                        child_rect = special_attack.get('fliprect', special_attack['rect']).copy()
+                    else:
+                        child_image = special_attack['image']
+                        child_rect = special_attack['rect'].copy()
 
-                        special_attack['next_spawn'] = now + special_attack['delay']
+                    # create child attack
+                    child_attack = {
+                        'image': child_image,
+                        'rect': child_rect.copy(),
+                        'expiry': now + special_attack.get('child_lifetime', 150),
+                        'hit_enemies': set(),
+                        'draw': True,
+                        'effect': special_attack.get('effect', None)
+                    }
+                    main_globals.setdefault('active_special_children', []).append(child_attack)
 
-                    still_active.append(special_attack)
+                    # toggle for next spawn
+                    special_attack['flip_next'] = not special_attack.get('flip_next', True)
+                    special_attack['hits'] -= 1
+                    special_attack['next_spawn'] = now + special_attack.get('delay', 250)
 
-            main_globals['active_special_attacks'] = still_active
+                # keep parent alive
+                if special_attack['expiry'] == -1 or now < special_attack['expiry']:
+                    still_parents.append(special_attack)
 
+            main_globals['active_special_attacks'] = still_parents
 
-        # check if special attacks hit an enemy
-        if 'active_special_attacks' in main_globals and main_globals['active_special_attacks']:
-            active_special_attacks = main_globals['active_special_attacks']
-            for enemy in enemy_list:
-                if not enemy.alive: # skip if dead
-                    continue
-                for special_attack in active_special_attacks:
-                    if pygame.Rect.colliderect(enemy.rect, special_attack['rect']):
-                        if enemy not in special_attack['hit_enemies']:
+            # update children
+            still_children = []
+            for child in main_globals.get('active_special_children', []):
+                if now < child['expiry']:
+                    if child.get('draw', True):
+                        screen.blit(child['image'], child['rect'])
+                    still_children.append(child)
+
+            main_globals['active_special_children'] = still_children
+
+            # check if special attack hits enemy
+            for attack in main_globals.get('active_special_children', []):
+                for enemy in enemy_list:
+                    if not enemy.alive: # skip if dead
+                        continue
+                    if pygame.Rect.colliderect(enemy.rect, attack['rect']):
+                        if enemy not in attack['hit_enemies']:
                             current_weapon = player.weapons
                             damage = main_globals['weapon_stats'][current_weapon[0].name]['damage']
                             enemy.damaged(damage)
-                            special_attack['hit_enemies'].add(enemy) # add to list that the slash hit ( so it doesnt spam )
+                            attack['hit_enemies'].add(enemy)
+                            print("hit, ", end="")
 
         # change player orientation? is it orientation? just change the way he is looking
         offset_x = (player_size * 3 - player_size) // 2
@@ -268,11 +292,11 @@ def dungeon(main_globals):
             weapon_image = pygame.transform.flip(weapon_image, True, False)
 
             weapon_x = draw_x + player_size + 40 # x offset
-            weapon_y = draw_y + player_size // 2 + 36  # y offset
+            weapon_y = draw_y + player_size // 2 + 36 # y offset
 
             if facing_left: # offset because of player offset
                 weapon_image = pygame.transform.flip(weapon_image, True, False)
-                weapon_x -= 90
+                weapon_x -= int(weapon_image.get_width()*1.24) if weapon.name in main_globals['dual_wields'] else int(weapon_image.get_width()*1.46)
 
             if weapon.name in main_globals['dual_wields']:
                 screen.blit(weapon_image, (weapon_x - weapon_image.get_width() // 2.7, weapon_y))

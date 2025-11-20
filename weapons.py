@@ -104,45 +104,26 @@ def weapons(main_globals):
                 print(f"{self.name} is on cooldown for {remaining} more seconds, ", end="")
 
         def special_attack(self, player, main_globals, type):
-            if type == "book":
-
-                expiry = 1000 # ms
-                hit_amount = 3
-                delay = 1000 # ms
-                effect = None
-                attack_image = main_globals['special_attack_images'][type]
-                attack_rect = attack_image.get_rect(center=(
-                    player.x + main_globals['player_size'] // 2 - main_globals['camera_x'],
-                    player.y + main_globals['player_size'] // 2 - main_globals['camera_y']
-                ))
-
-                main_globals['active_special_attacks'].append({
-                    'image': attack_image,
-                    'rect': attack_rect.copy(),
-                    'expiry': pygame.time.get_ticks() + expiry,
-                    'hits': hit_amount,
-                    'hit_enemies': set(),
-                    'delay': delay,
-                    'effect': effect,
-                })
 
             if type == "katana":
 
-                expiry = 600 # ms
-                hit_amount = 2
-                delay = 400 # ms
+                # stats
+                expiry = 100  # ms each attack is visible
+                hits = 2  # how many attacks after the first
+                delay = 250  # ms between attacks
                 effect = None
-                attack_image = main_globals['special_attack_images'][type]
-                attack_rect = attack_image.get_rect(center=(
-                    player.x + main_globals['player_size'] // 2 - main_globals['camera_x'],
-                    player.y + main_globals['player_size'] // 2 - main_globals['camera_y']
-                ))
 
-                mouse_pos = main_globals['mouse_pos']
+                attack_image = main_globals['special_attack_images'][type]
+                images = [
+                    attack_image,
+                    pygame.transform.flip(attack_image, False, True)
+                ]
 
                 # get player center
                 player_cx = player.x + main_globals['player_size'] // 2
                 player_cy = player.y + main_globals['player_size'] // 2 + 20
+
+                mouse_pos = main_globals['mouse_pos']
 
                 # angle to mouse
                 dx = mouse_pos[0] - (player_cx - main_globals['camera_x'])
@@ -154,25 +135,33 @@ def weapons(main_globals):
                 offset_x = math.cos(math.radians(-angle)) * distance
                 offset_y = math.sin(math.radians(-angle)) * distance
 
-                scaled_height = int(attack_image.get_height() * (self.range / 50))
-                scaled_attack = pygame.transform.scale(attack_image, (attack_image.get_width(), scaled_height))
-                rotated_attack = pygame.transform.rotate(scaled_attack, angle)
+                # rotate and scale both images
+                rotated_images = []
+                rects = []
+                for img in images:
+                    scaled_height = int(img.get_height() * (distance / 50))
+                    scaled_img = pygame.transform.scale(img, (img.get_width(), scaled_height))
+                    rotated_img = pygame.transform.rotate(scaled_img, angle)
+                    rotated_images.append(rotated_img)
+                    rects.append(rotated_img.get_rect(center=(player_cx - main_globals['camera_x'] + offset_x, player_cy - main_globals['camera_y'] + offset_y)))
 
-                attack_rect = rotated_attack.get_rect(center=(
-                    player_cx - main_globals['camera_x'] + offset_x,
-                    player_cy - main_globals['camera_y'] + offset_y
-                ))
-
-                main_globals['active_special_attacks'].append({
-                    'image': rotated_attack,
-                    'rect': attack_rect.copy(),
-                    'expiry': pygame.time.get_ticks() + expiry,
-                    'hits': hit_amount,
+                # create parent
+                parent_attack = {
+                    'image': rotated_images[0],
+                    'flipimage': rotated_images[1],
+                    'rect': rects[0],
+                    'fliprect': rects[1],
+                    'expiry': ((delay*hits + expiry*hits)*hits**2)**2, # i dont know man just some high number
+                    'hits': hits,
                     'hit_enemies': set(),
                     'delay': delay,
+                    'next_spawn': pygame.time.get_ticks(),
                     'effect': effect,
-                    'next_spawn': pygame.time.get_ticks() + delay
-                })
+                    'draw': False,
+                    'flip_next': True,
+                    'child_lifetime': expiry
+                }
+                main_globals['active_special_attacks'].append(parent_attack)
 
         def pickup(self, player):
             if len(player.weapons) > 0:
