@@ -1,6 +1,6 @@
 # speedloader for testings
 try:
-    import random, pygame, pymunk, time, importlib.util
+    import pygame, pymunk, time, importlib.util, webbrowser
     from pygame import mixer as mx
     import threading
 except ModuleNotFoundError as e:
@@ -306,8 +306,9 @@ while running:
             else:
                 main.pressed_f = False
             if event.key == pygame.K_ESCAPE:
-                if main.is_paused == False: main.is_paused = True
-                else: main.is_paused = False
+                if main.game_stage == "in dungeon":
+                    if main.is_paused == False: main.is_paused = True
+                    else: main.is_paused = False
 
             key = event.unicode.lower()
 
@@ -376,7 +377,9 @@ while running:
                         mx.music.pause()
                 if main.game_stage == "in battle pass": # kek
                     if main.to_menu.collidepoint(main.mouse_pos):
-                        pygame.quit()
+                        main.game_stage = "in menu"
+                    if main.buy_button.collidepoint(main.mouse_pos):
+                        webbrowser.open("https://www.youtube.com/channel/UC_zti-S08ZQegAafJw9wPhQ")
                 if main.player is not None:
                     if main.game_stage == "in dungeon":
                         if main.player.weapons != []:

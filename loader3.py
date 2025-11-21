@@ -3,7 +3,7 @@
 # loader 3
 
 try:
-    import math, random, pygame, pymunk, pathfinding, time
+    import math, random, pygame, pymunk, time
     from pygame import mixer as mx
 except ModuleNotFoundError as e:
     print(f"you are missing module {e.name} man")
