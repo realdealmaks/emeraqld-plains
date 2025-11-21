@@ -17,11 +17,13 @@ def loader3(main_globals):
 
     def draw_minimap(main_globals, tilemap, player):
         screen = main_globals['screen']
-        # background = main_globals['minimap_background']
+
+        background_rect_surf = pygame.Surface((75, 75), pygame.SRCALPHA)
+        background_rect_surf.fill((50, 50, 50, 128)) # color and alpha
 
         tl_size = 10
         tl_spacing = 2 # spacing between tiles
-        minimap_padding = 10
+        padding = 18 # offset from top right corner
 
         rows = len(tilemap)
         cols = len(tilemap[0])
@@ -37,24 +39,34 @@ def loader3(main_globals):
         end_x = min(player_tile_x + view_radius, cols - 1)
         end_y = min(player_tile_y + view_radius, rows - 1)
 
-        # top-right corner
-        offset_x = screen.get_width() - ((end_x - start_x + 1) * (tl_size + tl_spacing)) - minimap_padding
-        offset_y = minimap_padding
+        offset_x = screen.get_width() - background_rect_surf.get_width() - padding
+        offset_y = padding
+
+        center_x = offset_x + background_rect_surf.get_width() // 2
+        center_y = offset_y + background_rect_surf.get_height() // 2
+
+        screen.blit(background_rect_surf, (offset_x, offset_y))
 
         # draw tiles
         for y in range(start_y, end_y + 1):
             for x in range(start_x, end_x + 1):
-                tile_color = (255, 255, 255) # white default
-                if (x, y) in main_globals['active_tiles']:
-                    tile_color = (255, 0, 0) # active tile red
+                if tilemap[y][x] in main_globals['walkable_tiles']:
+                    tile_color = (90, 90, 90) # default
+                    if (x, y) == (player_tile_x, player_tile_y): # for tile with player
+                        tile_color = (140, 140, 240)
+                    elif (x, y) in main_globals['active_tiles']: # for explored tiles
+                        tile_color = (170, 170, 170)
 
-                rect = pygame.Rect(
-                    offset_x + (x - start_x) * (tl_size + tl_spacing),
-                    offset_y + (y - start_y) * (tl_size + tl_spacing),
-                    tl_size,
-                    tl_size
-                )
-                pygame.draw.rect(screen, tile_color, rect)
+                    rel_x = (x - player_tile_x) * (tl_size + tl_spacing)
+                    rel_y = (y - player_tile_y) * (tl_size + tl_spacing)
+
+                    rect = pygame.Rect(
+                        center_x + rel_x - tl_size // 2,
+                        center_y + rel_y - tl_size // 2,
+                        tl_size,
+                        tl_size
+                    )
+                    pygame.draw.rect(screen, tile_color, rect)
 
     def is_on_active_tile(main_globals, x, y):
         ts = main_globals['tile_size'] + main_globals['tile_offset']

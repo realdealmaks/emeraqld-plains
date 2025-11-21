@@ -243,4 +243,8 @@ add a "qol" feature(s) only to superloader though idrc abt reg loader
 make shit only spawn if shitter is on shitting
 really fucking basic map i need to shit
 
+great shit tbh
+
+make minimap actually look like something
+
 #
