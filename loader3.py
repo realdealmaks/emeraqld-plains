@@ -15,6 +15,55 @@ def loader3(main_globals):
     setting_font = credits_font = pygame.font.Font("assets/font/editundo.ttf", 28)
     smallfont = pygame.font.Font("assets/font/editundo.ttf", 22)
 
+    def draw_minimap(main_globals, tilemap, player):
+        screen = main_globals['screen']
+        # background = main_globals['minimap_background']
+
+        tl_size = 10
+        tl_spacing = 2 # spacing between tiles
+        minimap_padding = 10
+
+        rows = len(tilemap)
+        cols = len(tilemap[0])
+
+        # player tile
+        player_tile_x = (player.x + main_globals['player_size'] // 2) // (main_globals['tile_size'] + main_globals['tile_offset'])
+        player_tile_y = (player.y + main_globals['player_size'] // 2) // (main_globals['tile_size'] + main_globals['tile_offset'])
+
+        # view around player
+        view_radius = 2
+        start_x = max(player_tile_x - view_radius, 0)
+        start_y = max(player_tile_y - view_radius, 0)
+        end_x = min(player_tile_x + view_radius, cols - 1)
+        end_y = min(player_tile_y + view_radius, rows - 1)
+
+        # top-right corner
+        offset_x = screen.get_width() - ((end_x - start_x + 1) * (tl_size + tl_spacing)) - minimap_padding
+        offset_y = minimap_padding
+
+        # draw tiles
+        for y in range(start_y, end_y + 1):
+            for x in range(start_x, end_x + 1):
+                tile_color = (255, 255, 255) # white default
+                if (x, y) in main_globals['active_tiles']:
+                    tile_color = (255, 0, 0) # active tile red
+
+                rect = pygame.Rect(
+                    offset_x + (x - start_x) * (tl_size + tl_spacing),
+                    offset_y + (y - start_y) * (tl_size + tl_spacing),
+                    tl_size,
+                    tl_size
+                )
+                pygame.draw.rect(screen, tile_color, rect)
+
+    def is_on_active_tile(main_globals, x, y):
+        ts = main_globals['tile_size'] + main_globals['tile_offset']
+        tile_x = (x + main_globals['player_size'] // 2) // ts
+        tile_y = (y + main_globals['player_size'] // 2) // ts
+        tile = (tile_x, tile_y)
+
+        return tile in main_globals['active_tiles']
+
     def reset(main_globals):
         main_globals['player'].health = 100
         main_globals['player'].weapons = []
@@ -639,6 +688,8 @@ def loader3(main_globals):
         if counter == 0:
             # cba to make a seperate mask so calls itself with a counter for looping
             main_globals['locked_mask'] = make_initial_walkable_surface(tilemap, main_globals, False, counter + 1)
+            print(f"previous active tiles: {main_globals['active_tiles']}")
+            main_globals['active_tiles'] = []
         return mask
 
     def rebuild_walkable_mask(main_globals): # rebuilds the mask if something changed
@@ -1011,6 +1062,8 @@ def loader3(main_globals):
     main_globals['give_money'] = give_money
     main_globals['execute'] = execute
     main_globals['reset'] = reset
+    main_globals['draw_minimap'] = draw_minimap
+    main_globals['is_on_active_tile'] = is_on_active_tile
 
     # add classes to main globall
     main_globals['shop'] = shop

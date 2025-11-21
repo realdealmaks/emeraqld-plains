@@ -238,4 +238,9 @@ make bob collide with other bob so no stack
 do some rot ass shit to weapons yesterday, it doesnt work
 add a "qol" feature(s) only to superloader though idrc abt reg loader
 
-# 
+# 21 11 / literally always one
+
+make shit only spawn if shitter is on shitting
+really fucking basic map i need to shit
+
+#

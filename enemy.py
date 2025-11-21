@@ -41,6 +41,10 @@ def enemy(main_globals):
                 self.stagger_end_time = pygame.time.get_ticks() + self.stagger_duration
 
         def detect(self, player):
+
+            if not main_globals['is_on_active_tile'](self.main_globals, self.x, self.y):
+                return False
+
             distance = math.dist((self.x, self.y), (player.x, player.y))
             if distance <= 150:
                 self.active = True
@@ -109,6 +113,9 @@ def enemy(main_globals):
                     other.y -= dy2 * overlap * 0.5
 
         def draw(self, type):
+            if not main_globals['is_on_active_tile'](self.main_globals, self.x, self.y):
+                return
+
             if self.alive:
                 screen = main_globals['screen']
                 img = self.images[type]

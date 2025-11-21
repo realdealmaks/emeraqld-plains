@@ -36,6 +36,21 @@ def dungeon(main_globals):
         if 'enemy_groups' not in main_globals:
             main_globals['enemy_groups'] = []
 
+        # activate tiles
+        ts = main_globals['tile_size'] + main_globals['tile_offset']
+
+        left = (player.x + player_size // 2) // ts
+        right = (player.x + player_size // 2 + player_size - 1) // ts
+        top = (player.y + player_size // 2) // ts
+        bottom = (player.y + player_size // 2 + player_size - 1) // ts
+
+        for tx in range(left, right + 1):
+            for ty in range(top, bottom + 1):
+                tile = (tx, ty)
+                if tile not in main_globals['active_tiles']:
+                    main_globals['active_tiles'].append(tile)
+                    print(f"added active tile {tile}, ", end="")
+
         # tile checking systems
         for row_idx, row in enumerate(main_globals['tilemap']):
             for col_idx, tile_type in enumerate(row):
@@ -131,18 +146,18 @@ def dungeon(main_globals):
 
         # drawing things on tiles
 
-        # draw weapons
         for weapon in main_globals['weapons_on_map'][:]:
+
+            if not main_globals['is_on_active_tile'](main_globals, weapon.x, weapon.y):
+                continue # skip
+
             weapon_image = main_globals['weapon_images'][weapon.name]
             draw_x = weapon.x - weapon_image.get_width() // 2 - camera_x + 15
             draw_y = weapon.y - weapon_image.get_height() // 2 - camera_y
             weapon.draw(screen, draw_x, draw_y)
 
-            # interact image for said weapon
             if main_globals['distance_to'](player, weapon) < main_globals['interact_distance']:
                 screen.blit(main_globals['interact_image'], (draw_x, draw_y + weapon_image.get_height()))
-
-                # pick up weapon
                 main_globals['interact'](main_globals, player, weapon.x, weapon.y, lambda w=weapon: w.pickup(player))
 
         # enemy groups
@@ -335,6 +350,7 @@ def dungeon(main_globals):
 
         # pausing of the game
         if not is_paused:
+            main_globals['draw_minimap'](main_globals, main_globals['tilemap'], player)
 
             # enemy attack
             for enemy in enemy_list:

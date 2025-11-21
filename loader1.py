@@ -72,6 +72,7 @@ def loader1(main_globals):
     main_globals['most_enemies_killed'] = None # loaded data
     main_globals['richest_player'] = None # loaded data
     main_globals['total_deaths'] = None # loaded data
+    main_globals['active_tiles'] = [] # tiles the player has been on
 
     # camera
     main_globals['camera_x'] = 0
