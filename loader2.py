@@ -9,7 +9,7 @@ def loader2(main_globals):
     main_globals['player_ded'] = pygame.image.load("assets/models/player/ded.png").convert_alpha()
     main_globals['playergif'] = Image.open("assets/models/player/playergif.gif")
 
-    # player health images
+    # player hud health images
     player_health_images = []
     for i in range(1, 4):
         img = pygame.image.load(f"assets/models/player/playerhealth{i}.png").convert_alpha()
@@ -74,26 +74,26 @@ def loader2(main_globals):
     main_globals['interact_image'] = pygame.transform.scale(interact, (50, 50))
     main_globals['new_mutation_image'] = pygame.image.load("assets/useful images/mutation.png").convert_alpha()
 
-    # hint images (keys)
+    # hint images - keys
     key_hints = ["a", "s", "d", "w", "e"]
     for key in key_hints:
         img = pygame.image.load(f"assets/keys/key_{key}.png").convert_alpha()
         main_globals[f"key_{key}_hint"] = pygame.transform.scale2x(img)
 
-    # hint images (mouse)
+    # hint images - mouse
     mouse_w, mouse_h = pygame.image.load("assets/keys/mouse_left.png").convert_alpha().get_size()
     mouse_hints = ["blank", "left", "right"]
     for hint in mouse_hints:
         img = pygame.image.load(f"assets/keys/mouse_{hint}.png").convert_alpha()
         main_globals[f"mouse_{hint}_hint"] = pygame.transform.scale(img, (int(mouse_w * 3.5), int(mouse_h * 3.5)))
 
-    # weapon UI frame
+    # weapon stat frame
     weapon_frame = pygame.image.load("assets/models/weapons/stats/weaponFrame.png").convert_alpha()
     weapon_frame = pygame.transform.scale2x(weapon_frame)
     weapon_frame = pygame.transform.scale2x(weapon_frame)
     main_globals['weapon_frame'] = weapon_frame
 
-    # weapon stat images
+    # weapon stats images
     damage_stat = pygame.image.load("assets/models/weapons/stats/damage.png").convert_alpha()
     damage_stat = pygame.transform.scale(damage_stat, (int(damage_stat.get_width() * 1.2), int(damage_stat.get_height() * 1.2)))
     range_stat = pygame.image.load("assets/models/weapons/stats/reach.png").convert_alpha()

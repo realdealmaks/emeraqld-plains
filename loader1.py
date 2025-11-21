@@ -30,13 +30,13 @@ def loader1(main_globals):
 
     # dungeon variables
     main_globals['tilemap'] = [
-        [0, 0, 0, 0, 88, 0, 0, 0, 0, 0],
-        [0, 99, 1, 2, 98, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 88, 0, 0, 0, 0, 0], # 0 = void
+        [0, 99, 1, 2, 98, 0, 0, 0, 0, 0], # 1 = empty
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], # 99 = spawn tile
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], # 88 = shop tile
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], # 2 = weapon tile
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], # 3 = enemy tile
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], # 98 = end tile
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -60,8 +60,8 @@ def loader1(main_globals):
     main_globals['total_deaths'] = None
     main_globals['active_tiles'] = []
 
-    # helper to generate tile update calls
-    def generate_update_tile_calls(tilemap):
+    # generator :robot:
+    def generate_update_tile_calls(tilemap): # makes calls of update tile to make the default tilemap
         calls = []
         for r, row in enumerate(tilemap):
             for c, val in enumerate(row):
