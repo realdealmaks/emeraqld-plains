@@ -21,6 +21,8 @@ def connector(main_globals):
             "most_enemies_killed": 0,
             "richest_player": 0,
             "total_deaths": 0,
+            "blood_text": "True",
+            "hints_text": "True",
     }
 
     class Connector:

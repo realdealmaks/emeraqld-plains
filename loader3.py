@@ -146,6 +146,7 @@ def loader3(main_globals):
                 elif cmd == "ccache":
                     for i in main_globals['connector_instance'].data:
                         main_globals['save'](main_globals, **{i: main_globals['connector_instance'].default_data[i]})
+                    print("done")
 
                 else:
                     print("invalid")
@@ -454,6 +455,8 @@ def loader3(main_globals):
             screen.fill((0, 0, 0))
 
     def spawn_blood_particles(space, player_x, player_y, player_size, amount=10):
+        if main_globals['blood_text'] == "False":
+            return
         particles = []
         # bloods at player lower center
         spawn_x = player_x + player_size // 2
@@ -514,13 +517,11 @@ def loader3(main_globals):
                 new_res = main_globals['resolutions'][main_globals['resolution_index']]
                 main_globals['resolution'] = new_res
                 save(main_globals, resolution=new_res)
-                print(f"set resolution to {new_res}")
 
             elif function == "framerate": # changes max fps of real screen
                 new_fps = main_globals['frame_caps'][main_globals['frame_cap_index']]
                 main_globals['max_fps'] = new_fps
                 save(main_globals, max_fps=new_fps)
-                print(f"set fps to {new_fps}")
 
             elif function == "music": # changes music volume
                 new_volume = main_globals.get('volume_preview', main_globals.get('music_volume', mx.music.get_volume()))
@@ -528,9 +529,10 @@ def loader3(main_globals):
                 main_globals.pop('volume_preview', None) # reset bar preview
                 mx.music.set_volume(new_volume)
                 save(main_globals, music=new_volume)
-                print(f"set music volume to {new_volume}")
 
     def draw_hints(main_globals): # not really hints, just like keybinds but with a timer
+        if main_globals['hints_text'] == "False":
+            return
         dt = main_globals['dt']
         screen = main_globals['screen']
         alpha = main_globals['hint_alpha']
@@ -759,14 +761,19 @@ def loader3(main_globals):
             pygame.draw.circle(screen, (20, 20, 20), (100, 100), 80) # i think we should remove the text
             screen.blit(bigfont.render(str(player.health), True, (255, 255, 255)), (120, 200))
             screen.blit(bigfont.render(str(player.wealth), True, (255, 215, 0)), (120, 250)) # just realised man good job!!!!! wealth health
-            if player.health > 66: # jebo vam siks seven 🤖
-                screen.blit(main_globals['player_health_images'][0], (-50 + shake_x, -50 + shake_y))
-            elif player.health > 33:
-                screen.blit(main_globals['player_health_images'][1], (-50 + shake_x, -50 + shake_y))
+            if main_globals['blood_text'] == "True":
+                if player.health > 66: # jebo vam siks seven 🤖
+                    screen.blit(main_globals['player_health_images'][0], (-50 + shake_x, -50 + shake_y))
+                elif player.health > 33:
+                    screen.blit(main_globals['player_health_images'][1], (-50 + shake_x, -50 + shake_y))
+                else:
+                    screen.blit(main_globals['player_health_images'][2], (-50 + shake_x, -50 + shake_y))
             else:
-                screen.blit(main_globals['player_health_images'][2], (-50 + shake_x, -50 + shake_y))
+                screen.blit(main_globals['player_health_images'][0], (-50 + shake_x, -50 + shake_y))
 
     def draw_vignette(main_globals, player): # if you dont know what 'vignette' means go away!
+        if main_globals['blood_text'] == "False":
+            return
         if player.alive: # you filthy hog
             max_alpha = 180
             try:
@@ -914,26 +921,16 @@ def loader3(main_globals):
         to_menu = main_globals['to_menu']
         font = main_globals['font']
         screen.fill((0, 0, 0))
+
+        # title
         screen.blit(font.render("settings", True, (255, 255, 255)), (20, 20))
 
-        # liners
+        # line
         liner_y = 85
         liner = pygame.Rect(100, liner_y, main_globals['screen'].get_width() - 150, 2)
         pygame.draw.rect(screen, (40, 40, 40), liner)
-        liner_y += 50
-        liner = pygame.Rect(100, liner_y, main_globals['screen'].get_width() - 150, 2)
-        pygame.draw.rect(screen, (40, 40, 40), liner)
-        liner_y += 50
-        liner = pygame.Rect(100, liner_y, main_globals['screen'].get_width() - 150, 2)
-        pygame.draw.rect(screen, (40, 40, 40), liner)
-        liner_y += 50
-        liner = pygame.Rect(100, liner_y, main_globals['screen'].get_width() - 150, 2)
-        pygame.draw.rect(screen, (40, 40, 40), liner)
-        liner_y += 50
-        liner = pygame.Rect(100, liner_y, main_globals['screen'].get_width() - 150, 2)
-        pygame.draw.rect(screen, (40, 40, 40), liner)
 
-        # music slider
+        # music volume
         pygame.draw.rect(screen, (120, 120, 120), music_slider)
         volume = main_globals.get('volume_preview', main_globals.get('music_volume', mx.music.get_volume()))
         filled_width = int(music_slider.width * volume)
@@ -951,11 +948,10 @@ def loader3(main_globals):
         screen.blit(setting_font.render("music volume", True, (255, 255, 255)), (100, 100))
         screen.blit(setting_font.render(f"{int(volume * 100)}%", True, (255, 255, 255)), (main_globals['screen'].get_width() // 2 + 20, 100))
 
-        # return
-        to_menu_color = (70, 70, 70) if to_menu.collidepoint(mouse_pos) else (40, 40, 40)
-        pygame.draw.rect(screen, to_menu_color, to_menu)
-        img_rect = main_globals['return_image'].get_rect(center=main_globals['to_menu'].center)
-        screen.blit(main_globals['return_image'], img_rect.topleft)
+        # line
+        liner_y += 50
+        liner = pygame.Rect(100, liner_y, main_globals['screen'].get_width() - 150, 2)
+        pygame.draw.rect(screen, (40, 40, 40), liner)
 
         # hints
         screen.blit(setting_font.render("hints", True, (255, 255, 255)), (100, 150))
@@ -964,6 +960,11 @@ def loader3(main_globals):
         text_surf = setting_font.render(main_globals['hints_text'], True, (255, 255, 255))
         text_rect = text_surf.get_rect(center=main_globals['hints_button'].center)
         screen.blit(text_surf, text_rect.topleft)
+
+        # line
+        liner_y += 50
+        liner = pygame.Rect(100, liner_y, main_globals['screen'].get_width() - 150, 2)
+        pygame.draw.rect(screen, (40, 40, 40), liner)
 
         # resolution
         resolution_index = main_globals['resolution_index']
@@ -978,7 +979,7 @@ def loader3(main_globals):
         handle_width = 15
         handle_height = main_globals['resolution_slider_base'].height + 15
         handle_x = main_globals['resolution_slider_base'].x + resolution_index * step - handle_width // 2
-        handle_y = main_globals['resolution_slider_base'].y - 7  # y offset
+        handle_y = main_globals['resolution_slider_base'].y - 7
         handle_rect = pygame.Rect(handle_x, handle_y, handle_width, handle_height)
 
         screen.blit(setting_font.render("resolution", True, (255, 255, 255)), (100, 200))
@@ -991,6 +992,11 @@ def loader3(main_globals):
         main_globals['resolution_slider'] = handle_rect
         if main_globals['resolution'] != res:
             draw_apply_button(main_globals, main_globals['screen'].get_width() // 2 - 120, 190, "resolution")
+
+        # line
+        liner_y += 50
+        liner = pygame.Rect(100, liner_y, main_globals['screen'].get_width() - 150, 2)
+        pygame.draw.rect(screen, (40, 40, 40), liner)
 
         # framerate cap slider
         frame_cap_index = main_globals['frame_cap_index']
@@ -1005,7 +1011,7 @@ def loader3(main_globals):
         handle_width = 15
         handle_height = main_globals['frame_slider_base'].height + 15
         handle_x = main_globals['frame_slider_base'].x + frame_cap_index * step - handle_width // 2
-        handle_y = main_globals['frame_slider_base'].y - 7 # y offset
+        handle_y = main_globals['frame_slider_base'].y - 7
         handle_rect = pygame.Rect(handle_x, handle_y, handle_width, handle_height)
 
         screen.blit(setting_font.render("framerate cap", True, (255, 255, 255)), (100, 250))
@@ -1018,6 +1024,30 @@ def loader3(main_globals):
         main_globals['frame_slider'] = handle_rect
         if frame != main_globals['max_fps']:
             draw_apply_button(main_globals, main_globals['screen'].get_width() // 2 - 120, 242, "framerate")
+
+        # line
+        liner_y += 50
+        liner = pygame.Rect(100, liner_y, main_globals['screen'].get_width() - 150, 2)
+        pygame.draw.rect(screen, (40, 40, 40), liner)
+
+        # blood toggle
+        screen.blit(setting_font.render("blood", True, (255, 255, 255)), (100, 300))
+        blood_color = (70, 70, 70) if main_globals['blood_button'].collidepoint(mouse_pos) else (40, 40, 40)
+        pygame.draw.rect(screen, blood_color, main_globals['blood_button'])
+        text_surf = setting_font.render(main_globals['blood_text'], True, (255, 255, 255))
+        text_rect = text_surf.get_rect(center=main_globals['blood_button'].center)
+        screen.blit(text_surf, text_rect.topleft)
+
+        # line
+        liner_y += 50
+        liner = pygame.Rect(100, liner_y, main_globals['screen'].get_width() - 150, 2)
+        pygame.draw.rect(screen, (40, 40, 40), liner)
+
+        # return button
+        to_menu_color = (70, 70, 70) if to_menu.collidepoint(mouse_pos) else (40, 40, 40)
+        pygame.draw.rect(screen, to_menu_color, to_menu)
+        img_rect = main_globals['return_image'].get_rect(center=main_globals['to_menu'].center)
+        screen.blit(main_globals['return_image'], img_rect.topleft)
 
     def draw_dead(main_globals, mouse_pos):
         screen = main_globals['screen']
@@ -1040,7 +1070,7 @@ def loader3(main_globals):
         buy_button = main_globals['buy_button']
         to_menu = main_globals['to_menu']
         buy_button_color = (70, 70, 70) if buy_button.collidepoint(mouse_pos) else (40, 40, 40)
-        text_surf = font.render("14.99€", True, (255, 255, 255))
+        text_surf = font.render("14.99$", True, (255, 255, 255))
         text_rect = text_surf.get_rect(center=main_globals['buy_button'].center)
 
         screen.fill((0, 0, 0))

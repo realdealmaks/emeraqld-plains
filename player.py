@@ -78,7 +78,8 @@ def player(main_globals):
             new_particles = self.main_globals['spawn_blood_particles'](
                 self.main_globals['space'], blood_x, blood_y, amount // 2
             )
-            self.main_globals['blood_particles'].extend(new_particles)
+            if new_particles is not None:
+                self.main_globals['blood_particles'].extend(new_particles)
 
             if self.health <= 0:
                 self.die()
