@@ -35,6 +35,8 @@ def loader2(main_globals):
     main_globals['vignette'] = pygame.image.load("assets/useful images/redvignette.png").convert_alpha()
     main_globals['vignette'] = pygame.transform.scale(main_globals['vignette'], (main_globals['screen_w'], main_globals['screen_h']))
 
+    main_globals['return_image'] = pygame.image.load("assets/useful images/return.png").convert_alpha()
+    main_globals['return_image'] = pygame.transform.scale(main_globals['return_image'], (main_globals['return_image'].get_width() * 1.6, main_globals['return_image'].get_height() * 1.6))
     main_globals['thx'] = pygame.image.load("assets/useful images/thx.png") # credits
 
     main_globals['save_image'] = pygame.image.load("assets/useful images/save.png").convert_alpha()

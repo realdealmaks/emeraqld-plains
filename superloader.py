@@ -369,15 +369,10 @@ while running:
                         else: 
                             main.hints_text = "True"
                             print("hints reenabled")
-                    if main.to_menu.collidepoint(main.mouse_pos):
-                        main.game_stage = "in menu"
-                if main.game_stage == "dead": # IF DEAD
-                    if main.to_menu.collidepoint(main.mouse_pos):
-                        main.game_stage = "in menu"
-                        mx.music.pause()
+                if main.to_menu.collidepoint(main.mouse_pos):
+                    main.game_stage = "in menu"
+                    mx.music.pause()
                 if main.game_stage == "in battle pass": # kek
-                    if main.to_menu.collidepoint(main.mouse_pos):
-                        main.game_stage = "in menu"
                     if main.buy_button.collidepoint(main.mouse_pos):
                         webbrowser.open("https://www.youtube.com/channel/UC_zti-S08ZQegAafJw9wPhQ")
                 if main.player is not None:

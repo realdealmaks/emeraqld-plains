@@ -79,7 +79,6 @@ def loader3(main_globals):
     def reset(main_globals):
         main_globals['player'].health = 100
         main_globals['player'].weapons = []
-        main_globals['tilemap'] = main_globals['start_tilemap']
         main_globals['spawn_set'] = False
         main_globals['player'].wealth = 0
         main_globals['groups_spawned'] = 0
@@ -87,10 +86,13 @@ def loader3(main_globals):
         main_globals['in_shop'] = False
         main_globals['blood_particles'] = []
         main_globals['money_texts'] = []
-        main_globals['Weapon'] = None
         main_globals['facing_left'] = False
-        main_globals['make_initial_walkable_surface'](main_globals['tilemap'], main_globals)
         main_globals['is_paused'] = False
+        for call in main_globals['default_tilemap_calls']:
+            eval(call)
+        main_globals['rebuild_walkable_mask'](main_globals)
+        main_globals['active_tiles'] = []
+        main_globals['current_floor'] = 0
 
     def execute():
         try:
@@ -371,6 +373,13 @@ def loader3(main_globals):
         text_surf2 = main_globals['font'].render("2", True, (255, 255, 255))
         screen.blit(text_surf2, text_surf2.get_rect(center=button2.center))
 
+        # return
+        to_menu = main_globals['to_menu']
+        to_menu_color = (70, 70, 70) if to_menu.collidepoint(mouse_pos) else (40, 40, 40)
+        pygame.draw.rect(screen, to_menu_color, to_menu)
+        img_rect = main_globals['return_image'].get_rect(center=main_globals['to_menu'].center)
+        screen.blit(main_globals['return_image'], img_rect.topleft)
+
     def transition_to_dungeon(main_globals, screen):
 
         if not main_globals.get('transition_active', False):
@@ -410,7 +419,6 @@ def loader3(main_globals):
                     player.effect("healfull", 0)
                     main_globals['musicswitcher'](main_globals, 0)
                     main_globals['game_stage'] = "in dungeon"
-                    main_globals['tilemap'] = main_globals['start_tilemap']
                     mx.music.unpause()
                 elif selected_mode == 2: # send to yo mama hous
                     pass
@@ -856,9 +864,8 @@ def loader3(main_globals):
         # return
         to_menu_color = (70, 70, 70) if to_menu.collidepoint(mouse_pos) else (40, 40, 40)
         pygame.draw.rect(screen, to_menu_color, to_menu)
-        text_surf = font.render("return", True, (255, 255, 255))
-        text_rect = text_surf.get_rect(center=main_globals['to_menu'].center)
-        screen.blit(text_surf, text_rect.topleft)
+        img_rect = main_globals['return_image'].get_rect(center=main_globals['to_menu'].center)
+        screen.blit(main_globals['return_image'], img_rect.topleft)
 
         # credits text
         screen.blit(credits_font.render("shmuby ones", True, (255, 255, 255)), (50, 100))
@@ -947,9 +954,8 @@ def loader3(main_globals):
         # return
         to_menu_color = (70, 70, 70) if to_menu.collidepoint(mouse_pos) else (40, 40, 40)
         pygame.draw.rect(screen, to_menu_color, to_menu)
-        text_surf = font.render("To menu", True, (255, 255, 255))
-        text_rect = text_surf.get_rect(center=main_globals['to_menu'].center)
-        screen.blit(text_surf, text_rect.topleft)
+        img_rect = main_globals['return_image'].get_rect(center=main_globals['to_menu'].center)
+        screen.blit(main_globals['return_image'], img_rect.topleft)
 
         # hints
         screen.blit(setting_font.render("hints", True, (255, 255, 255)), (100, 150))
@@ -1022,16 +1028,17 @@ def loader3(main_globals):
         screen.blit(font.render("ded", True, (255, 255, 255)), (20, 20))
         main_globals['musicswitcher'](main_globals, 1)
 
+        # return
         to_menu_color = (70, 70, 70) if to_menu.collidepoint(mouse_pos) else (40, 40, 40)
         pygame.draw.rect(screen, to_menu_color, to_menu)
-        text_surf = font.render("To menu", True, (255, 255, 255))
-        text_rect = text_surf.get_rect(center=main_globals['to_menu'].center)
-        screen.blit(text_surf, text_rect.center)
+        img_rect = main_globals['return_image'].get_rect(center=main_globals['to_menu'].center)
+        screen.blit(main_globals['return_image'], img_rect.topleft)
 
     def draw_battle_pass(main_globals, mouse_pos):
         screen = main_globals['screen']
         font = main_globals['font']
         buy_button = main_globals['buy_button']
+        to_menu = main_globals['to_menu']
         buy_button_color = (70, 70, 70) if buy_button.collidepoint(mouse_pos) else (40, 40, 40)
         text_surf = font.render("14.99€", True, (255, 255, 255))
         text_rect = text_surf.get_rect(center=main_globals['buy_button'].center)
@@ -1040,6 +1047,12 @@ def loader3(main_globals):
         screen.blit(main_globals['battlepass_image'], (0, 0))
         pygame.draw.rect(screen, buy_button_color, buy_button)
         screen.blit(text_surf, text_rect.topleft)
+        
+        # return
+        to_menu_color = (70, 70, 70) if to_menu.collidepoint(mouse_pos) else (40, 40, 40)
+        pygame.draw.rect(screen, to_menu_color, to_menu)
+        img_rect = main_globals['return_image'].get_rect(center=main_globals['to_menu'].center)
+        screen.blit(main_globals['return_image'], img_rect.topleft)
 
     shop = Shop(main_globals)
 

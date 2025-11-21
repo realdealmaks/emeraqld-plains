@@ -247,4 +247,8 @@ great shit tbh
 
 make minimap actually look like something
 
+now you can actually play again instead of relaunching
+
+add some returns
+
 # 

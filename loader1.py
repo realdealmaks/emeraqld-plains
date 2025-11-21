@@ -55,7 +55,21 @@ def loader1(main_globals):
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
     ]
-    main_globals['start_tilemap'] = main_globals['tilemap']
+
+    def generate_update_tile_calls(tilemap):
+        calls = []
+        for r, row in enumerate(tilemap): 
+            for c, val in enumerate(row):
+                if val == 99:
+                    calls.append(f"main_globals['update_tile'](main_globals, {c}, {r}, {val})")
+        for r, row in enumerate(tilemap):
+            for c, val in enumerate(row):
+                if val != 0 and val != 99:
+                    calls.append(f"main_globals['update_tile'](main_globals, {c}, {r}, {val})")
+        return calls
+
+    main_globals['default_tilemap_calls'] = generate_update_tile_calls(main_globals['tilemap'])
+
     main_globals['walkable_tiles'] = [1, 2, 3, 4, 99, 88, 98] # tiles that can be walked on
     main_globals['in_shop'] = False
     main_globals['tile_size'] = 600
@@ -127,7 +141,7 @@ def loader1(main_globals):
     main_globals['settings_button'] = pygame.Rect(50, main_globals['screen_h'] - 300, 200, 100)
     main_globals['credits_button'] = pygame.Rect(50, main_globals['screen_h'] - 450, 200, 100)
     main_globals['bp_button'] = pygame.Rect(50, main_globals['screen_h'] - 600, 200, 100)
-    main_globals['to_menu'] = pygame.Rect(main_globals['screen_w'] - 250, main_globals['screen_h'] - 150, 200, 100)
+    main_globals['to_menu'] = pygame.Rect(main_globals['screen_w'] - 120, main_globals['screen_h'] - 120, 65, 65)
     main_globals['buy_button'] = pygame.Rect(20, main_globals['screen_h'] - 150, 200, 100)
     main_globals['hints_button'] = pygame.Rect(main_globals['screen_w'] - 400, 100 + 43, 75, 35)
     main_globals['resolution_slider_base'] = pygame.Rect(main_globals['screen_w'] - 400, 200 + 7, 300, 5)
