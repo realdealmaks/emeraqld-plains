@@ -14,7 +14,7 @@ def stsw(main_globals):
                     main_globals['draw_dungeon'](main_globals, main_globals['player'], main_globals['is_paused'], main_globals['facing_left'])
                     main_globals['draw_hints'](main_globals)
                 if main_globals['transition_active']:
-                    main_globals['draw_transition'](main_globals, main_globals['screen'])
+                    main_globals['transition_to_dungeon'](main_globals, main_globals['screen'])
             case "in settings":
                 main_globals['draw_settings'](main_globals, main_globals['mouse_pos'])
             case "dead":

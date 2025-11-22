@@ -121,6 +121,6 @@ def player(main_globals):
     player = Player(main_globals, main_globals['spawn_x'], main_globals['spawn_y'])
 
     main_globals['player'] = player
-    main_globals['Player'] = Player 
+    main_globals['Player'] = Player
 
     print("player, " , end = "")

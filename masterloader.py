@@ -125,12 +125,14 @@ def superloader():
         ("loader1", "variables"),
         ("connector", "data"),
         ("loader2", "assets"),
+        ("ui", "ui"),
         ("weapons", "logic"),
         ("loader3", "logic"),
         ("dungeon", "logic"),
         ("player", "logic"),
         ("enemy", "logic"),
         ("inputcontroller", "controller"),
+        ("cmd", "tools"),
     ]
     loading_steps = len(modules_to_load)
 

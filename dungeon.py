@@ -1,5 +1,5 @@
 # this file is for loading the dungeon
-import pygame, random, math
+import pygame, random, math, types
 from pygame import mixer as mx
 
 def dungeon(main_globals):
@@ -397,8 +397,137 @@ def dungeon(main_globals):
             main_globals['draw_hud'](main_globals, player)
 
         else: # if paused
-            main_globals['draw_pause_menu'](main_globals)
+            main_globals['pause_menu'](main_globals)
 
-    main_globals['draw_dungeon'] = draw_dungeon
+    def remake_floor():
+        tilemap = main_globals['tilemap']
+        rows = len(tilemap)
+        cols = len(tilemap[0])
+        min_distance = 4  # minimum distance between start and end
+        min_straight = 1  # minimum distance before turning again
+        tile_choices = [1, 2, 3] # tiles the path can be filled with
+        tile_probs = [0.5, 0.1, 0.4] # in order * 100 in %
+
+        # pick start and end far enough apart
+        while True:
+            start_r = random.randint(0, rows - 1)
+            start_c = random.randint(0, cols - 1)
+            end_r = random.randint(0, rows - 1)
+            end_c = random.randint(0, cols - 1)
+            distance = abs(start_r - end_r) + abs(start_c - end_c)
+            if distance >= min_distance:
+                break
+
+        # mark start and end
+        main_globals['update_tile'](main_globals, start_c, start_r, 99)
+        main_globals['update_tile'](main_globals, end_c, end_r, 98)
+
+        # r = hoRizontal c = vertiCal
+        current_r, current_c = start_r, start_c
+        current_dir = 'r' if random.random() < 0.5 else 'c'
+        straight_count = 0
+
+        path_tiles = []
+
+        while (current_r, current_c) != (end_r, end_c):
+            dr = end_r - current_r
+            dc = end_c - current_c
+
+            can_turn = straight_count >= min_straight
+            if current_dir == 'r' and dc != 0:
+                step = 1 if dc > 0 else -1
+                current_c += step
+                straight_count += 1
+            elif current_dir == 'c' and dr != 0:
+                step = 1 if dr > 0 else -1
+                current_r += step
+                straight_count += 1
+            elif can_turn:
+                if current_dir == 'r' and dr != 0:
+                    step = 1 if dr > 0 else -1
+                    current_r += step
+                    current_dir = 'c'
+                    straight_count = 1
+                elif current_dir == 'c' and dc != 0:
+                    step = 1 if dc > 0 else -1
+                    current_c += step
+                    current_dir = 'r'
+                    straight_count = 1
+            else:
+                if current_dir == 'r' and dc == 0 and dr != 0:
+                    step = 1 if dr > 0 else -1
+                    current_r += step
+                    current_dir = 'c'
+                    straight_count = 1
+                elif current_dir == 'c' and dr == 0 and dc != 0:
+                    step = 1 if dc > 0 else -1
+                    current_c += step
+                    current_dir = 'r'
+                    straight_count = 1
+
+            # make tile in the path a random one
+            if tilemap[current_r][current_c] not in (99, 98):
+                tile_value = random.choices(tile_choices, weights=tile_probs)[0]
+                path_tiles.append((current_r, current_c, tile_value))
+
+        # force at least 1 tile 2 or 3
+        if not any(tile[2] in (2, 3) for tile in path_tiles):
+            idx = random.randint(0, len(path_tiles) - 1)
+            r, c, _ = path_tiles[idx]
+            path_tiles[idx] = (r, c, random.choice([2, 3]))
+
+        # update tilemap
+        for r, c, val in path_tiles:
+            main_globals['update_tile'](main_globals, c, r, val)
+
+        print("new tilemap is:")
+        main_globals['current_floor'] += 1 # save floors
+        if main_globals['current_floor'] > main_globals['best_floor']:
+            main_globals['best_floor'] = main_globals['current_floor']
+            main_globals['save'](main_globals, best_floor=main_globals['best_floor'])
+        for i in range(len(main_globals['tilemap'])):
+            print(main_globals['tilemap'][i])
+        main_globals['rebuild_walkable_mask'](main_globals)
+
+    def update_tile(main_globals, col_idx, row_idx, new_tile_type): # updates a specific tile
+        # ex. update_tilemap(main_globals, 0, 0, 99)
+        # update tilemap ( glogales, column index, row index, tile type )
+
+        ts = main_globals['tile_size'] + main_globals['tile_offset']
+        center_x = col_idx * ts + main_globals['tile_size'] // 2
+        center_y = row_idx * ts + main_globals['tile_size'] // 2
+
+        if new_tile_type == 99: # clears other tiles if new tile is a spawn tile
+            print("clearing tiles")
+            for i in range(len(main_globals['tilemap'])):
+                for j in range(len(main_globals['tilemap'][0])):
+                    main_globals['tilemap'][i][j] = 0
+            main_globals['player'].respawn()
+
+        main_globals['weapons_on_map'] = [ # remove all weapons that are not on the new tiles
+        w for w in main_globals['weapons_on_map']
+            if not (math.isclose(w.x, center_x, abs_tol=1) and math.isclose(w.y, center_y, abs_tol=1))
+        ]
+
+        print(f"updating tilemap with {col_idx, row_idx} as type {new_tile_type}, ", end="")
+        main_globals['tilemap'][row_idx][col_idx] = new_tile_type # actually updates the tile
+        if 'groups_spawned' in main_globals:
+            main_globals['groups_spawned'] = 0
+
+    def get_camera_offset(main_globals, player, tile_size): # offset of the camera depending on tile with player
+        player_center_x = player.x + main_globals['player_size'] // 2
+        player_center_y = player.y + main_globals['player_size'] // 2
+
+        tile_x = player_center_x // (tile_size + main_globals['tile_offset'])
+        tile_y = player_center_y // (tile_size + main_globals['tile_offset'])
+        # camera moves to the center of the tile
+        offset_x = tile_x * (tile_size + main_globals['tile_offset']) + tile_size // 2 - main_globals['screen'].get_width() // 2
+        offset_y = tile_y * (tile_size + main_globals['tile_offset']) + tile_size // 2 - main_globals['screen'].get_height() // 2
+        return offset_x, offset_y
+
+    # define functions and classes into main globals
+    for name, obj in locals().items():
+        if isinstance(obj, (types.FunctionType, type)):
+            main_globals[name] = obj
 
     print("dungeon, ", end = "")
