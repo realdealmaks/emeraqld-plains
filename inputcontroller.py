@@ -124,4 +124,4 @@ def inputcontroller(main_globals):
                     main_globals['dragging_resolution_slider'] = False
 
     main_globals['input_controller'] = input_controller
-    print("incon, ", )
+    print("incon, ", end="")
