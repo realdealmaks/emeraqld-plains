@@ -251,4 +251,16 @@ now you can actually play again instead of relaunching
 
 add some returns
 
+# next day
+
+i kind of forgot half of a fucking file
+- me at 3 am doing this btw ^
+
+# 22 11
+
+update pause menu
+
+ragajeblidishidarim please do the text on weapon stats
+> xoxo shrambabley wan
+
 # 

@@ -59,7 +59,7 @@ print("ready, ", end="")
 
 
 # dont change ts diddybludd
-main.developer_tools = False
+main.developer_tools = True
 # well obvi unless you are a dev :(
 # https://tenor.com/en-GB/view/diddyblud-diddy-einstein-albert-einstein-calc-gif-9528529477851089865
 
@@ -101,7 +101,7 @@ space.gravity = (0, 500)
 
 time.sleep(0.3)
 
-print("started")
+print(f"started, {"dev" if main.developer_tools else "reg"}")
 # loop setup
 clock = pygame.time.Clock() # makes some clocks and sets the titles
 pygame.display.set_caption(' naganou :)))') # change to naganou? :))) # sure man

@@ -18,6 +18,7 @@ def player(main_globals):
             self.weapons = []
             self.wealth = 0 # broke ass bitch
             self.locked = False
+            self.inventory = []
 
             size = self.main_globals['player_size']
             self.rect = pygame.Rect(self.x, self.y, size, size)

@@ -14,6 +14,7 @@ def loader3(main_globals):
     bigfont = pygame.font.Font("assets/font/editundo.ttf", 48)
     setting_font = credits_font = pygame.font.Font("assets/font/editundo.ttf", 28)
     smallfont = pygame.font.Font("assets/font/editundo.ttf", 22)
+    smallerfont = pygame.font.Font("assets/font/editundo.ttf", 16)
 
     def draw_minimap(main_globals, tilemap, player):
         screen = main_globals['screen']
@@ -79,6 +80,7 @@ def loader3(main_globals):
     def reset(main_globals):
         main_globals['player'].health = 100
         main_globals['player'].weapons = []
+        main_globals['player'].inventory = []
         main_globals['spawn_set'] = False
         main_globals['player'].wealth = 0
         main_globals['groups_spawned'] = 0
@@ -94,70 +96,123 @@ def loader3(main_globals):
         main_globals['active_tiles'] = []
         main_globals['current_floor'] = 0
 
-    def execute():
-        try:
-            main_globals['is_paused'] = True
+    def shell(main_globals, event): # oh why oh why am i so kinky for these specific things
+        sections = {
+            "branching commands": {
+                "weapon": "weapon name",
+                "money": "amount",
+                "health": "amount",
+                "stage": "stage name",
+            },
+            "regular commands": {
+                "rebuild": "rebuild floor",
+                "reset": "reset dungeon",
+                "respawn": "respawn player",
+                "ccache": "clear data",
+            },
+            "exit commands": {
+                "quit, q, exit, x": "",
+            }
+        }
 
-            cmd = input("> ")
+        key = getattr(event, "unicode", "")
 
-            while cmd not in ["q", "quit", "exit", "x"]:
-                if cmd == "help":
-                    print("\nbranching commands:\n"
-                            "weapon -> weapon name\n"
-                            "money -> amount\n"
-                            "health -> amount\n"
-                            "stage -> stage name\n"
+        # cmd mode
+        if not main_globals.get('cmd_active', False):
+            sequence = "cmd"
+            dttv = main_globals.get('dttv', 0)
+            if key.lower() == sequence[dttv]:
+                main_globals['dttv'] = dttv + 1
+                if main_globals['dttv'] == len(sequence):
+                    main_globals['cmd_active'] = True
+                    main_globals['is_paused'] = True
+                    main_globals['cmd_buffer'] = ""
+                    main_globals['waiting_for_input'] = None
+                    print("\n> ", end="", flush=True)
+                    main_globals['dttv'] = 0
+                return
+            else:
+                main_globals['dttv'] = 0
+            return
 
-                            "\nregular commands:\n"
-                            "rebuild - rebuild floor\n"
-                            "reset - reset dungeon\n"
-                            "respawn - respawn player\n"
-                            "ccache - clear data\n"
+        waiting = main_globals.get('waiting_for_input')
 
-                            "\nexit commands:\n"
-                            "quit, q, exit, x\n"
-                        )
+        # backspace
+        if event.key == pygame.K_BACKSPACE:
+            if main_globals['cmd_buffer']:
+                main_globals['cmd_buffer'] = main_globals['cmd_buffer'][:-1]
+                print('\b \b', end="", flush=True)
+            return
 
-                elif cmd == "weapon":
-                    weapon_name = input(">> name: ")
-                    new_weapon = main_globals['Weapon'](weapon_name)
-                    main_globals['player'].weapon = new_weapon
-                    main_globals['player'].weapons = [new_weapon]
-                    print("set")
+        # enter
+        if event.key == pygame.K_RETURN:
+            cmd = main_globals['cmd_buffer'].strip()
+            main_globals['cmd_buffer'] = ""
 
-                elif cmd == "money":
-                    main_globals['give_money'](int(input(">> amount: "))), print("set")
+            if waiting:
+                value = cmd
+                try:
+                    if waiting == "weapon":
+                        if value not in main_globals['weapon_stats']:
+                            raise ValueError("invalid")
+                        new_weapon = main_globals['Weapon'](value)
+                        main_globals['player'].weapon = new_weapon
+                        main_globals['player'].weapons = [new_weapon]
+                    elif waiting == "money":
+                        main_globals['give_money'](int(value))
+                    elif waiting == "health":
+                        main_globals['player'].health = int(value)
+                    elif waiting == "stage":
+                        main_globals['game_stage'] = value
+                    print(f"\n>> {value}\ndone")
+                except Exception:
+                    print(f"\n>> {value}\nerror: invalid")
+                main_globals['waiting_for_input'] = None
+                print("> ", end="", flush=True)
+                return
 
-                elif cmd == "health":
-                    main_globals['player'].health = int(input(">> amount: ")), print("set")
+            cmd_lower = cmd.lower()
+            if cmd_lower in ["quit", "q", "exit", "x"]:
+                main_globals['cmd_active'] = False
+                main_globals['is_paused'] = False
+                print("\nexit")
+            elif cmd_lower == "help":
+                print()
+                for category, cmds in sections.items():
+                    print(f"{category}:")
+                    for name, desc in cmds.items():
+                        print(f"    {name:<10} {desc}")
+                    print()
+                print("> ", end="", flush=True)
+            elif cmd_lower in ["weapon", "money", "health", "stage"]:
+                main_globals['waiting_for_input'] = cmd_lower
+                prompt = {
+                    "weapon": "\n>> enter weapon name: ",
+                    "money": "\n>> enter amount: ",
+                    "health": "\n>> enter amount: ",
+                    "stage": "\n>> enter stage name: "
+                }[cmd_lower]
+                print(prompt, end="", flush=True)
+            elif cmd_lower == "rebuild":
+                main_globals['remake_floor']()
+                print("done\n> ", end="", flush=True)
+            elif cmd_lower == "reset":
+                main_globals['reset'](main_globals)
+                print("done\n> ", end="", flush=True)
+            elif cmd_lower == "respawn":
+                main_globals['player'].respawn()
+                print("done\n> ", end="", flush=True)
+            elif cmd_lower == "ccache":
+                for i in main_globals['connector_instance'].data:
+                    main_globals['save'](main_globals, **{i: main_globals['connector_instance'].default_data[i]})
+                print("done\n> ", end="", flush=True)
+            else:
+                print("invalid\n> ", end="", flush=True)
 
-                elif cmd == "rebuild":
-                    main_globals['remake_floor'](), print("done")
-
-                elif cmd == "reset":
-                    main_globals['reset'](main_globals), print("done")
-
-                elif cmd == "stage":
-                    main_globals['game_stage'] = input(">> stage: "), print("done")
-
-                elif cmd == "respawn":
-                    main_globals['player'].respawn(), print("done")
-
-                elif cmd == "ccache":
-                    for i in main_globals['connector_instance'].data:
-                        main_globals['save'](main_globals, **{i: main_globals['connector_instance'].default_data[i]})
-                    print("done")
-
-                else:
-                    print("invalid")
-
-                cmd = input("> ")
-
-            main_globals['is_paused'] = False
-
-        except Exception as e:
-            main_globals['is_paused'] = False
-            print(e)
+        # print characters in terminal
+        elif key:
+            main_globals['cmd_buffer'] += key
+            print(key, end="", flush=True)
 
     def give_money(amount):  # some indicator for getting rich 🤑
         if main_globals['money_texts']:
@@ -365,9 +420,7 @@ def loader3(main_globals):
         screen.blit(text_surf1, text_surf1.get_rect(center=button1.center))
 
         button2.width, button2.height = map(int, main_globals['mode2_btn_size'])
-        button2.left = screen.get_width() * 3 // 4 - base_size[0] // 2
-        if hover2:
-            button2.left -= button2.width - base_size[0]
+        button2.left = screen.get_width() * 3 // 4 - button2.width // 2
         button2.top = screen.get_height() // 2
         color2 = (70, 70, 70) if hover2 else (40, 40, 40)
         pygame.draw.rect(screen, color2, button2, border_radius=8)
@@ -571,11 +624,121 @@ def loader3(main_globals):
         else:
             main_globals['hint_alpha'] = 0
 
+    def pause_menu(main_globals):
+        screen = main_globals['screen']
+        tabs = main_globals['tabs']
+        background = main_globals['pause_tabs_images']['background']
+
+        current_tab = main_globals.get('current_tab', 'weapon_stats')
+        main_globals['current_tab'] = current_tab
+
+        screen.blit(background, (screen.get_width() // 2 - background.get_width() // 2, screen.get_height() // 2 - background.get_height() // 2))
+
+        main_globals['draw_pause_buttons'](main_globals)
+        main_globals['draw_pause_stats'](main_globals)
+        if current_tab in tabs:
+            func_name = tabs[current_tab]
+            main_globals[func_name](main_globals)
+
+    def draw_inventory(main_globals):
+        screen = main_globals['screen']
+        inventory = main_globals['player'].inventory
+        image = main_globals['pause_tabs_images']['inventory']
+        image_x = screen.get_width() // 2 - image.get_width() // 2 + 0
+        image_y = screen.get_height() // 2 - image.get_height() // 2 + 0
+
+        screen.blit(image, (image_x, image_y))
+        center_x = main_globals['screen'].get_width() // 2
+        center_y = image.get_height() // 2
+
+        spacing = 60 # space between buttons
+        total_height = len(inventory) * spacing
+        start_y = center_y - total_height // 2 + spacing // 2 # first button y
+
+        for i, item in enumerate(inventory):
+            item_rect = item.get_rect(center=(center_x, start_y + i * spacing))
+            screen.blit(item, item_rect)
+
+    def draw_pause_buttons(main_globals):
+        screen = main_globals['screen']
+        screen_w, screen_h = screen.get_size()
+
+        image = main_globals['pause_tabs_images']['buttons']
+        image_x = screen.get_width() // 2 + main_globals['pause_tabs_images']['background'].get_width() // 2 - image.get_width()
+        image_y = screen_h // 2 - image.get_height() // 2
+        screen.blit(image, (image_x, image_y))
+
+        buttons_dict = main_globals['pause_buttons']
+        mouse_pos = pygame.mouse.get_pos()
+
+        num_buttons = len(buttons_dict)
+
+        # scale to fit
+        button_width = int(image.get_width() * 0.8) # 80% of background
+        button_height = int(image.get_height() / (num_buttons + 1) * 0.8) # fit vert
+
+        spacing = image.get_height() / (num_buttons + 1)
+        center_x = image_x + image.get_width() // 2 # hor center
+
+        for i, (name, rect) in enumerate(buttons_dict.items(), start=1):
+            # resize
+            rect.width = button_width
+            rect.height = button_height
+
+            # position
+            rect.center = (center_x, image_y + i * spacing)
+            buttons_dict[name] = rect
+
+            # hover
+            color = (70, 70, 70) if rect.collidepoint(mouse_pos) else (40, 40, 40)
+            pygame.draw.rect(screen, color, rect, 2)
+
+            text_surf = smallfont.render(name, True, (255, 255, 255))
+            text_rect = text_surf.get_rect(center=rect.center)
+            screen.blit(text_surf, text_rect)
+
+    def draw_pause_stats(main_globals):
+        screen = main_globals['screen']
+        image = main_globals['pause_tabs_images']['player_stats']
+        bg = main_globals['pause_tabs_images']['background']
+        image_x = screen.get_width() // 2 - bg.get_width() // 2 + 4
+        image_y = screen.get_height() // 2 - image.get_height() // 2
+
+        screen.blit(image, (image_x, image_y))
+
+        # position
+        start_y_offset = 40 # y offset for the first stat
+        inner_padding_x = 15
+        spacing = 20 # space between label and value
+        line_spacing = 45 # space between stats
+
+        base_x = image_x + inner_padding_x
+        base_y = image_y + start_y_offset
+
+        stats = {
+            "Health": main_globals['player'].health,
+            "Wealth": main_globals['player'].wealth,
+            "Enemies killed": main_globals['enemies_killed'],
+            "Floor": main_globals['current_floor']
+        }
+
+        y = base_y
+        for label, value in stats.items():
+            label_surf = smallerfont.render(f"{label}:", True, (255, 255, 255))
+            value_surf = smallerfont.render(str(value), True, (255, 255, 255))
+
+            screen.blit(label_surf, (base_x, y))
+            screen.blit(value_surf, (base_x, y + spacing))
+
+            y += line_spacing
+
     def weapon_info(main_globals):
         screen = main_globals['screen']
         weapons = main_globals['player'].weapons
         screen_w = main_globals['screen'].get_width()
         screen_h = main_globals['screen'].get_height()
+        image_x = screen_w // 2 - main_globals['weapon_frame'].get_width() // 2 + 0
+        image_y = screen_h // 2 - main_globals['weapon_frame'].get_height() // 2 + 0
         screen.blit(main_globals['weapon_frame'], (screen_w // 2 - main_globals['weapon_frame'].get_width() // 2, screen_h // 2 - main_globals['weapon_frame'].get_height() // 2))
 
         if not weapons or weapons[0] is None:
@@ -584,6 +747,7 @@ def loader3(main_globals):
 
         weapon = main_globals['player'].weapons[0]
         weapon_image = main_globals['weapon_images'][weapon.name]
+        screen.blit(main_globals['weapon_light'], (screen_w // 2 - main_globals['weapon_frame'].get_width() // 2 + 35, screen_h // 2 - main_globals['weapon_frame'].get_height() // 2 + 30))
         screen.blit(weapon_image, (screen_w // 2 - main_globals['weapon_frame'].get_width() // 2 + 35, screen_h // 2 - main_globals['weapon_frame'].get_height() // 2 + 30))
 
         # stats
@@ -788,7 +952,7 @@ def loader3(main_globals):
         screen = main_globals['screen']
         screen.blit(main_globals['font'].render("paused", True, (255, 255, 255)), (main_globals['screen'].get_width() // 2 - 60, main_globals['screen'].get_height() // 4 - 22))
         mx.music.pause()
-        weapon_info(main_globals)
+        pause_menu(main_globals)
 
     def draw_menu(main_globals, mouse_pos): # main menu
         screen = main_globals['screen']
@@ -1115,10 +1279,13 @@ def loader3(main_globals):
     main_globals['draw_transition'] = transition_to_dungeon
     main_globals['remake_floor'] = remake_floor
     main_globals['give_money'] = give_money
-    main_globals['execute'] = execute
+    main_globals['shell'] = shell
     main_globals['reset'] = reset
     main_globals['draw_minimap'] = draw_minimap
     main_globals['is_on_active_tile'] = is_on_active_tile
+    main_globals['draw_pause_stats'] = draw_pause_stats
+    main_globals['draw_pause_buttons'] = draw_pause_buttons
+    main_globals['draw_inventory'] = draw_inventory
 
     # add classes to main globall
     main_globals['shop'] = shop

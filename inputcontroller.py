@@ -1,5 +1,5 @@
 try:
-    import random, pygame, pymunk, time
+    import random, pygame, webbrowser
     from pygame import mixer as mx
 except ModuleNotFoundError as e:
     print(f"you are missing module {e.name} man")
@@ -9,10 +9,11 @@ def inputcontroller(main_globals):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                quit() # https://cdn.discordapp.com/emojis/1389247646593581206.webp?size=96
+                quit()
 
             # key presses
             if event.type == pygame.KEYDOWN:
+                main_globals['shell'](main_globals, event)
                 if event.key == pygame.K_w: 
                     main_globals['moving_up'] = True
                 if event.key == pygame.K_s: 
@@ -34,41 +35,9 @@ def inputcontroller(main_globals):
                 else:
                     main_globals['pressed_f'] = False
                 if event.key == pygame.K_ESCAPE:
-                    if main_globals['is_paused'] == False: main_globals['is_paused'] = True
-                    else: main_globals['is_paused'] = False
-
-                # testing binds
-                if main_globals['developer_tools'] == True:
-                    if event.key == pygame.K_m:
-                        if main_globals['game_stage'] == "in dungeon":
-                            mx.music.pause()
-                            main_globals['game_stage'] = "in menu"
                     if main_globals['game_stage'] == "in dungeon":
-                        if event.key == pygame.K_h:
-                            main_globals['player'].damaged(10)
-                        if event.key == pygame.K_p:
-                            main_globals['game_stage'] = "dead"
-                        if event.key == pygame.K_y:
-                            rand1 = random.randint(0, 9)
-                            rand2 = random.randint(0, 9)
-                            main_globals['update_tile'](main_globals, rand1, rand2, 99)
-                            main_globals['update_tile'](main_globals, rand1 + 1, rand2, 2)
-                            main_globals['camera_x'], main_globals['camera_y'] = main_globals['get_camera_offset'](main_globals, main_globals['player'], main_globals['tile_size'])
-                            main_globals['spawn_weapons'](main_globals)
-                        if event.key == pygame.K_r:
-                            main_globals['player'].respawn()
-                        if event.key == pygame.K_o:
-                            main_globals['player'].locked = not main_globals['player'].locked
-                            print(f"is locked {main_globals['player'].locked}")
-                        if event.key == pygame.K_b:
-                            if not main_globals['in_shop']:
-                                main_globals['in_shop'] = True # just now for debugging use match state when actually doing the thing
-                                main_globals['game_stage'] = "shopping"
-                                print("in shop")
-                            else:
-                                main_globals['in_shop'] = False
-                                main_globals['game_stage'] = "in dungeon"
-                                print("dih")
+                        if main_globals['is_paused'] == False: main_globals['is_paused'] = True
+                        else: main_globals['is_paused'] = False
 
             # keys releases
             if event.type == pygame.KEYUP:
@@ -111,24 +80,39 @@ def inputcontroller(main_globals):
                         if main_globals['hints_button'].collidepoint(main_globals['mouse_pos']):
                             if main_globals['hints_text'] == "True":
                                 main_globals['hints_text'] = "False"
-                                print("hints disabled")
                             else: 
                                 main_globals['hints_text'] = "True"
-                                print("hints reenabled")
-                        if main_globals['to_menu'].collidepoint(main_globals['mouse_pos']):
-                            main_globals['game_stage'] = "in menu"
-                    if main_globals['game_stage'] == "dead": # IF DEAD
-                        if main_globals['to_menu'].collidepoint(main_globals['mouse_pos']):
-                            main_globals['game_stage'] = "in menu"
-                            mx.music.pause()
+                            main_globals['hints'] = main_globals['hints_text'].split(", ")
+                            main_globals['save'](main_globals, hints=main_globals['hints'])
+                        if main_globals['blood_button'].collidepoint(main_globals['mouse_pos']):
+                            if main_globals['blood_text'] == "True":
+                                main_globals['blood_text'] = "False"
+                            else: 
+                                main_globals['blood_text'] = "True"
+                            main_globals['blood'] = main_globals['blood_text'].split(", ")
+                            main_globals['save'](main_globals, blood=main_globals['blood'])
+                    if main_globals['to_menu'].collidepoint(main_globals['mouse_pos']):
+                        main_globals['game_stage'] = "in menu"
+                        mx.music.pause()
                     if main_globals['game_stage'] == "in battle pass": # kek
-                        if main_globals['to_menu'].collidepoint(main_globals['mouse_pos']):
-                            pygame.quit()
+                        if main_globals['buy_button'].collidepoint(main_globals['mouse_pos']):
+                            webbrowser.open("https://www.youtube.com/channel/UC_zti-S08ZQegAafJw9wPhQ")
                     if main_globals['player'] is not None:
                         if main_globals['game_stage'] == "in dungeon":
                             if main_globals['player'].weapons != []:
                                 main_globals['player'].attack(main_globals)
-                                # print("player attacked") annoys me that it says it even if its on cd so i moved it
+                    if main_globals['game_stage'] == "in dungeon":
+                        if main_globals['is_paused']:
+                            for name, rect in main_globals['pause_buttons'].items():
+                                if rect.collidepoint(main_globals['mouse_pos']):
+                                    if name == 'resume':
+                                        main_globals['is_paused'] = False
+                                    elif name == 'inventory':
+                                        main_globals['current_tab'] = 'inventory'
+                                    elif name == 'weapon':
+                                        main_globals['current_tab'] = 'weapon_stats'
+                                    elif name == 'quit':
+                                        pass
 
             main_globals['mouse_pressed'] = pygame.mouse.get_pressed()[0] # hi
 

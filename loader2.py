@@ -78,7 +78,7 @@ def loader2(main_globals):
     key_hints = ["a", "s", "d", "w", "e"]
     for key in key_hints:
         img = pygame.image.load(f"assets/keys/key_{key}.png").convert_alpha()
-        main_globals[f"key_{key}_hint"] = pygame.transform.scale2x(img)
+        main_globals[f"key_{key}_hint"] = pygame.transform.scale(img, (int(img.get_width() * 1.6), int(img.get_height() * 1.6)))
 
     # hint images - mouse
     mouse_w, mouse_h = pygame.image.load("assets/keys/mouse_left.png").convert_alpha().get_size()
@@ -86,6 +86,31 @@ def loader2(main_globals):
     for hint in mouse_hints:
         img = pygame.image.load(f"assets/keys/mouse_{hint}.png").convert_alpha()
         main_globals[f"mouse_{hint}_hint"] = pygame.transform.scale(img, (int(mouse_w * 3.5), int(mouse_h * 3.5)))
+
+    # pause menu
+    screen_w, screen_h = main_globals['screen_w'], main_globals['screen_h']
+    background_mult = 0.72
+    size_mult = 2.9
+    background = pygame.image.load("assets/pause/pause_background.png").convert_alpha()
+    background = pygame.transform.scale(background, (screen_w * background_mult, screen_h * background_mult))
+    buttons = pygame.image.load("assets/pause/pause_buttons.png").convert_alpha()
+    buttons = pygame.transform.scale(buttons, (buttons.get_width() * size_mult, buttons.get_height() * size_mult))
+    stats = pygame.image.load("assets/pause/pause_player.png").convert_alpha()
+    stats = pygame.transform.scale(stats, (stats.get_width() * size_mult, stats.get_height() * size_mult))
+    inventory = pygame.image.load("assets/pause/pause_inventory.png").convert_alpha()
+    inventory = pygame.transform.scale(inventory, (inventory.get_width() * size_mult, inventory.get_height() * size_mult))
+    main_globals['pause_tabs_images'] = {
+        'background': background,
+        'buttons': buttons,
+        'inventory': inventory,
+        'player_stats': stats
+    }
+    main_globals['pause_buttons'] = {
+        'resume': pygame.Rect(0, 0, 200, 50),
+        'inventory': pygame.Rect(0, 0, 200, 50),
+        'weapon': pygame.Rect(0, 0, 200, 50),
+        'quit': pygame.Rect(0, 0, 200, 50)
+    }
 
     # weapon stat frame
     weapon_frame = pygame.image.load("assets/models/weapons/stats/weaponFrame.png").convert_alpha()
@@ -100,6 +125,12 @@ def loader2(main_globals):
     range_stat = pygame.transform.scale(range_stat, (int(range_stat.get_width() * 1.2), int(range_stat.get_height() * 1.2)))
     cooldown_stat = pygame.image.load("assets/models/weapons/stats/cooldown.png").convert_alpha()
     main_globals['weapon_stat_images'] = [damage_stat, range_stat, cooldown_stat]
+
+    # stat light
+    weapon_light = pygame.image.load("assets/models/weapons/stats/light.png").convert_alpha()
+    weapon_light.set_alpha(70)
+    weapon_light = pygame.transform.scale(weapon_light, (int(weapon_light.get_width() * 2.2), int(weapon_light.get_height() * 2.2)))
+    main_globals['weapon_light'] = weapon_light
 
     # weapon images
     sword = pygame.image.load("assets/models/weapons/sword.png").convert_alpha()

@@ -59,6 +59,13 @@ def loader1(main_globals):
     main_globals['richest_player'] = None
     main_globals['total_deaths'] = None
     main_globals['active_tiles'] = []
+    main_globals['tabs'] = {
+        'player_stats': 'draw_pause_stats',
+        'buttons': 'draw_pause_buttons',
+        'weapon_stats': 'weapon_info',
+        'inventory': 'draw_inventory',
+        'settings': 'draw_settings',
+    }
 
     # generator :robot:
     def generate_update_tile_calls(tilemap): # makes calls of update tile to make the default tilemap
@@ -114,6 +121,9 @@ def loader1(main_globals):
     main_globals['currently_playing_index'] = 0
     main_globals['blood_text'] = "True"
     main_globals['blood'] = main_globals['blood_text'].split(", ")
+    main_globals['dttv'] = 0
+    main_globals['cmd_active'] = False
+    main_globals['cmd_buffer'] = "" # collects inputs
 
     # hint variables
     main_globals['hint_alpha'] = 0
