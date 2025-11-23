@@ -343,10 +343,10 @@ def loader3(main_globals):
             pass
         main_globals['frames'] = frames
 
-    def musicswitcher(main_globals, indexhere):
+    def musicswitcher(main_globals, indexhere, start=-1):
         if main_globals['currently_playing_index'] != indexhere:
             mx.music.load(main_globals['musics'][indexhere])
-            mx.music.play(-1)
+            mx.music.play(start)
             main_globals['currently_playing_index'] = indexhere
 
     def make_initial_walkable_surface(tilemap, main_globals, bridging=True, counter=0): # make the initial walkable mask as its own surface
@@ -380,7 +380,7 @@ def loader3(main_globals):
             # cba to make a seperate mask so calls itself with a counter for looping
             main_globals['locked_mask'] = make_initial_walkable_surface(tilemap, main_globals, False, counter + 1)
             print(f"previous active tiles: {main_globals['active_tiles']}")
-            main_globals['active_tiles'] = []
+        main_globals['active_tiles'] = []
         return mask
 
     def rebuild_walkable_mask(main_globals): # rebuilds the mask if something changed

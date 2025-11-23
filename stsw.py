@@ -1,12 +1,18 @@
 # for switching the game state
 # stsw - stage switcher
 
+try:
+    import pygame
+except ImportError as e:
+    print(f"missing module {e}")
+
 def stsw(main_globals):
 
     def match_state(main_globals, state):
         match state:
             case "in menu":
                 main_globals['draw_menu'](main_globals, main_globals['mouse_pos'])
+                main_globals['musicswitcher'](main_globals, 2)
             case "choosing mode" | "in dungeon":
                 if state == "choosing mode": # cursed with low fps
                     main_globals['draw_mode_selection'](main_globals, main_globals['mouse_pos'])

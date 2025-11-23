@@ -35,6 +35,7 @@ def inputcontroller(main_globals):
                     main_globals['pressed_f'] = False
                 if event.key == pygame.K_ESCAPE:
                     if main_globals['game_stage'] == "in dungeon":
+                        main_globals['selected_item'] = None
                         if main_globals['is_paused'] == False: main_globals['is_paused'] = True
                         else: main_globals['is_paused'] = False
 

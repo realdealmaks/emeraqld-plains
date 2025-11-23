@@ -63,7 +63,7 @@ def loader2(main_globals):
     main_globals['stairs_image'] = pygame.transform.scale2x(stairs)
 
     # background music
-    main_globals['musics'] = ["assets/audio/music/testdroga.mp3", "assets/audio/music/game_over_loop.mp3"]
+    main_globals['musics'] = ["assets/audio/music/testdroga.mp3", "assets/audio/music/game_over_loop.mp3", "assets/audio/music/bakus funk trim.mp3"]
     mx.music.load(main_globals['musics'][0])
     mx.music.play(-1)
     mx.music.pause()
