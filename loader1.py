@@ -136,6 +136,7 @@ def loader1(main_globals):
 
     # button variables
     screen_w, screen_h = main_globals['screen_w'], main_globals['screen_h']
+    main_globals['mouse_clicked'] = False
 
     main_globals['music_slider'] = pygame.Rect(screen_w - 400, 100, 300, 20)
     main_globals['play_button'] = pygame.Rect(50, screen_h - 150, 200, 100)
@@ -201,6 +202,7 @@ def loader1(main_globals):
     main_globals['space'] = None
 
     # items
+    main_globals['selected_item'] = None
     items = {
         # 'item name': {
             # 'description': 'item description',

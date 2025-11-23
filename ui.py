@@ -156,9 +156,8 @@ def ui(main_globals):
         inventory = main_globals['player'].inventory
         panel_image = main_globals['pause_tabs_images']['inventory']
         items_data = main_globals['items'] # data for items
-        font = main_globals['font']
 
-        mouse_pos = pygame.mouse.get_pos()
+        mouse_pos = main_globals['mouse_pos']
 
         # position of the panel
         panel_x = screen.get_width() // 2 - panel_image.get_width() // 2
@@ -181,6 +180,8 @@ def ui(main_globals):
         spacing_y = item_size + 10
         items_per_row = max(1, inner_width // spacing_x)
 
+        # boxes
+        item_rects = {}
         for idx, (name, count) in enumerate(inventory.items()):
             if name not in items_data:
                 continue # skip if unknown
@@ -203,12 +204,70 @@ def ui(main_globals):
             # hover overlay
             if border_rect.collidepoint(mouse_pos):
                 overlay = pygame.Surface((border_rect.width, border_rect.height), pygame.SRCALPHA)
-                overlay.fill((255, 255, 255, 100))
+                overlay.fill((255, 255, 255, 60))
+                screen.blit(overlay, border_rect.topleft)
+            if main_globals['selected_item'] == name:
+                overlay = pygame.Surface((border_rect.width, border_rect.height), pygame.SRCALPHA)
+                overlay.fill((255, 255, 255, 130))
                 screen.blit(overlay, border_rect.topleft)
 
             count_text = smallerfont.render(str(count), True, (255, 255, 255))
             count_pos = (border_rect.right - count_text.get_width() - 3, border_rect.bottom - count_text.get_height() - 3)
             screen.blit(count_text, count_pos)
+
+            item_rects[name] = border_rect
+
+        main_globals['inventory_items_rects'] = item_rects
+
+        # description box
+
+        # offsets
+        offset_top = 300
+        offset_bottom = 20
+        offset_left = 20
+        offset_right = 20
+
+        # available space
+        inner_width = panel_image.get_width() - offset_left - offset_right
+        inner_height = panel_image.get_height() - offset_top - offset_bottom
+
+        # description text
+        if main_globals['selected_item'] is not None:
+            item_name = main_globals['selected_item']
+            if item_name in items_data and item_name in main_globals['player'].inventory:
+                description = items_data[item_name]['description']
+                desc_lines = description.split('\n')
+
+                desc_x = panel_x + offset_left
+                desc_y = panel_y + offset_top
+
+                for line in desc_lines:
+                    desc_text = smallerfont.render(line, True, (255, 255, 255))
+                    screen.blit(desc_text, (desc_x, desc_y))
+                    desc_y += desc_text.get_height() + 5
+
+                if main_globals['items'][item_name]['function'] is not None:
+                    use_text = smallerfont.render("use", True, (255, 255, 255))
+                    use_rect = use_text.get_rect()
+                    use_rect.topright = (panel_x + panel_image.get_width() - offset_right, desc_y + 10)
+                    screen.blit(use_text, use_rect.topleft)
+                    border_rect = use_rect.inflate(10, 10)
+                    pygame.draw.rect(screen, (200, 200, 200), border_rect, 2)
+                    if border_rect.collidepoint(mouse_pos):
+                        overlay = pygame.Surface((border_rect.width, border_rect.height), pygame.SRCALPHA)
+                        overlay.fill((255, 255, 255, 60))
+                        screen.blit(overlay, border_rect.topleft)
+
+                    if main_globals['mouse_pressed'] and border_rect.collidepoint(mouse_pos) and not main_globals['mouse_clicked']:
+                        main_globals['items'][item_name]['function'](main_globals)
+                        if main_globals['player'].inventory[item_name] > 1:
+                            main_globals['player'].inventory[item_name] -= 1
+                        else:
+                            del main_globals['player'].inventory[item_name]
+                        main_globals['mouse_clicked'] = True
+
+        if not main_globals['mouse_pressed']: # it spammed :(
+            main_globals['mouse_clicked'] = False
 
     def draw_pause_buttons(main_globals):
         screen = main_globals['screen']

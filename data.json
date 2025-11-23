@@ -1,5 +1,5 @@
 {
-    "music": 0.6766666666666666,
+    "music": 1.0,
     "max_fps": 120,
     "resolution": [
         1080,
@@ -7,9 +7,15 @@
     ],
     "best_floor": 1,
     "most_groups_cleared": 1,
-    "most_enemies_killed": 7,
-    "richest_player": 85,
+    "most_enemies_killed": 8,
+    "richest_player": 100,
     "total_deaths": 0,
     "blood_text": "True",
-    "hints_text": "True"
+    "hints_text": "True",
+    "blood": [
+        "False"
+    ],
+    "hints": [
+        "False"
+    ]
 }

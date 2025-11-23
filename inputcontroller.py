@@ -99,8 +99,9 @@ def inputcontroller(main_globals):
                             webbrowser.open("https://www.youtube.com/channel/UC_zti-S08ZQegAafJw9wPhQ")
                     if main_globals['player'] is not None:
                         if main_globals['game_stage'] == "in dungeon":
-                            if main_globals['player'].weapons != []:
-                                main_globals['player'].attack(main_globals)
+                            if main_globals['is_paused'] == False:
+                                if main_globals['player'].weapons != []:
+                                    main_globals['player'].attack(main_globals)
                     if main_globals['game_stage'] == "in dungeon":
                         if main_globals['is_paused']:
                             for name, rect in main_globals['pause_buttons'].items():
@@ -113,6 +114,11 @@ def inputcontroller(main_globals):
                                         main_globals['current_tab'] = 'weapon'
                                     elif name == 'quit':
                                         pass
+                            if main_globals['current_tab'] == 'inventory':
+                                item_rects = main_globals.get('inventory_items_rects', {})
+                                for item_name, rect in item_rects.items():
+                                    if rect.collidepoint(main_globals['mouse_pos']):
+                                        main_globals['selected_item'] = item_name
 
             main_globals['mouse_pressed'] = pygame.mouse.get_pressed()[0] # hi
 
