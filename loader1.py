@@ -1,7 +1,9 @@
 # this file is for variables
 
-import PIL
-import pygame
+try:
+    import pygame
+except ImportError as e:
+    print(f"missing module{e}")
 
 def loader1(main_globals):
     # player variables
@@ -67,6 +69,29 @@ def loader1(main_globals):
         'inventory': 'draw_inventory',
         'settings': 'draw_settings',
     }
+
+    main_globals['selected_crystal_effect'] = None
+    main_globals['crystal_ui_buttons'] = [ # button images
+        pygame.image.load("assets/models/items/consumables/crystal/crystal.png").convert_alpha(
+            ).copy().fill((0,255,0,0), special_flags=pygame.BLEND_RGBA_ADD), # green
+        pygame.image.load("assets/models/items/consumables/crystal/crystal.png").convert_alpha(
+            ).copy().fill((255,0,0,0), special_flags=pygame.BLEND_RGBA_ADD), # red
+        pygame.image.load("assets/models/items/consumables/crystal/crystal.png").convert_alpha(
+            ).copy().fill((0,0,255,0), special_flags=pygame.BLEND_RGBA_ADD), # blue
+    ]
+
+    main_globals['crystals'] = [ # list of descriptions of crystals
+        "increases max hp", # green
+        "increases overall damage", # red
+        "increases overall attack speed", # blue
+    ]
+    """
+    main_globals['crystal_effects'] = [ # list of functions for effects lambda blablabla
+            lambda main_globals: main_globals['player'].effect(name, value), # green
+            lambda main_globals: main_globals['player'].effect(name, value), # red
+            lambda main_globals: main_globals['player'].effect(name, value), # blue
+        ]
+    """
 
     # generator :robot:
     def generate_update_tile_calls(tilemap): # makes calls of update tile to make the default tilemap

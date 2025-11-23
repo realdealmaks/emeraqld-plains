@@ -1,6 +1,9 @@
 # this file is for loading the dungeon
-import pygame, random, math, types
-from pygame import mixer as mx
+try:
+    import pygame, random, math, types
+    from pygame import mixer as mx
+except ImportError as e:
+    print(f"missing module{e}")
 
 def dungeon(main_globals):
 
@@ -171,11 +174,7 @@ def dungeon(main_globals):
                     enemy.active_counter -= main_globals['dt'] * 60
                     font = pygame.font.Font(None, 36)
                     text_surface = font.render("!", True, (255, 70, 70))
-                    main_globals['screen'].blit(
-                        text_surface,
-                        (enemy.x - main_globals['camera_x'],
-                         enemy.y - main_globals['camera_y'] - enemy.size // 2 - 8)
-                    )
+                    main_globals['screen'].blit(text_surface, (enemy.x - main_globals['camera_x'], enemy.y - main_globals['camera_y'] - enemy.size // 2 - 8))
                 if not enemy.active and enemy.detect(player):
                     for e in group['enemies']:
                         e.active = True
@@ -413,7 +412,7 @@ def dungeon(main_globals):
         tilemap = main_globals['tilemap']
         rows = len(tilemap)
         cols = len(tilemap[0])
-        min_distance = 10 # minimum distance between start and end
+        min_distance = 5 # minimum distance between start and end
         min_straight = 1 # minimum distance before turning again
         tile_choices = [1, 2, 3] # tiles the path can be filled with
         tile_probs = [0.5, 0.1, 0.4] # in order * 100 in %
