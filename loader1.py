@@ -62,7 +62,7 @@ def loader1(main_globals):
     main_globals['tabs'] = {
         'player_stats': 'draw_pause_stats',
         'buttons': 'draw_pause_buttons',
-        'weapon_stats': 'weapon_info',
+        'weapon': 'weapon_info',
         'inventory': 'draw_inventory',
         'settings': 'draw_settings',
     }

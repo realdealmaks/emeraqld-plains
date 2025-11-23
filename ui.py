@@ -88,7 +88,7 @@ def ui(main_globals):
         tabs = main_globals['tabs']
         background = main_globals['pause_tabs_images']['background']
 
-        current_tab = main_globals.get('current_tab', 'weapon_stats')
+        current_tab = main_globals.get('current_tab', 'weapon')
         main_globals['current_tab'] = current_tab
 
         screen.blit(background, (screen.get_width() // 2 - background.get_width() // 2, screen.get_height() // 2 - background.get_height() // 2))
@@ -98,11 +98,7 @@ def ui(main_globals):
         paused_rect.center = (main_globals['screen'].get_width() // 2, main_globals['screen'].get_height() // 4 - 45)
         screen.blit(paused_surf, paused_rect.topleft)
 
-        if current_tab == "weapon_stats":
-            text = "weapon stats"
-        else:
-            text = current_tab
-
+        text = current_tab.replace("_", " ")
         text_surf = font.render(text, True, (255, 255, 255))
         text_rect = text_surf.get_rect()
         text_rect.center = (main_globals['screen'].get_width() // 2, main_globals['screen'].get_height() - 130)
@@ -205,12 +201,18 @@ def ui(main_globals):
             buttons_dict[name] = rect
 
             # hover
-            color = (70, 70, 70) if rect.collidepoint(mouse_pos) else (40, 40, 40)
-            pygame.draw.rect(screen, color, rect, 2)
+            color = (110, 110, 110) if rect.collidepoint(mouse_pos) else (40, 40, 40)
+            pygame.draw.line(screen, color, (rect.right, rect.top), (rect.right, rect.bottom), 3)
 
+            name = name.replace("_", " ")
             text_surf = smallfont.render(name, True, (255, 255, 255))
             text_rect = text_surf.get_rect(center=rect.center)
             screen.blit(text_surf, text_rect)
+
+            if name == main_globals['current_tab']:
+                indicator_surf = smallfont.render(">", True, (255, 255, 255))
+                indicator_rect = indicator_surf.get_rect(midleft=(rect.left - 4, rect.centery))
+                screen.blit(indicator_surf, indicator_rect)
 
     def draw_pause_stats(main_globals):
         screen = main_globals['screen']

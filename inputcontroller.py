@@ -110,7 +110,7 @@ def inputcontroller(main_globals):
                                     elif name == 'inventory':
                                         main_globals['current_tab'] = 'inventory'
                                     elif name == 'weapon':
-                                        main_globals['current_tab'] = 'weapon_stats'
+                                        main_globals['current_tab'] = 'weapon'
                                     elif name == 'quit':
                                         pass
 
