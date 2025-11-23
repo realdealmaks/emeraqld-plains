@@ -109,6 +109,15 @@ def player(main_globals):
                 player.health += number
                 if player.health > 100:
                     player.health = 100
+
+                # remove item from inventory
+                for potion, heal in [('small_potion', 20), ('medium_potion', 40), ('large_potion', 60)]:
+                    if potion in main_globals['player'].inventory and heal == number:
+                        main_globals['player'].inventory[potion] -= 1
+                        if main_globals['player'].inventory[potion] <= 0:
+                            del main_globals['player'].inventory[potion]
+                        break
+
             elif effect_type == "healfull":
                 player.health = 100
             elif effect_type == "money":

@@ -32,8 +32,8 @@ def ui(main_globals):
     def draw_minimap(main_globals, tilemap, player):
         screen = main_globals['screen']
 
-        background_rect_surf = pygame.Surface((75, 75), pygame.SRCALPHA)
-        background_rect_surf.fill((50, 50, 50, 128)) # color and alpha
+        background_rect_surf = pygame.Surface((155, 155), pygame.SRCALPHA)
+        background_rect_surf.fill((50, 50, 50, 85)) # color and alpha
 
         tl_size = 10
         tl_spacing = 2 # spacing between tiles
@@ -47,7 +47,7 @@ def ui(main_globals):
         player_tile_y = (player.y + main_globals['player_size'] // 2) // (main_globals['tile_size'] + main_globals['tile_offset'])
 
         # view around player
-        view_radius = 2
+        view_radius = 6
         start_x = max(player_tile_x - view_radius, 0)
         start_y = max(player_tile_y - view_radius, 0)
         end_x = min(player_tile_x + view_radius, cols - 1)
@@ -211,8 +211,16 @@ def ui(main_globals):
                 overlay.fill((255, 255, 255, 130))
                 screen.blit(overlay, border_rect.topleft)
 
-            count_text = smallerfont.render(str(count), True, (255, 255, 255))
-            count_pos = (border_rect.right - count_text.get_width() - 3, border_rect.bottom - count_text.get_height() - 3)
+            # amount of item
+            count_text_str = str(count)
+            count_pos = (border_rect.right - smallerfont.size(count_text_str)[0] - 3, border_rect.bottom - smallerfont.size(count_text_str)[1] - 3)
+
+            count_behind_text = smallerfont.render(count_text_str, True, (0, 0, 0))
+            outline_offsets = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+            for ox, oy in outline_offsets:
+                screen.blit(count_behind_text, (count_pos[0] + ox, count_pos[1] + oy))
+
+            count_text = smallerfont.render(count_text_str, True, (255, 255, 255))
             screen.blit(count_text, count_pos)
 
             item_rects[name] = border_rect
@@ -259,12 +267,12 @@ def ui(main_globals):
                         screen.blit(overlay, border_rect.topleft)
 
                     if main_globals['mouse_pressed'] and border_rect.collidepoint(mouse_pos) and not main_globals['mouse_clicked']:
-                        main_globals['items'][item_name]['function'](main_globals)
-                        if main_globals['player'].inventory[item_name] > 1:
-                            main_globals['player'].inventory[item_name] -= 1
+                        if not main_globals['player'].locked and main_globals['selected_item'] not in main_globals['other_consumables']:
+                            main_globals['items'][item_name]['function'](main_globals)
+                            main_globals['mouse_clicked'] = True
                         else:
-                            del main_globals['player'].inventory[item_name]
-                        main_globals['mouse_clicked'] = True
+                            text = font.render("Cannot use in combat", True, (255, 70, 70))
+                            screen.blit(text, (screen.get_width() // 2 - text.get_width() // 2, screen.get_height() // 4 - text.get_height()))
 
         if not main_globals['mouse_pressed']: # it spammed :(
             main_globals['mouse_clicked'] = False

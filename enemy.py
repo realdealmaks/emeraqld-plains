@@ -21,6 +21,7 @@ def enemy(main_globals):
             self.facing_left = False
             self.cooldown = 1500 # ms, 1 1/2 seconds
             self.damage = 10 # why not right?
+            self.active_counter = 10 # frames until ! disappears
             self.last_attack_time = 0
             self.images = [
                 pygame.transform.scale2x(main_globals['enemy_test_0'].convert_alpha()),

@@ -16,6 +16,15 @@ def loader3(main_globals):
     smallfont = pygame.font.Font("assets/font/editundo.ttf", 22)
     smallerfont = pygame.font.Font("assets/font/editundo.ttf", 16)
 
+    def use_fragments(main_globals):
+        player = main_globals['player']
+        screen = main_globals['screen']
+        if player.inventory['crystal_fragments'] >= 6:
+            player.inventory['crystal_fragments'] -= 6
+            if player.inventory['crystal_fragments'] == 0:
+                del player.inventory['crystal_fragments']
+            player.inventory['crystal'] = player.inventory.get('crystal', 0) + 1
+
     def is_on_active_tile(main_globals, x, y):
         ts = main_globals['tile_size'] + main_globals['tile_offset']
         tile_x = (x + main_globals['player_size'] // 2) // ts

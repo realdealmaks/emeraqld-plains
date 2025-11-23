@@ -1,5 +1,6 @@
 # this file is for variables
 
+import PIL
 import pygame
 
 def loader1(main_globals):
@@ -210,12 +211,40 @@ def loader1(main_globals):
             # 'image': image
         # }
 
-        'fuck': {
+        'fuck': { # test item
             'description': 'item description',
             'function': lambda main_globals: main_globals['player'].effect('heal', 10),
             'image': pygame.image.load("assets/models/items/weapons/katana.png").convert_alpha()
-        }
+        },
+
+        'small_potion': {
+            'description': 'heals you a little',
+            'function': lambda main_globals: main_globals['player'].effect('heal', 20),
+            'image': pygame.image.load("assets/models/items/consumables/potions/health/potion20.png").convert_alpha()
+        },
+        'medium_potion': {
+            'description': 'heals you a bit',
+            'function': lambda main_globals: main_globals['player'].effect('heal', 40),
+            'image': pygame.image.load("assets/models/items/consumables/potions/health/potion40.png").convert_alpha()
+        },
+        'large_potion': {
+            'description': 'heals you a lot',
+            'function': lambda main_globals: main_globals['player'].effect('heal', 60),
+            'image': pygame.image.load("assets/models/items/consumables/potions/health/potion60.png").convert_alpha()
+        },
+        'crystal_fragments': {
+            'description': 'fragments of a crystal, you require 6',
+            'function': lambda main_globals: main_globals['use_fragments'](main_globals),
+            'image': pygame.image.load("assets/models/items/consumables/crystal/crystalfragments.png").convert_alpha()
+        },
+        'crystal': {
+            'description': 'a crystal',
+            'function': None,
+            'image': pygame.image.load("assets/models/items/consumables/crystal/crystal.png").convert_alpha()
+        },
     }
+    main_globals['other_consumables'] = []
+
     main_globals['items'] = items
 
     print("loader1, ", end="")

@@ -263,4 +263,11 @@ update pause menu
 ragajeblidishidarim please do the text on weapon stats
 > xoxo shrambabley wan
 
+# 23 11
+
+make swoopy happy
+did a bunch of shit i forgot to write it here
+make minimap bigger
+draw ! if enemy detects naganou
+
 # 
