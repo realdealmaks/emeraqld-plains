@@ -8,8 +8,7 @@ def inputcontroller(main_globals):
     def input_controller(main_globals):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
+                main_globals['running'] = False
 
             # key presses
             if event.type == pygame.KEYDOWN:

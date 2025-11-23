@@ -111,7 +111,8 @@ main.walkable_mask = main.make_initial_walkable_surface(main.tilemap, main_globa
 
 # makes some game loops
 running = True # https://cdn.discordapp.com/emojis/1234577960414085271.webp?size=96
-while running:
+main.running = running
+while main.running:
     main.space.step(main.dt) # physixx step for space/particles
     real_mx, real_my = pygame.mouse.get_pos()
     # transform mouse coords to virtual if resolution mismatch
@@ -169,4 +170,7 @@ while running:
         vfps = int(1 / virtual_dt)
         pygame.display.set_caption(f"fps: {int(clock.get_fps())} / {main.max_fps}, vfps: {vfps}, mouse pos: {pygame.mouse.get_pos()}, vmouse pos: {int(main.mouse_pos[0]), int(main.mouse_pos[1])}, player pos: {main_globals['player'].x, main_globals['player'].y}")
 
+from connector_db import save_db
+save_db("data.json", "game_data.db")
+print("exiting")
 pygame.quit()
