@@ -200,4 +200,20 @@ def loader1(main_globals):
     main_globals['blood_particles'] = []
     main_globals['space'] = None
 
+    # items
+    items = {
+        # 'item name': {
+            # 'description': 'item description',
+            # 'function': 'function name ex. effect(heal, 10)',
+            # 'image': image
+        # }
+
+        'fuck': {
+            'description': 'item description',
+            'function': lambda main_globals: main_globals['player'].effect('heal', 10),
+            'image': pygame.image.load("assets/models/items/weapons/katana.png").convert_alpha()
+        }
+    }
+    main_globals['items'] = items
+
     print("loader1, ", end="")

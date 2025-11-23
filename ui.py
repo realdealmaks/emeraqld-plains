@@ -154,21 +154,61 @@ def ui(main_globals):
     def draw_inventory(main_globals):
         screen = main_globals['screen']
         inventory = main_globals['player'].inventory
-        image = main_globals['pause_tabs_images']['inventory']
-        image_x = screen.get_width() // 2 - image.get_width() // 2 + 0
-        image_y = screen.get_height() // 2 - image.get_height() // 2 + 0
+        panel_image = main_globals['pause_tabs_images']['inventory']
+        items_data = main_globals['items'] # data for items
+        font = main_globals['font']
 
-        screen.blit(image, (image_x, image_y))
-        center_x = main_globals['screen'].get_width() // 2
-        center_y = image.get_height() // 2
+        mouse_pos = pygame.mouse.get_pos()
 
-        spacing = 60 # space between buttons
-        total_height = len(inventory) * spacing
-        start_y = center_y - total_height // 2 + spacing // 2 # first button y
+        # position of the panel
+        panel_x = screen.get_width() // 2 - panel_image.get_width() // 2
+        panel_y = screen.get_height() // 2 - panel_image.get_height() // 2
+        screen.blit(panel_image, (panel_x, panel_y))
 
-        for i, item in enumerate(inventory):
-            item_rect = item.get_rect(center=(center_x, start_y + i * spacing))
-            screen.blit(item, item_rect)
+        # offsets inside panel
+        offset_top = 20
+        offset_bottom = 20
+        offset_left = 20
+        offset_right = 20
+
+        # available space
+        inner_width = panel_image.get_width() - offset_left - offset_right
+        inner_height = panel_image.get_height() - offset_top - offset_bottom
+
+        # item layout
+        item_size = 50
+        spacing_x = item_size + 10
+        spacing_y = item_size + 10
+        items_per_row = max(1, inner_width // spacing_x)
+
+        for idx, (name, count) in enumerate(inventory.items()):
+            if name not in items_data:
+                continue # skip if unknown
+
+            row = idx // items_per_row
+            col = idx % items_per_row
+
+            # center position for this item
+            x = panel_x + offset_left + col * spacing_x + item_size // 2
+            y = panel_y + offset_top + row * spacing_y + item_size // 2
+
+            border_rect = pygame.Rect(0, 0, item_size, item_size)
+            border_rect.center = (x, y)
+            pygame.draw.rect(screen, (50, 50, 50), border_rect, 2)
+
+            img = items_data[name]['image']
+            img_rect = img.get_rect(center=border_rect.center)
+            screen.blit(img, img_rect)
+
+            # hover overlay
+            if border_rect.collidepoint(mouse_pos):
+                overlay = pygame.Surface((border_rect.width, border_rect.height), pygame.SRCALPHA)
+                overlay.fill((255, 255, 255, 100))
+                screen.blit(overlay, border_rect.topleft)
+
+            count_text = smallerfont.render(str(count), True, (255, 255, 255))
+            count_pos = (border_rect.right - count_text.get_width() - 3, border_rect.bottom - count_text.get_height() - 3)
+            screen.blit(count_text, count_pos)
 
     def draw_pause_buttons(main_globals):
         screen = main_globals['screen']
