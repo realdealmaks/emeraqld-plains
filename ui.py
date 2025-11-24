@@ -60,16 +60,8 @@ def ui(main_globals):
 
             screen.blit(btn_img, (btn_x, draw_y))
 
-            # overlay on hover
-            """
-            if btn_rect.collidepoint(main_globals['mouse_pos']):
-                overlay = pygame.Surface(btn_img.get_size(), pygame.SRCALPHA)
-                overlay.fill((255, 255, 255, 100))
-                screen.blit(overlay, (btn_x, draw_y))
-            """
-
             if main_globals.get('selected_crystal_effect') == i:
-                # alpha pulse
+                # pulse
                 t = pygame.time.get_ticks() / 500 # speed of pulse
                 shine_img = btn_img.copy().convert_alpha()
                 arr = pygame.surfarray.pixels3d(shine_img)
@@ -111,15 +103,15 @@ def ui(main_globals):
         if not main_globals['mouse_pressed']:
             main_globals['mouse_clicked'] = False
 
-    def draw_hud(main_globals, player): # top left images for symboling his health
-        if player.alive: # IS HE????????
+    def draw_hud(main_globals, player): # top left images for his health
+        if player.alive:
             shake_x, shake_y = player.shake() # reuse player shake for the hud
             screen = main_globals['screen']
-            pygame.draw.circle(screen, (20, 20, 20), (100, 100), 80) # i think we should remove the text
+            pygame.draw.circle(screen, (20, 20, 20), (100, 100), 80)
             screen.blit(bigfont.render(str(player.health), True, (255, 255, 255)), (120, 200))
-            screen.blit(bigfont.render(str(player.wealth), True, (255, 215, 0)), (120, 250)) # just realised man good job!!!!! wealth health
+            screen.blit(bigfont.render(str(player.wealth), True, (255, 215, 0)), (120, 250))
             if main_globals['blood_text'] == "True":
-                if player.health > 66: # jebo vam siks seven 🤖
+                if player.health > 66:
                     screen.blit(main_globals['player_health_images'][0], (-50 + shake_x, -50 + shake_y))
                 elif player.health > 33:
                     screen.blit(main_globals['player_health_images'][1], (-50 + shake_x, -50 + shake_y))
@@ -134,7 +126,7 @@ def ui(main_globals):
         background_rect_surf = pygame.Surface((155, 155), pygame.SRCALPHA)
         background_rect_surf.fill((50, 50, 50, 85)) # color and alpha
 
-        tl_size = 10
+        tl_size = 10 # size of each tile
         tl_spacing = 2 # spacing between tiles
         padding = 18 # offset from top right corner
 
@@ -145,7 +137,7 @@ def ui(main_globals):
         player_tile_x = (player.x + main_globals['player_size'] // 2) // (main_globals['tile_size'] + main_globals['tile_offset'])
         player_tile_y = (player.y + main_globals['player_size'] // 2) // (main_globals['tile_size'] + main_globals['tile_offset'])
 
-        # view around player
+        # view around player tile
         view_radius = 6
         start_x = max(player_tile_x - view_radius, 0)
         start_y = max(player_tile_y - view_radius, 0)
@@ -192,12 +184,14 @@ def ui(main_globals):
 
         screen.blit(background, (screen.get_width() // 2 - background.get_width() // 2, screen.get_height() // 2 - background.get_height() // 2))
 
+        # paused text
         paused_surf = main_globals['font'].render("paused", True, (255, 255, 255))
         paused_rect = paused_surf.get_rect()
         paused_rect.center = (main_globals['screen'].get_width() // 2, main_globals['screen'].get_height() // 4 - 45)
         screen.blit(paused_surf, paused_rect.topleft)
 
-        text = current_tab.replace("_", " ")
+        # current tab text
+        text = current_tab.replace("_", " ") # not req anymore
         text_surf = font.render(text, True, (255, 255, 255))
         text_rect = text_surf.get_rect()
         text_rect.center = (main_globals['screen'].get_width() // 2, main_globals['screen'].get_height() - 130)
@@ -205,13 +199,13 @@ def ui(main_globals):
 
         main_globals['draw_pause_buttons'](main_globals)
         main_globals['draw_pause_stats'](main_globals)
-        if current_tab in tabs:
+        if current_tab in tabs: # call tabs function
             func_name = tabs[current_tab]
             main_globals[func_name](main_globals)
 
-    def draw_hints(main_globals): # not really hints, just like keybinds but with a timer
+    def draw_hints(main_globals): # not really hints, just like keybinds but whatever
         if main_globals['hints_text'] == "False" or main_globals['choosing']:
-            return
+            return # skip if disabled or choosing something
         dt = main_globals['dt']
         screen = main_globals['screen']
         alpha = main_globals['hint_alpha']
@@ -224,8 +218,6 @@ def ui(main_globals):
             if alpha > 255:
                 alpha = 255
 
-            # really shoulda made a for loop for ts
-            # i did
             main_globals['hint_alpha'] = alpha
             hints = {
                 'key_w_hint': (10 + block_size, main_globals['screen'].get_height() - block_size*2 - 10),
@@ -241,7 +233,7 @@ def ui(main_globals):
 
             # swap mouse image
             ticks = pygame.time.get_ticks() # ms
-            if (ticks // 1000) % 2 == 0: # s
+            if (ticks // 1000) % 2 == 0: # every other s
                 main_globals['mouse_blank_hint'].set_alpha(alpha)
                 screen.blit(main_globals['mouse_blank_hint'], (main_globals['screen'].get_width() - main_globals['mouse_blank_hint'].get_width() - 10, main_globals['screen'].get_height() - main_globals['mouse_blank_hint'].get_height() - 10))
             else:
@@ -314,6 +306,7 @@ def ui(main_globals):
             count_text_str = str(count)
             count_pos = (border_rect.right - smallerfont.size(count_text_str)[0] - 3, border_rect.bottom - smallerfont.size(count_text_str)[1] - 3)
 
+            # outline
             count_behind_text = smallerfont.render(count_text_str, True, (0, 0, 0))
             outline_offsets = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
             for ox, oy in outline_offsets:
@@ -343,7 +336,7 @@ def ui(main_globals):
             item_name = main_globals['selected_item']
             if item_name in items_data and item_name in main_globals['player'].inventory:
                 description = items_data[item_name]['description']
-                desc_lines = description.split('\n')
+                desc_lines = description.split('\n') # split into lines
 
                 desc_x = panel_x + offset_left
                 desc_y = panel_y + offset_top
@@ -353,14 +346,14 @@ def ui(main_globals):
                     screen.blit(desc_text, (desc_x, desc_y))
                     desc_y += desc_text.get_height() + 5
 
-                if main_globals['items'][item_name]['function'] is not None:
+                if main_globals['items'][item_name]['function'] is not None: # if it has a function
                     use_text = smallerfont.render("use", True, (255, 255, 255))
                     use_rect = use_text.get_rect()
                     use_rect.topright = (panel_x + panel_image.get_width() - offset_right, desc_y + 10)
                     screen.blit(use_text, use_rect.topleft)
                     border_rect = use_rect.inflate(10, 10)
                     pygame.draw.rect(screen, (200, 200, 200), border_rect, 2)
-                    if border_rect.collidepoint(mouse_pos):
+                    if border_rect.collidepoint(mouse_pos): # hover
                         overlay = pygame.Surface((border_rect.width, border_rect.height), pygame.SRCALPHA)
                         overlay.fill((255, 255, 255, 60))
                         screen.blit(overlay, border_rect.topleft)
@@ -368,12 +361,12 @@ def ui(main_globals):
                     if main_globals['mouse_pressed'] and border_rect.collidepoint(mouse_pos) and not main_globals['mouse_clicked']:
                         if not main_globals['player'].locked and main_globals['selected_item'] not in main_globals['other_consumables']:
                             main_globals['items'][item_name]['function'](main_globals)
-                            main_globals['mouse_clicked'] = True
+                            main_globals['mouse_clicked'] = True # clicked
                         else:
-                            text = font.render("Cannot use in combat", True, (255, 70, 70))
+                            text = font.render("Cannot use in combat", True, (255, 70, 70)) # but locked
                             screen.blit(text, (screen.get_width() // 2 - text.get_width() // 2, screen.get_height() // 4 - text.get_height()))
 
-        if not main_globals['mouse_pressed']: # it spammed :(
+        if not main_globals['mouse_pressed']:
             main_globals['mouse_clicked'] = False
 
     def draw_pause_buttons(main_globals):
@@ -394,7 +387,7 @@ def ui(main_globals):
         button_width = int(image.get_width() * 0.8) # 80% of background
         button_height = int(image.get_height() / (num_buttons + 1) * 0.8) # fit vert
 
-        spacing = image.get_height() / (num_buttons + 1)
+        spacing = image.get_height() / (num_buttons + 1) # vert spacing
         center_x = image_x + image.get_width() // 2 # hor center
 
         for i, (name, rect) in enumerate(buttons_dict.items(), start=1):
@@ -410,17 +403,17 @@ def ui(main_globals):
             color = (110, 110, 110) if rect.collidepoint(mouse_pos) else (40, 40, 40)
             pygame.draw.line(screen, color, (rect.right, rect.top), (rect.right, rect.bottom), 3)
 
-            name = name.replace("_", " ")
+            name = name.replace("_", " ") # not req anymore
             text_surf = smallfont.render(name, True, (255, 255, 255))
             text_rect = text_surf.get_rect(center=rect.center)
             screen.blit(text_surf, text_rect)
 
             if name == main_globals['current_tab']:
-                indicator_surf = smallfont.render(">", True, (255, 255, 255))
+                indicator_surf = smallfont.render(">", True, (255, 255, 255)) # pointer
                 indicator_rect = indicator_surf.get_rect(midleft=(rect.left - 4, rect.centery))
                 screen.blit(indicator_surf, indicator_rect)
 
-    def draw_pause_stats(main_globals):
+    def draw_pause_stats(main_globals): # player stats
         screen = main_globals['screen']
         image = main_globals['pause_tabs_images']['player_stats']
         bg = main_globals['pause_tabs_images']['background']
@@ -468,9 +461,12 @@ def ui(main_globals):
             # draw some hands or something
             return
 
+        # backlight
+        screen.blit(main_globals['weapon_light'], (screen_w // 2 - main_globals['weapon_frame'].get_width() // 2 + 35, screen_h // 2 - main_globals['weapon_frame'].get_height() // 2 + 30))
+
+        # weapon
         weapon = main_globals['player'].weapons[0]
         weapon_image = main_globals['weapon_images'][weapon.name]
-        screen.blit(main_globals['weapon_light'], (screen_w // 2 - main_globals['weapon_frame'].get_width() // 2 + 35, screen_h // 2 - main_globals['weapon_frame'].get_height() // 2 + 30))
         screen.blit(weapon_image, (screen_w // 2 - main_globals['weapon_frame'].get_width() // 2 + 35, screen_h // 2 - main_globals['weapon_frame'].get_height() // 2 + 30))
 
         # stats
@@ -486,7 +482,7 @@ def ui(main_globals):
         text = smallfont.render(str(weapon.cooldown), True, (255, 255, 255))
         screen.blit(text, (screen_w // 2 - text.get_width() // 2, screen_h // 2 - main_globals['weapon_frame'].get_height() // 2 + 110))
 
-    def new_mutation(main_globals, effect, number): # remake this shit
+    def new_mutation(main_globals, effect, number): # remake this shit sometime
         screen = main_globals['screen']
         mutation_alpha = 0
         while mutation_alpha < 255:
@@ -511,7 +507,7 @@ def ui(main_globals):
             pygame.display.flip()
         main_globals['mutation_image'].set_alpha(255)
 
-    def draw_vignette(main_globals, player): # if you dont know what 'vignette' means go away!
+    def draw_vignette(main_globals, player):
         if main_globals['blood_text'] == "False":
             return
         if player.alive: # you filthy hog
@@ -520,7 +516,7 @@ def ui(main_globals):
                 if main_globals['vignette'].get_alpha() != max_alpha * (1 - player.health / 100):
                     vignette_alpha = max_alpha * (1 - player.health / 100)
                     main_globals['vignette'].set_alpha(vignette_alpha)
-            except UnboundLocalError: # if it dont exists yet
+            except UnboundLocalError: # if it doesnt exist yet
                 vignette_alpha = max_alpha
             main_globals['screen'].blit(main_globals['vignette'], (0, 0))
 
@@ -586,20 +582,14 @@ def ui(main_globals):
             text_surf = font.render("Battle Pass", True, (255, 255, 255))
             text_rect = text_surf.get_rect(center=main_globals['bp_button'].center)
             screen.blit(text_surf, text_rect.topleft)
-            # uncomment if you dare
-            # i dared and its staying this way ;)
 
-    def draw_credits(main_globals, mouse_pos): # cursed with 1% total fps
+    def draw_credits(main_globals, mouse_pos): # cursed with 1 fps
         screen = main_globals['screen']
         to_menu = main_globals['to_menu']
         font = main_globals['font']
         screen.fill((0, 0, 0))
 
         screen.blit(font.render("credits", True, (255, 255, 255)), (20, 20))
-        # screen.blit(main_globals['thx'], (540, 0)) # i got the coordinates right first try btw
-        # show off
-
-        # no problem man
         screen.blit(main_globals['thx'], (main_globals['screen'].get_width() // 2, 0))
 
         # return
@@ -732,7 +722,7 @@ def ui(main_globals):
         liner = pygame.Rect(100, liner_y, main_globals['screen'].get_width() - 150, 2)
         pygame.draw.rect(screen, (40, 40, 40), liner)
 
-        # framerate cap slider
+        # framerate cap
         frame_cap_index = main_globals['frame_cap_index']
         step = main_globals['frame_slider_base'].width / (len(main_globals['frame_caps'])-1)
 

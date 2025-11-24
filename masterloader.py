@@ -12,22 +12,6 @@ def superloader():
         globals().update(module.__dict__)
         return module
 
-    # this turns all of the main_globals[''] slop into actually non eye burning variables
-    class DictNamespace:
-        def __init__(self, d):
-            self._d = d
-        def __getattr__(self, k):
-            return self._d[k]
-        def __setattr__(self, k, v):
-            if k == "_d":
-                super().__setattr__(k, v)
-            else:
-                self._d[k] = v
-        def __getitem__(self, k):
-            return self._d[k]
-        def __setitem__(self, k, v):
-            self._d[k] = v
-
     start_time = time.time()
 
     # pre defines some variables

@@ -273,3 +273,7 @@ draw ! if enemy detects naganou
 # 24 11
 instead of working just make progression and other shit i forgot to tell you about
 add bottom right text for recent items
+
+you cant make shopping its own state because you wont know what to do with the dungeon after
+
+# 

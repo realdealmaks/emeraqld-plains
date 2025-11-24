@@ -18,7 +18,7 @@ def loader2(main_globals):
         player_health_images.append(img)
     main_globals['player_health_images'] = player_health_images
 
-    # player sound effects
+    # sfx
     main_globals['death_sound'] = mx.Sound("assets/audio/sfx/vineboom.mp3")
     main_globals['hurt_sound'] = mx.Sound("assets/audio/sfx/new_hurt.ogg")
 
@@ -39,7 +39,7 @@ def loader2(main_globals):
     w, h = return_img.get_size()
     main_globals['return_image'] = pygame.transform.scale(return_img, (int(w * 1.6), int(h * 1.6)))
 
-    main_globals['thx'] = pygame.image.load("assets/useful images/thx.png")
+    main_globals['thx'] = pygame.image.load("assets/useful images/thx.png") # credits
     save_img = pygame.image.load("assets/useful images/save.png").convert_alpha()
     main_globals['save_image'] = pygame.transform.scale2x(save_img)
 
@@ -48,18 +48,18 @@ def loader2(main_globals):
     main_globals['battlepass_image'] = pygame.transform.scale(battlepass_img, main_globals['resolution'])
 
     # mode selection images
-    mode1_img = pygame.image.load("assets/useful images/mode1.png").convert_alpha()
-    mode2_img = pygame.image.load("assets/useful images/mode2.png").convert_alpha()
+    mode1_img = pygame.image.load("assets/useful images/mode1.png").convert_alpha() # background
+    mode2_img = pygame.image.load("assets/useful images/mode2.png").convert_alpha() # make some real ones soon
     w, h = main_globals['screen_w'] // 2, main_globals['screen_h']
     main_globals['mode1img'] = pygame.transform.scale(mode1_img, (w, int(h * 1.2)))
     main_globals['mode2img'] = pygame.transform.scale(mode2_img, (w, int(h * 1.2)))
 
     # dungeon assets
     pedestal = pygame.image.load("assets/useful images/pedestal.png").convert_alpha()
-    main_globals['pedistal_image'] = pygame.transform.scale2x(pedestal)
+    main_globals['pedistal_image'] = pygame.transform.scale2x(pedestal) # pedestal
     main_globals['floorboard'] = pygame.image.load("assets/useful images/tiles/image.png")
     main_globals['shop_holder'] = pygame.image.load("assets/useful images/shop_holder.png").convert_alpha()
-    stairs = pygame.image.load("assets/useful images/stairs.png").convert_alpha()
+    stairs = pygame.image.load("assets/useful images/stairs.png").convert_alpha() # thing to rebuild tilemap
     main_globals['stairs_image'] = pygame.transform.scale2x(stairs)
 
     # background music
@@ -69,7 +69,7 @@ def loader2(main_globals):
     mx.music.pause()
     mx.music.set_volume(1)
 
-    # interaction images
+    # interaction image
     interact = pygame.image.load("assets/useful images/interact.png").convert_alpha()
     main_globals['interact_image'] = pygame.transform.scale(interact, (50, 50))
     main_globals['new_mutation_image'] = pygame.image.load("assets/useful images/mutation.png").convert_alpha()
@@ -105,7 +105,7 @@ def loader2(main_globals):
         'inventory': inventory,
         'player_stats': stats
     }
-    main_globals['pause_buttons'] = {
+    main_globals['pause_buttons'] = { # in order
         'resume': pygame.Rect(0, 0, 200, 50),
         'inventory': pygame.Rect(0, 0, 200, 50),
         'weapon': pygame.Rect(0, 0, 200, 50),
@@ -128,7 +128,7 @@ def loader2(main_globals):
 
     # stat light
     weapon_light = pygame.image.load("assets/models/weapons/stats/light.png").convert_alpha()
-    weapon_light.set_alpha(70)
+    weapon_light.set_alpha(70) # light behind the weapon while in stats
     weapon_light = pygame.transform.scale(weapon_light, (int(weapon_light.get_width() * 2.2), int(weapon_light.get_height() * 2.2)))
     main_globals['weapon_light'] = weapon_light
 
@@ -149,9 +149,11 @@ def loader2(main_globals):
     w, h = katana.get_size()
     katana = pygame.transform.scale(katana, (int(w * 0.7), int(h * 0.7)))
 
+    # reg atk
     main_globals['slash_image'] = pygame.image.load("assets/useful images/slash.png").convert_alpha()
     main_globals['slash_image'] = pygame.transform.scale(main_globals['slash_image'], (50, 50))
 
+    # active atks
     main_globals['active_slash'] = None
     main_globals['active_special_attacks'] = []
 
@@ -162,6 +164,7 @@ def loader2(main_globals):
         "katana": katana
     }
 
+    # special weapons attack image
     main_globals['special_attack_images'] = {
         "katana": main_globals['slash_image']
     }

@@ -26,6 +26,7 @@ dt = dt = virtual_clock.tick(vfps_max) / 1000
 prev_time = pygame.time.get_ticks() / 1000
 max_fps = 60
 
+# pymunk space setup
 space = pymunk.Space()
 space.gravity = (0, 0)
 
@@ -49,13 +50,14 @@ main_globals = {
     'screen_w': 1080, 'screen_h': 750, 'screen': pygame.display.set_mode((1080, 750))
 }
 
+# import the importer
 from masterloader import superloader
 main_globals = superloader()
 
 main = DictNamespace(main_globals) # converts some globals
 print("ready, ", end="")
 # dont use main_globals['🤖'] but instead use main.🤖
-# stupar ce to vidite me je res prevec motilo da je vse bilo v neumni barvi vsega drugega "" texta in nisem hotel kopirati main_globals[''] cisto povsod
+# swoopy ce to vidite me je res prevec motilo da je vse bilo v neumni barvi vsega drugega "" texta in nisem hotel kopirati main_globals[''] cisto povsod
 
 
 # dont change ts diddybludd
@@ -95,7 +97,7 @@ main.resolution = resolutions[main.resolution_index]
 
 main.player_gif(main_globals) # loads the player gif
 
-# start pymunk space
+# pass space to globals
 main.space = space
 space.gravity = (0, 500)
 
@@ -113,7 +115,7 @@ main.walkable_mask = main.make_initial_walkable_surface(main.tilemap, main_globa
 running = True # https://cdn.discordapp.com/emojis/1234577960414085271.webp?size=96
 main.running = running
 while main.running:
-    main.space.step(main.dt) # physixx step for space/particles
+    main.space.step(main.dt) # physixx step for space particles
     real_mx, real_my = pygame.mouse.get_pos()
     # transform mouse coords to virtual if resolution mismatch
     mouse_pos = pygame.mouse.get_pos()
@@ -122,22 +124,7 @@ while main.running:
         real_my * virtual_h / screen.get_height()
     )
 
-    main.input_controller(main_globals)
-
-    # hint timer
-    if main.game_stage == "in dungeon":
-        keys = pygame.key.get_pressed()
-        if any(keys): # any key press
-            main_globals['last_input_time'] = pygame.time.get_ticks() / 1000 # ms to s
-
-        mouse_buttons = pygame.mouse.get_pressed()
-        if any(mouse_buttons): # any mouse press
-            main_globals['last_input_time'] = pygame.time.get_ticks() / 1000
-
-        current_time = pygame.time.get_ticks() / 1000
-        main_globals['idle_time'] = current_time - main_globals['last_input_time']
-
-    else: main_globals['last_input_time'] = 0
+    main.input_controller(main_globals) # check inputs
 
     # update main screen with virtual screen
     current_time = pygame.time.get_ticks() / 1000

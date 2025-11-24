@@ -34,12 +34,14 @@ def cmd(main_globals):
                 "money": "amount",
                 "health": "amount",
                 "stage": "stage name",
+                "inventory": "add/remove, item name+amount",
             },
             "regular commands": {
                 "rebuild": "rebuild floor",
                 "reset": "reset dungeon",
                 "respawn": "respawn player",
                 "ccache": "clear data",
+                "inventory": "add/remove items",
             },
             "exit commands": {
                 "quit, q, exit, x": "",

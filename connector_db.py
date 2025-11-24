@@ -1,7 +1,11 @@
+# databes
+
 try:
     import sqlite3, json, os
 except ImportError as e:
     print(f"missing module {e}")
+
+# stores data from json to db when quit
 
 def save_db(json_filename="data.json", db_filename="game_data.db"):
     if not os.path.exists(json_filename):

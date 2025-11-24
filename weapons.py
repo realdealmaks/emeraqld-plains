@@ -19,7 +19,7 @@ def weapons(main_globals):
                         continue
 
                     # pick random weapon
-                    weapon_name = random.randint(0, len(weapon_types) - 1)
+                    weapon_name = random.randint(0, len(weapon_types) - 1) # remake this with %s
                     weapon_name = weapon_types[weapon_name]
                     new_weapon = main_globals['Weapon'](weapon_name)
                     new_weapon.x = center_x
@@ -69,7 +69,6 @@ def weapons(main_globals):
                 offset_y = math.sin(math.radians(-angle)) * distance
 
                 # default slash attack
-                # would need organising and restructure but wtv
                 if self.name == "sword" or self.name == "axe":
                     scaled_height = int(slash_img.get_height() * (self.range / 50))
                     scaled_slash = pygame.transform.scale(slash_img, (slash_img.get_width(), scaled_height))
@@ -109,10 +108,10 @@ def weapons(main_globals):
             if type == "katana":
 
                 # stats
-                expiry = 100  # ms each attack is visible
-                hits = 2  # how many attacks after the first
-                delay = 250  # ms between attacks
-                effect = None
+                expiry = 100 # ms each attack is visible
+                hits = 2 # how many attacks after the first
+                delay = 250 # ms between attacks
+                effect = None # special effect
 
                 attack_image = main_globals['special_attack_images'][type]
                 images = [

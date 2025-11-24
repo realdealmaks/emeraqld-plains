@@ -129,5 +129,20 @@ def inputcontroller(main_globals):
                     main_globals['dragging_music_slider'] = False
                     main_globals['dragging_resolution_slider'] = False
 
+        # hint timer
+        if main_globals['game_stage'] == "in dungeon":
+            keys = pygame.key.get_pressed()
+            if any(keys): # any key press
+                main_globals['last_input_time'] = pygame.time.get_ticks() / 1000 # ms to s
+
+            mouse_buttons = main_globals['mouse_pressed']
+            if mouse_buttons: # any mouse press
+                main_globals['last_input_time'] = pygame.time.get_ticks() / 1000
+
+            current_time = pygame.time.get_ticks() / 1000
+            main_globals['idle_time'] = current_time - main_globals['last_input_time']
+
+        else: main_globals['last_input_time'] = 0
+
     main_globals['input_controller'] = input_controller
     print("incon, ", end="")

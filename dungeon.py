@@ -12,13 +12,14 @@ def dungeon(main_globals):
         camera_x = main_globals['camera_x']
         camera_y = main_globals['camera_y']
         camera_speed = main_globals['camera_speed']
-        current_frame = main_globals['current_frame']
-        frame_timer = main_globals['frame_timer']
-        frame_delay = main_globals['frame_delay']
-        frames = main_globals['frames']
+        current_frame = main_globals['current_frame'] # gif frame
+        frame_timer = main_globals['frame_timer'] # time since last gif frame change
+        frame_delay = main_globals['frame_delay'] # time between gif frames
+        frames = main_globals['frames'] # player gif frames
         player_size = main_globals['player_size']
         enemy_size = main_globals['enemy_size']
         enemy_list = main_globals['enemy_list']
+
         screen.fill((0, 0, 0))
 
         target_x, target_y = main_globals['get_camera_offset'](main_globals, player, main_globals['tile_size'])
@@ -28,14 +29,14 @@ def dungeon(main_globals):
         main_globals['camera_y'] = camera_y
         ts = main_globals['tile_size'] + main_globals['tile_offset']
 
-        mask_width, mask_height = main_globals['walkable_mask'].get_size()
+        mask_width, mask_height = main_globals['walkable_mask'].get_size() # blit tile image on mask
         tile_surface = main_globals['tile_images']
         tilemap = main_globals['tilemap']
         for y in range(0, mask_height, ts):
             for x in range(0, mask_width, ts):
                 if main_globals['walkable_mask'].get_at((x, y))[:3] == (0, 255, 0):
                     screen.blit(tile_surface, (x - camera_x, y - camera_y))
-        
+
         if 'enemy_groups' not in main_globals:
             main_globals['enemy_groups'] = []
 
@@ -75,6 +76,7 @@ def dungeon(main_globals):
                     # fixed position because why would it not be
                     # it shouldnt have been fixed
                     # i dont think its even centered
+                    # good job shambly
                     screen.blit(main_globals['pedistal_image'], (col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_width() // 2, row_idx * ts - camera_y + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_height() // 2 + 50))
 
                 elif tile_type == 3: # enemy spawn tile
@@ -86,7 +88,6 @@ def dungeon(main_globals):
                         tile_center_y = row_idx * ts + main_globals['tile_size'] // 2
                         # i dont know what this is for and im not going to question it \/
                         '''upper limit :D''' # ookay?
-                        # actually i will question it, stop calling random every damn frame
                         upper = random.randrange(2, 10)
                         previous_coords = []
                         min_distance = 100
@@ -94,20 +95,19 @@ def dungeon(main_globals):
                         for i in range(1, upper): # adds x through y
                             attempts = 0
                             max_attempts = 500 # give him some tries
-                            while attempts < max_attempts:    
+                            while attempts < max_attempts: # to get a valid pos
                                 deviation = random.randrange(50, 200)
                                 enemy_x = tile_center_x - enemy_size // 2 + random.choice((deviation, -deviation))
                                 enemy_y = tile_center_y - enemy_size // 2 + random.choice((deviation, -deviation))
 
-                                # check from the previous cocks # the previous WHAT
-                                # on_walkable = rect_touches_color(main_globals['walkable_mask'], temporary_rect, (0, 255, 0))
+                                # check distance to the previous cocks
                                 too_close = False
                                 for (px, py) in previous_coords:
                                     if math.isclose(enemy_x, px, abs_tol=min_distance) and math.isclose(enemy_y, py, abs_tol=min_distance):
                                         too_close = True
-                                        break # too close to another guy
+                                        break # too close to another cock
 
-                                if not too_close:
+                                if not too_close: # wow he did it
                                     new_enemy = main_globals['Enemy'](main_globals, enemy_x, enemy_y, random.choice([0, 1]))
                                     enemy_list.append(new_enemy)
                                     hemorrhoids_in_tile.append(new_enemy)
@@ -152,14 +152,14 @@ def dungeon(main_globals):
         for weapon in main_globals['weapons_on_map'][:]:
 
             if not main_globals['is_on_active_tile'](main_globals, weapon.x, weapon.y):
-                continue # skip
+                continue # skip if not active
 
             weapon_image = main_globals['weapon_images'][weapon.name]
             draw_x = weapon.x - weapon_image.get_width() // 2 - camera_x + 15
             draw_y = weapon.y - weapon_image.get_height() // 2 - camera_y
             weapon.draw(screen, draw_x, draw_y)
 
-            if main_globals['distance_to'](player, weapon) < main_globals['interact_distance']:
+            if main_globals['distance_to'](player, weapon) < main_globals['interact_distance']: # interact
                 screen.blit(main_globals['interact_image'], (draw_x, draw_y + weapon_image.get_height()))
                 main_globals['interact'](main_globals, player, weapon.x, weapon.y, lambda w=weapon: w.pickup(player))
 
@@ -169,12 +169,14 @@ def dungeon(main_globals):
             # check if ANY enemy in the group detects the player
             group_should_activate = False
             for enemy in group['enemies']:
+
                 # draw !
                 if enemy.active and enemy.active_counter > 0:
                     enemy.active_counter -= main_globals['dt'] * 60
                     font = pygame.font.Font(None, 36)
                     text_surface = font.render("!", True, (255, 70, 70))
                     main_globals['screen'].blit(text_surface, (enemy.x - main_globals['camera_x'], enemy.y - main_globals['camera_y'] - enemy.size // 2 - 8))
+
                 if not enemy.active and enemy.detect(player):
                     for e in group['enemies']:
                         e.active = True
@@ -324,7 +326,7 @@ def dungeon(main_globals):
 
             if facing_left: # offset because of player offset
                 weapon_image = pygame.transform.flip(weapon_image, True, False)
-                weapon_x -= int(weapon_image.get_width()*1.24) if weapon.name in main_globals['dual_wields'] else int(weapon_image.get_width()*1.46)
+                weapon_x -= int(weapon_image.get_width()*1.24) if weapon.name in main_globals['dual_wields'] else int(weapon_image.get_width()*1.46) # most probably will break
 
             if weapon.name in main_globals['dual_wields']:
                 screen.blit(weapon_image, (weapon_x - weapon_image.get_width() // 2.7, weapon_y))
@@ -332,7 +334,6 @@ def dungeon(main_globals):
             screen.blit(weapon_image, (weapon_x, weapon_y))
 
         # draw blood particles
-        # this is here because we need to draw them over the player
         new_particles = []
         for body, shape, color, lifetime, max_lifetime in main_globals['blood_particles']:
             # stop at landing y
@@ -358,7 +359,7 @@ def dungeon(main_globals):
         main_globals['blood_particles'] = new_particles
 
         # pausing of the game
-        if not is_paused:
+        if not is_paused: # not paused
             main_globals['draw_minimap'](main_globals, main_globals['tilemap'], player)
 
             # enemy attack
@@ -392,7 +393,7 @@ def dungeon(main_globals):
                         main_globals['richest_player'] = player.wealth
                         main_globals['save'](main_globals, richest_player=main_globals['richest_player'])
 
-            # + items
+            # + items image
             offset = 25 # from bottom right
             padding = 5 # between items
             for index, item in enumerate(main_globals['inventory_texts'][:]):
@@ -433,18 +434,18 @@ def dungeon(main_globals):
         else: # if paused
             main_globals['pause_menu'](main_globals)
 
-        if main_globals['choosing']:
-            if main_globals['choosing_crystal']:
+        if main_globals['choosing']: # if he is in some menu
+            if main_globals['choosing_crystal']: # if he is choosing a crystal effect
                 main_globals['crystal_ui'](main_globals)
 
-    def remake_floor():
+    def remake_floor(): # remakes the floor
         tilemap = main_globals['tilemap']
         rows = len(tilemap)
         cols = len(tilemap[0])
         min_distance = 5 # minimum distance between start and end
         min_straight = 1 # minimum distance before turning again
         tile_choices = [1, 2, 3] # tiles the path can be filled with
-        tile_probs = [0.5, 0.1, 0.4] # in order * 100 in %
+        tile_probs = [0.5, 0.1, 0.4] # in order of ^ # *100 in %
 
         # pick start and end far enough apart
         while True:
@@ -465,7 +466,7 @@ def dungeon(main_globals):
         current_dir = 'r' if random.random() < 0.5 else 'c'
         straight_count = 0
 
-        path_tiles = []
+        path_tiles = [] # tiles between start and end
 
         while (current_r, current_c) != (end_r, end_c):
             dr = end_r - current_r

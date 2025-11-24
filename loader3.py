@@ -17,7 +17,7 @@ def loader3(main_globals):
     smallfont = pygame.font.Font("assets/font/editundo.ttf", 22)
     smallerfont = pygame.font.Font("assets/font/editundo.ttf", 16)
 
-    def add_to_inventory(main_globals, item_name, amount=1):
+    def add_to_inventory(main_globals, item_name, amount=1): # bottom right text to show what you got
         player = main_globals['player']
         inventory = player.inventory
         inventory[item_name] = inventory.get(item_name, 0) + amount
@@ -62,7 +62,7 @@ def loader3(main_globals):
                 del player.inventory['crystal_fragments']
             main_globals['add_to_inventory'](main_globals, 'crystal', 1)
 
-    def is_on_active_tile(main_globals, x, y):
+    def is_on_active_tile(main_globals, x, y): # is something on a tile the player walked on?
         ts = main_globals['tile_size'] + main_globals['tile_offset']
         tile_x = (x + main_globals['player_size'] // 2) // ts
         tile_y = (y + main_globals['player_size'] // 2) // ts
@@ -70,7 +70,7 @@ def loader3(main_globals):
 
         return tile in main_globals['active_tiles']
 
-    def give_money(amount):  # some indicator for getting rich 🤑
+    def give_money(amount): # some indicator for getting rich 🤑
         if main_globals['money_texts']:
             existing = main_globals['money_texts'][0]
             existing['amount'] += amount
@@ -91,8 +91,8 @@ def loader3(main_globals):
         base_size = (200, 50)
         hover_size = (220, 60)
         anim_speed = 5.5
-        hover_scale = 1.1
-        shrink_scale = 0.9
+        hover_scale = 1.1 # how much to scale when hovered
+        shrink_scale = 0.9 # scale opposing down
 
         main_globals.setdefault('mode1_scaled', main_globals['mode1img'])
         main_globals.setdefault('mode2_scaled', main_globals['mode2img'])
@@ -271,10 +271,10 @@ def loader3(main_globals):
 
         def draw_shop(self, main_globals):
             screen = main_globals['screen']
-            screen.fill((0, 0, 0))
+            screen.fill((0, 0, 0)) # dont do this
 
     def spawn_blood_particles(space, player_x, player_y, player_size, amount=10):
-        if main_globals['blood_text'] == "False":
+        if main_globals['blood_text'] == "False": # if option disabled
             return
         particles = []
         # bloods at player lower center
@@ -282,7 +282,7 @@ def loader3(main_globals):
         spawn_y = player_y + player_size + 25
 
         # y where they stop
-        landing_y = spawn_y + 30
+        landing_y = spawn_y + 30 # kind of pointless because they dont live enough
 
         for i in range(amount):
             # random size
@@ -370,7 +370,7 @@ def loader3(main_globals):
                 raise TypeError(f"bad type: {thing}")
 
         x1, y1 = get_xy(thing1)
-        x2, y2 = get_xy(thing2)
+        x2, y2 = get_xy(thing2) # this entire thing is only because i wanted the player center btw
         return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
 
     def player_gif(main_globals): # makes the player gif to frames
@@ -399,9 +399,9 @@ def loader3(main_globals):
         ts = main_globals['tile_size'] + main_globals['tile_offset']
         tile_size = main_globals['tile_size']
         mask = pygame.Surface((len(tilemap[0]) * ts, len(tilemap) * ts))
-        mask.fill((0, 0, 0))  # black is not walkable
+        mask.fill((0, 0, 0)) # black is not walkable
 
-        bridge_fraction = 0.25
+        bridge_fraction = 0.25 # *100 in % of tile size
         bridge_size = int(tile_size * bridge_fraction)
 
         for row_idx, row in enumerate(tilemap):
@@ -445,6 +445,7 @@ def loader3(main_globals):
         # remake the mask
         main_globals['walkable_mask'] = main_globals['make_initial_walkable_surface'](tilemap, main_globals)
 
+    # make instances
     shop = Shop(main_globals)
 
     # define functions and classes into main globals

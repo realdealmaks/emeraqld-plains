@@ -27,8 +27,6 @@ def stsw(main_globals):
                 main_globals['draw_dead'](main_globals, main_globals['mouse_pos'])
             case "in credits":
                 main_globals['draw_credits'](main_globals, main_globals['mouse_pos']) # cursed with low fps
-            case "shopping":
-                main_globals['shop'].draw_shop(main_globals) # should change to shop ui its misleading
             case "in battle pass": # kek # https://cdn.discordapp.com/attachments/773066547525582860/1429558008089804883/speed.gif?ex=6903c225&is=690270a5&hm=e337ff15ddec125110c8135df1c5b8a56ba220bb733b0207d4f5040a3156a4a4&
                 main_globals['draw_battle_pass'](main_globals, main_globals['mouse_pos'])
 

@@ -10,7 +10,7 @@ def player(main_globals):
         def __init__(self, main_globals, x, y):
             self.x = x
             self.y = y
-            self.speed = 2
+            self.speed = 2 * main_globals['plr_spd_mult']
             self.health = 100
             self.max_hp = main_globals['player_max_health']
             self.alive = True
@@ -18,7 +18,7 @@ def player(main_globals):
             self.main_globals = main_globals
             self.weapons = []
             self.wealth = 0 # broke ass bitch
-            self.locked = False
+            self.locked = False # if locked to current tile
             self.inventory = {}
 
             size = self.main_globals['player_size']
@@ -26,14 +26,14 @@ def player(main_globals):
 
         def move(self, dx, dy):
             dt = self.main_globals['dt']
-            new_x = self.x + dx * self.speed * dt * 60 * main_globals['plr_spd_mult']
-            new_y = self.y + dy * self.speed * dt * 60 * main_globals['plr_spd_mult']
+            new_x = self.x + dx * self.speed * dt * 60
+            new_y = self.y + dy * self.speed * dt * 60
 
             # change mask depending on lock
             if self.locked:
-                mask = self.main_globals.get('locked_mask')
+                mask = self.main_globals.get('locked_mask') # no bridge
             else:
-                mask = self.main_globals.get('walkable_mask')
+                mask = self.main_globals.get('walkable_mask') # bridge
 
             # horizontal movement
             new_x = self.x + dx * self.speed
@@ -55,7 +55,7 @@ def player(main_globals):
                     can_move_y = False
                     break
 
-            # actually move if 'it' can
+            # actually move
             if can_move_x:
                 self.x = new_x
             if can_move_y:
@@ -89,6 +89,7 @@ def player(main_globals):
                 # note: this will never be fixes
                 """self.main_globals['hurt_sound'].play()
                 please fix this man"""
+                # this has and will be broken since day 1
 
         def die(self):
             self.main_globals['game_stage'] = "dead"
@@ -105,7 +106,7 @@ def player(main_globals):
             self.y = self.main_globals['spawn_y']
             self.main_globals['blood_particles'] = []
 
-        def effect(self, effect_type, number): # i dont know why this is seperate
+        def effect(self, effect_type, number):
             if effect_type == "heal":
                 player.health += number
                 if player.health > self.max_hp:
@@ -125,8 +126,8 @@ def player(main_globals):
                 player.wealth += number
             elif effect_type == "max_hp":
                 main_globals['player_max_health'] += number
+                self.hp += main_globals['player_max_health'] - self.max_hp # heal for change
                 self.max_hp = main_globals['player_max_health']
-                self.hp = main_globals['player_max_health']
             elif effect_type == "ovr_damage":
                 main_globals['damage_mult'] += number
             elif effect_type == "ovr_speed":

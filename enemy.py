@@ -115,7 +115,7 @@ def enemy(main_globals):
 
         def draw(self, type):
             if not main_globals['is_on_active_tile'](self.main_globals, self.x, self.y):
-                return
+                return # skip if not active
 
             if self.alive:
                 screen = main_globals['screen']
