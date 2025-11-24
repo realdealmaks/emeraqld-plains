@@ -43,10 +43,10 @@ def dungeon(main_globals):
         # activate tiles
         ts = main_globals['tile_size'] + main_globals['tile_offset']
 
-        left = (player.x + player_size // 2) // ts
-        right = (player.x + player_size // 2 + player_size - 1) // ts
-        top = (player.y + player_size // 2) // ts
-        bottom = (player.y + player_size // 2 + player_size - 1) // ts
+        left = int((player.x + player_size // 2) // ts)
+        right = int((player.x + player_size // 2 + player_size - 1) // ts)
+        top = int((player.y + player_size // 2) // ts)
+        bottom = int((player.y + player_size // 2 + player_size - 1) // ts)
 
         for tx in range(left, right + 1):
             for ty in range(top, bottom + 1):

@@ -139,10 +139,11 @@ def ui(main_globals):
 
         # view around player tile
         view_radius = 6
-        start_x = max(player_tile_x - view_radius, 0)
-        start_y = max(player_tile_y - view_radius, 0)
-        end_x = min(player_tile_x + view_radius, cols - 1)
-        end_y = min(player_tile_y + view_radius, rows - 1)
+        start_x = int(max(player_tile_x - view_radius, 0))
+        start_y = int(max(player_tile_y - view_radius, 0))
+        end_x = int(min(player_tile_x + view_radius, cols - 1))
+        end_y = int(min(player_tile_y + view_radius, rows - 1))
+
 
         offset_x = screen.get_width() - background_rect_surf.get_width() - padding
         offset_y = padding

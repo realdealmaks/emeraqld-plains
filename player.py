@@ -126,7 +126,7 @@ def player(main_globals):
                 player.wealth += number
             elif effect_type == "max_hp":
                 main_globals['player_max_health'] += number
-                self.hp += main_globals['player_max_health'] - self.max_hp # heal for change
+                self.health += main_globals['player_max_health'] - self.max_hp # heal for change
                 self.max_hp = main_globals['player_max_health']
             elif effect_type == "ovr_damage":
                 main_globals['damage_mult'] += number
