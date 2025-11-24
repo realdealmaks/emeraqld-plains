@@ -380,6 +380,7 @@ def dungeon(main_globals):
             for enemy in enemy_list: 
                 if enemy.active: enemy.move(player)
 
+            # + money
             for item in main_globals['money_texts']:
                 screen.blit(item['text'], (130, 300))
                 item['timer'] -= main_globals['dt']
@@ -390,6 +391,30 @@ def dungeon(main_globals):
                     if player.wealth > main_globals['richest_player']:
                         main_globals['richest_player'] = player.wealth
                         main_globals['save'](main_globals, richest_player=main_globals['richest_player'])
+
+            # + items
+            offset = 25 # from bottom right
+            padding = 5 # between items
+            for index, item in enumerate(main_globals['inventory_texts'][:]):
+                img = item['image']
+                text = item['text']
+
+                x = screen.get_width() - img.get_width() - offset
+                y = screen.get_height() - img.get_height() - offset - index * (img.get_height() + padding)
+
+                text_y = y + (img.get_height() - text.get_height()) // 2
+                text_x = x - text.get_width() - 5
+
+                background = pygame.Surface((img.get_width() + text.get_width() + 10, img.get_height()), pygame.SRCALPHA)
+                background.fill((50, 50, 50, 150))
+                screen.blit(background, (text_x - 5, y))
+
+                screen.blit(text, (text_x, text_y))
+                screen.blit(img, (x, y))
+
+                item['timer'] -= main_globals['dt']
+                if item['timer'] <= 0:
+                    main_globals['inventory_texts'].remove(item)
 
             main_globals['draw_vignette'](main_globals, player)
             mx.music.unpause()

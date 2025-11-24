@@ -81,6 +81,7 @@ def loader1(main_globals):
         "increases overall damage", # red
         "increases overall speed", # blue
     ]
+    main_globals['inventory_texts'] = []
 
     main_globals['crystal_effects'] = [ # list of functions for effects lambda blablabla
             lambda main_globals: main_globals['player'].effect("max_hp", 20), # green

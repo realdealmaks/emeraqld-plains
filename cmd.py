@@ -19,6 +19,8 @@ def cmd(main_globals):
         main_globals['money_texts'] = []
         main_globals['facing_left'] = False
         main_globals['is_paused'] = False
+        main_globals['inventory_texts'] = []
+        main_globals['money_texts'] = []
         for call in main_globals['default_tilemap_calls']:
             eval(call)
         main_globals['rebuild_walkable_mask'](main_globals)

@@ -17,6 +17,33 @@ def loader3(main_globals):
     smallfont = pygame.font.Font("assets/font/editundo.ttf", 22)
     smallerfont = pygame.font.Font("assets/font/editundo.ttf", 16)
 
+    def add_to_inventory(main_globals, item_name, amount=1):
+        player = main_globals['player']
+        inventory = player.inventory
+        inventory[item_name] = inventory.get(item_name, 0) + amount
+        img_size = 42
+
+        img = main_globals['items'][item_name]['image']
+        img = pygame.transform.scale(img, (img_size, img_size))
+
+        font = pygame.font.Font(None, 30)
+        text = font.render(f"+{amount}", True, (200, 200, 200))
+
+        for existing in main_globals['inventory_texts']:
+            if existing.get('item_name') == item_name:
+                existing['timer'] = 3.0
+                existing['amount'] += amount
+                existing['text'] = font.render(f"+{existing['amount']}", True, (200, 200, 200))
+                return
+
+        main_globals['inventory_texts'].append({
+            'item_name': item_name,
+            'image': img,
+            'text': text,
+            'timer': 3.0,
+            'amount': amount
+        })
+
     def use_crystal(main_globals):
         player = main_globals['player']
         if player.inventory.get('crystal', 0) >= 1:
@@ -33,7 +60,7 @@ def loader3(main_globals):
             player.inventory['crystal_fragments'] -= 6
             if player.inventory['crystal_fragments'] == 0:
                 del player.inventory['crystal_fragments']
-            player.inventory['crystal'] = player.inventory.get('crystal', 0) + 1
+            main_globals['add_to_inventory'](main_globals, 'crystal', 1)
 
     def is_on_active_tile(main_globals, x, y):
         ts = main_globals['tile_size'] + main_globals['tile_offset']

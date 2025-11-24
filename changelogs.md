@@ -272,3 +272,4 @@ draw ! if enemy detects naganou
 
 # 24 11
 instead of working just make progression and other shit i forgot to tell you about
+add bottom right text for recent items
