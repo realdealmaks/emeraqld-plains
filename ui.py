@@ -1,7 +1,8 @@
 # user interface
 try:
-    import pygame, time, types
+    import pygame, time, types, math
     from pygame import mixer as mx
+    import numpy as np
 except ModuleNotFoundError as e:
     print(f"you are missing module {e.name} man")
 
@@ -11,6 +12,102 @@ def ui(main_globals):
     setting_font = credits_font = pygame.font.Font("assets/font/editundo.ttf", 28)
     smallfont = pygame.font.Font("assets/font/editundo.ttf", 22)
     smallerfont = pygame.font.Font("assets/font/editundo.ttf", 16)
+
+    def crystal_ui(main_globals):
+        screen = main_globals['screen']
+        width, height = screen.get_size()
+        background = main_globals['crystal_ui_bg']
+
+        bg_x = (width - background.get_width()) // 2
+        bg_y = (height - background.get_height()) // 2
+        screen.blit(background, (bg_x, bg_y))
+
+        buttons = main_globals['crystal_ui_buttons']
+        num_buttons = len(buttons)
+        if num_buttons == 0:
+            return
+
+        button_y = height // 2
+        bg_width = background.get_width()
+        spacing = bg_width // (num_buttons + 1)
+
+        rise_amount = 20 # pixels to raise selected crystal
+        rise_speed = 0.3 # fraction per frame to move
+
+        if 'crystal_ui_rects' not in main_globals:
+            main_globals['crystal_ui_rects'] = [None] * len(main_globals['crystal_ui_buttons'])
+        if 'crystal_ui_offsets' not in main_globals:
+            main_globals['crystal_ui_offsets'] = [0] * len(buttons)
+
+        for i, button in enumerate(buttons):
+            btn_img = button
+            btn_x = bg_x + spacing * (i + 1) - btn_img.get_width() // 2
+
+            if main_globals.get('selected_crystal_effect') == i:
+                target_offset = -rise_amount
+            else:
+                target_offset = 0
+
+            # raise if selected
+            current_offset = main_globals['crystal_ui_offsets'][i]
+            current_offset += (target_offset - current_offset) * rise_speed
+            main_globals['crystal_ui_offsets'][i] = current_offset
+
+            draw_y = button_y - btn_img.get_height() // 2 + current_offset
+
+            btn_rect = pygame.Rect(btn_x, draw_y, btn_img.get_width(), btn_img.get_height())
+            main_globals['crystal_ui_rects'][i] = btn_rect
+
+            screen.blit(btn_img, (btn_x, draw_y))
+
+            # overlay on hover
+            """
+            if btn_rect.collidepoint(main_globals['mouse_pos']):
+                overlay = pygame.Surface(btn_img.get_size(), pygame.SRCALPHA)
+                overlay.fill((255, 255, 255, 100))
+                screen.blit(overlay, (btn_x, draw_y))
+            """
+
+            if main_globals.get('selected_crystal_effect') == i:
+                # alpha pulse
+                t = pygame.time.get_ticks() / 500 # speed of pulse
+                shine_img = btn_img.copy().convert_alpha()
+                arr = pygame.surfarray.pixels3d(shine_img)
+                arr[:, :, :] = np.clip(arr[:, :, :] + (255 - arr[:, :, :]) * (0.5 + 0.5 * math.sin(t)), 0, 255) # this was such a fucking pain to make
+                del arr
+                screen.blit(shine_img, (btn_x, draw_y))
+
+            # select on click
+            if btn_rect.collidepoint(main_globals['mouse_pos']) and not main_globals['mouse_clicked'] and main_globals['mouse_pressed']:
+                main_globals['mouse_clicked'] = True
+                main_globals['selected_crystal_effect'] = i
+
+            # description, confirm, apply
+            if main_globals['selected_crystal_effect'] is not None:
+                description = main_globals['crystals'][main_globals['selected_crystal_effect']]
+                desc_surf = smallfont.render(description, True, (255, 255, 255))
+                desc_x = (width - desc_surf.get_width()) // 2
+                screen.blit(desc_surf, (desc_x, height - desc_surf.get_height() - 10))
+
+                confirm_button = pygame.rect.Rect((width - 150) // 2, height - 80, 150, 50)
+                pygame.draw.rect(screen, (70, 70, 70), confirm_button)
+                confirm_text = font.render("Confirm", True, (255, 255, 255))
+                screen.blit(confirm_text, confirm_text.get_rect(center=confirm_button.center))
+
+                if confirm_button.collidepoint(main_globals['mouse_pos']) and not main_globals['mouse_clicked'] and main_globals['mouse_pressed']:
+                    main_globals['mouse_clicked'] = True
+                    effect_index = main_globals['selected_crystal_effect']
+                    effect_function = main_globals['crystal_effects'][effect_index]
+                    if effect_function:
+                        effect_function(main_globals)
+                        main_globals['selected_crystal_effect'] = None
+                        main_globals['choosing'] = False
+                        main_globals['choosing_crystal'] = False
+                        print(f"used crystal for {main_globals['crystals'][effect_index]}")
+                        print(f"stats : {main_globals['damage_mult']=:.2f}, {main_globals['plr_spd_mult']=:.2f}, {main_globals['cooldown_mult']=:.2f}, {main_globals['player_max_health']=:.2f}")
+
+        if not main_globals['mouse_pressed']:
+            main_globals['mouse_clicked'] = False
 
     def draw_hud(main_globals, player): # top left images for symboling his health
         if player.alive: # IS HE????????
