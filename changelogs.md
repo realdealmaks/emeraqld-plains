@@ -276,4 +276,6 @@ add bottom right text for recent items
 
 you cant make shopping its own state because you wont know what to do with the dungeon after
 
+tile images are now texture
+
 # 

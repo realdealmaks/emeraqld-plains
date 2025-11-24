@@ -3,7 +3,7 @@
 # loader 3
 
 try:
-    import random, pygame, pymunk, types, math
+    import random, pygame, pymunk, types, threading
     from pygame import mixer as mx
     import numpy as np
 except ModuleNotFoundError as e:
@@ -16,6 +16,70 @@ def loader3(main_globals):
     setting_font = credits_font = pygame.font.Font("assets/font/editundo.ttf", 28)
     smallfont = pygame.font.Font("assets/font/editundo.ttf", 22)
     smallerfont = pygame.font.Font("assets/font/editundo.ttf", 16)
+
+    def tile_texturer(main_globals, mask, store_key='textured_tiles'):
+        texture = main_globals['tile_texture']
+        main_globals['textures_ready'] = False
+        tex_w, tex_h = texture.get_size()
+        map_w, map_h = mask.get_size()
+
+        # map sized surface
+        texture_surface = pygame.Surface((map_w, map_h), pygame.SRCALPHA)
+
+        # progress
+        main_globals['texturing_progress'] = {'rows_done': 0, 'total_rows': map_h}
+
+        for y in range(0, map_h, tex_h):
+            for x in range(0, map_w, tex_w):
+                texture_surface.blit(texture, (x, y))
+            main_globals['texturing_progress']['rows_done'] = y + tex_h
+
+        # green to white
+        mask_array = pygame.surfarray.pixels3d(mask) # get array
+        mask_copy = mask.copy()
+        mask_copy_array = pygame.surfarray.pixels3d(mask_copy)
+        green_mask = mask_array[:, :, 1] > 0 # all pixels with green
+        mask_copy_array[:, :, 0][green_mask] = 255 # r
+        mask_copy_array[:, :, 1][green_mask] = 255 # g
+        mask_copy_array[:, :, 2][green_mask] = 255 # b
+        del mask_array, mask_copy_array
+
+        # apply
+        texture_surface.blit(mask_copy, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
+        main_globals[store_key] = texture_surface
+
+        main_globals['textures_ready'] = True
+
+        # remove progress
+        if 'texturing_progress' in main_globals:
+            del main_globals['texturing_progress']
+
+    def tt_thread(main_globals, mask, store_key='textured_tiles'):
+        thread = threading.Thread(target=main_globals['tile_texturer'], args=(main_globals, mask, store_key))
+        thread.start()
+        return thread
+
+    def draw_texturing_progress(main_globals):
+        if 'texturing_progress' in main_globals:
+            screen = main_globals['screen']
+            progress = main_globals['texturing_progress']
+            total = progress['total_rows']
+            done = progress['rows_done']
+            screen_w, screen_h = screen.get_size()
+
+            bar_width = int(screen_w * done / total)
+            pygame.draw.rect(screen, (0, 255, 0), (0, screen_h - 20, bar_width, 20))
+            pygame.draw.rect(screen, (255, 255, 255), (0, screen_h - 20, screen_w, 20), 2)
+            pygame.display.flip()
+
+    def draw_tiles(main_globals):
+        screen = main_globals['screen']
+        camera_x = int(main_globals['camera_x'])
+        camera_y = int(main_globals['camera_y'])
+        screen_w, screen_h = screen.get_size()
+        texture = main_globals['textured_tiles'] if main_globals['player'].locked == False else main_globals['locked_textured_tiles']
+
+        screen.blit(texture, (0, 0), pygame.Rect(camera_x, camera_y, screen_w, screen_h))
 
     def add_to_inventory(main_globals, item_name, amount=1): # bottom right text to show what you got
         player = main_globals['player']
@@ -336,19 +400,19 @@ def loader3(main_globals):
             if function == "resolution": # changes resolution
                 new_res = main_globals['resolutions'][main_globals['resolution_index']]
                 main_globals['resolution'] = new_res
-                save(main_globals, resolution=new_res)
+                main_globals['save'](main_globals, resolution=new_res)
 
             elif function == "framerate": # changes max fps of real screen
                 new_fps = main_globals['frame_caps'][main_globals['frame_cap_index']]
                 main_globals['max_fps'] = new_fps
-                save(main_globals, max_fps=new_fps)
+                main_globals['save'](main_globals, max_fps=new_fps)
 
             elif function == "music": # changes music volume
                 new_volume = main_globals.get('volume_preview', main_globals.get('music_volume', mx.music.get_volume()))
                 main_globals['music_volume'] = new_volume
                 main_globals.pop('volume_preview', None) # reset bar preview
                 mx.music.set_volume(new_volume)
-                save(main_globals, music=new_volume)
+                main_globals['save'](main_globals, music=new_volume)
 
     def interact(main_globals, player, x, y, function): # interaction prompt
         if distance_to(player, (x, y)) < main_globals['interact_distance']: # if player is within reach
@@ -424,8 +488,10 @@ def loader3(main_globals):
         main_globals['spawn_weapons'](main_globals)
         if counter == 0:
             # cba to make a seperate mask so calls itself with a counter for looping
-            main_globals['locked_mask'] = make_initial_walkable_surface(tilemap, main_globals, False, counter + 1)
+            main_globals['locked_mask'] = main_globals['make_initial_walkable_surface'](tilemap, main_globals, False, counter + 1)
             print(f"previous active tiles: {main_globals['active_tiles']}")
+            thread_reg = main_globals['tt_thread'](main_globals, mask)
+            thread_lock = main_globals['tt_thread'](main_globals, main_globals['locked_mask'], 'locked_textured_tiles')
         main_globals['active_tiles'] = []
         return mask
 

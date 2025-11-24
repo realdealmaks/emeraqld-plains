@@ -41,7 +41,6 @@ def cmd(main_globals):
                 "reset": "reset dungeon",
                 "respawn": "respawn player",
                 "ccache": "clear data",
-                "inventory": "add/remove items",
             },
             "exit commands": {
                 "quit, q, exit, x": "",

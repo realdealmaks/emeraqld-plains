@@ -61,6 +61,7 @@ def loader2(main_globals):
     main_globals['shop_holder'] = pygame.image.load("assets/useful images/shop_holder.png").convert_alpha()
     stairs = pygame.image.load("assets/useful images/stairs.png").convert_alpha() # thing to rebuild tilemap
     main_globals['stairs_image'] = pygame.transform.scale2x(stairs)
+    main_globals['tile_texture'] = pygame.image.load("assets/useful images/tiles/tile600x600.png") # change sometime
 
     # background music
     main_globals['musics'] = ["assets/audio/music/testdroga.mp3", "assets/audio/music/game_over_loop.mp3", "assets/audio/music/bakus funk trim.mp3"]

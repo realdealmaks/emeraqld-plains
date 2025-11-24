@@ -19,6 +19,7 @@ def dungeon(main_globals):
         player_size = main_globals['player_size']
         enemy_size = main_globals['enemy_size']
         enemy_list = main_globals['enemy_list']
+        tilemap = main_globals['tilemap']
 
         screen.fill((0, 0, 0))
 
@@ -29,13 +30,7 @@ def dungeon(main_globals):
         main_globals['camera_y'] = camera_y
         ts = main_globals['tile_size'] + main_globals['tile_offset']
 
-        mask_width, mask_height = main_globals['walkable_mask'].get_size() # blit tile image on mask
-        tile_surface = main_globals['tile_images']
-        tilemap = main_globals['tilemap']
-        for y in range(0, mask_height, ts):
-            for x in range(0, mask_width, ts):
-                if main_globals['walkable_mask'].get_at((x, y))[:3] == (0, 255, 0):
-                    screen.blit(tile_surface, (x - camera_x, y - camera_y))
+        main_globals['draw_tiles'](main_globals)
 
         if 'enemy_groups' not in main_globals:
             main_globals['enemy_groups'] = []
@@ -72,11 +67,7 @@ def dungeon(main_globals):
                             main_globals['player'].y = main_globals['spawn_y']
                         main_globals['spawn_set'] = True
 
-                elif tile_type == 2: # weapon tile
-                    # fixed position because why would it not be
-                    # it shouldnt have been fixed
-                    # i dont think its even centered
-                    # good job shambly
+                elif tile_type == 2:
                     screen.blit(main_globals['pedistal_image'], (col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_width() // 2, row_idx * ts - camera_y + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_height() // 2 + 50))
 
                 elif tile_type == 3: # enemy spawn tile
@@ -173,8 +164,7 @@ def dungeon(main_globals):
                 # draw !
                 if enemy.active and enemy.active_counter > 0:
                     enemy.active_counter -= main_globals['dt'] * 60
-                    font = pygame.font.Font(None, 36)
-                    text_surface = font.render("!", True, (255, 70, 70))
+                    text_surface = main_globals['font'].render("!", True, (255, 70, 70))
                     main_globals['screen'].blit(text_surface, (enemy.x - main_globals['camera_x'], enemy.y - main_globals['camera_y'] - enemy.size // 2 - 8))
 
                 if not enemy.active and enemy.detect(player):
@@ -200,7 +190,7 @@ def dungeon(main_globals):
                         main_globals['most_groups_cleared'] = main_globals['groups_cleared']
                         main_globals['save'](main_globals, most_groups_cleared=main_globals['most_groups_cleared'])
                     print(f"group at {group['tile_pos']} cleared, ", end="")
-                    player.locked = False  # unlock player once group is cleared
+                    player.locked = False # unlock player once group is cleared
 
         # draw bob
         for enemy in enemy_list:

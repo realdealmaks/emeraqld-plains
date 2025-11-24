@@ -17,8 +17,11 @@ def stsw(main_globals):
                 if state == "choosing mode": # cursed with low fps
                     main_globals['draw_mode_selection'](main_globals, main_globals['mouse_pos'])
                 elif state == "in dungeon":
-                    main_globals['draw_dungeon'](main_globals, main_globals['player'], main_globals['is_paused'], main_globals['facing_left'])
-                    main_globals['draw_hints'](main_globals)
+                    if main_globals['textures_ready']:
+                        main_globals['draw_dungeon'](main_globals, main_globals['player'], main_globals['is_paused'], main_globals['facing_left'])
+                        main_globals['draw_hints'](main_globals)
+                    else:
+                        main_globals['draw_texturing_progress'](main_globals)
                 if main_globals['transition_active']:
                     main_globals['transition_to_dungeon'](main_globals, main_globals['screen'])
             case "in settings":
