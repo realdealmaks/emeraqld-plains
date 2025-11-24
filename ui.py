@@ -111,7 +111,7 @@ def ui(main_globals):
             main_globals[func_name](main_globals)
 
     def draw_hints(main_globals): # not really hints, just like keybinds but with a timer
-        if main_globals['hints_text'] == "False":
+        if main_globals['hints_text'] == "False" or main_globals['choosing']:
             return
         dt = main_globals['dt']
         screen = main_globals['screen']

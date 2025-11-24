@@ -408,6 +408,10 @@ def dungeon(main_globals):
         else: # if paused
             main_globals['pause_menu'](main_globals)
 
+        if main_globals['choosing']:
+            if main_globals['choosing_crystal']:
+                main_globals['crystal_ui'](main_globals)
+
     def remake_floor():
         tilemap = main_globals['tilemap']
         rows = len(tilemap)

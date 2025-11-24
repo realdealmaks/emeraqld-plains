@@ -69,29 +69,25 @@ def loader1(main_globals):
         'inventory': 'draw_inventory',
         'settings': 'draw_settings',
     }
+    main_globals['proj_spd_mult'] = 1.1 # of range
+    main_globals['damage_mult'] = 1.0
+    main_globals['cooldown_mult'] = 1.0
+    main_globals['plr_spd_mult'] = 1.0
 
     main_globals['selected_crystal_effect'] = None
-    main_globals['crystal_ui_buttons'] = [ # button images
-        pygame.image.load("assets/models/items/consumables/crystal/crystal.png").convert_alpha(
-            ).copy().fill((0,255,0,0), special_flags=pygame.BLEND_RGBA_ADD), # green
-        pygame.image.load("assets/models/items/consumables/crystal/crystal.png").convert_alpha(
-            ).copy().fill((255,0,0,0), special_flags=pygame.BLEND_RGBA_ADD), # red
-        pygame.image.load("assets/models/items/consumables/crystal/crystal.png").convert_alpha(
-            ).copy().fill((0,0,255,0), special_flags=pygame.BLEND_RGBA_ADD), # blue
-    ]
-
     main_globals['crystals'] = [ # list of descriptions of crystals
         "increases max hp", # green
         "increases overall damage", # red
-        "increases overall attack speed", # blue
+        "increases overall speed", # blue
     ]
-    """
+
     main_globals['crystal_effects'] = [ # list of functions for effects lambda blablabla
-            lambda main_globals: main_globals['player'].effect(name, value), # green
-            lambda main_globals: main_globals['player'].effect(name, value), # red
-            lambda main_globals: main_globals['player'].effect(name, value), # blue
+            lambda main_globals: main_globals['player'].effect("max_hp", 20), # green
+            lambda main_globals: main_globals['player'].effect("ovr_damage", 5), # red
+            lambda main_globals: main_globals['player'].effect("ovr_speed", 0.4), # blue
         ]
-    """
+    main_globals['choosing'] = False
+    main_globals['choosing_crystal'] = False
 
     # generator :robot:
     def generate_update_tile_calls(tilemap): # makes calls of update tile to make the default tilemap
@@ -264,7 +260,7 @@ def loader1(main_globals):
         },
         'crystal': {
             'description': 'a crystal',
-            'function': None,
+            'function': lambda main_globals: main_globals['use_crystal'](main_globals),
             'image': pygame.image.load("assets/models/items/consumables/crystal/crystal.png").convert_alpha()
         },
     }

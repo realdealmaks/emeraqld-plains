@@ -37,13 +37,14 @@ def weapons(main_globals):
             self.x = main_globals['tile_size'] // 2
             self.y = main_globals['tile_size'] // 2
             self.last_attack_time = 0
+            self.projectile_speed = self.range * main_globals['proj_spd_mult']
 
         def __repr__(self): # makes it printable without memory locations
             return f"Weapon('{self.name}')"
 
         def can_attack(self):
             current_time = time.time()
-            return (current_time - self.last_attack_time) >= self.cooldown
+            return (current_time - self.last_attack_time) >= self.cooldown * self.cooldown_mult
 
         def attack(self, player, main_globals):
             if self.can_attack():

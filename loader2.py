@@ -166,11 +166,31 @@ def loader2(main_globals):
         "katana": main_globals['slash_image']
     }
 
+    damage_mult = main_globals['damage_mult']
+    cooldown_mult = main_globals['cooldown_mult']
+
     main_globals['weapon_stats'] = {
-        "sword": {"damage": 15, "range": 50, "cooldown": 0.6},
-        "axe": {"damage": 20, "range": 75, "cooldown": 1},
-        "book": {"damage": 25, "range": 100, "cooldown": 2},
-        "katana": {"damage": 5, "range": 60, "cooldown": 0.8}
+        "sword": {"damage": 15 * damage_mult, "range": 50, "cooldown": 0.6 * cooldown_mult},
+        "axe": {"damage": 20 * damage_mult, "range": 75, "cooldown": 1 * cooldown_mult},
+        "book": {"damage": 25 * damage_mult, "range": 100, "cooldown": 2 * cooldown_mult},
+        "katana": {"damage": 5 * damage_mult, "range": 60, "cooldown": 0.8 * cooldown_mult}
     }
+
+    # crystals
+    crystal_ui_bg = pygame.image.load("assets/models/items/consumables/crystal/crystal_ui_bg.png").convert_alpha()
+    main_globals['crystal_ui_bg'] = pygame.transform.scale(crystal_ui_bg, (screen_w, screen_h))
+
+    base = pygame.image.load("assets/models/items/consumables/crystal/crystal_reg.png").convert_alpha()
+
+    green = base.copy()
+    green.fill((0,255,0,0), special_flags=pygame.BLEND_RGBA_ADD)
+
+    red = base.copy()
+    red.fill((255,0,0,0), special_flags=pygame.BLEND_RGBA_ADD)
+
+    blue = base.copy()
+    blue.fill((0,0,255,0), special_flags=pygame.BLEND_RGBA_ADD)
+
+    main_globals['crystal_ui_buttons'] = [green, red, blue]
 
     print("loader2, ", end="")

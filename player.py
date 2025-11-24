@@ -12,6 +12,7 @@ def player(main_globals):
             self.y = y
             self.speed = 2
             self.health = 100
+            self.max_hp = 100
             self.alive = True
             self.shake_timer = 0
             self.main_globals = main_globals
@@ -25,8 +26,8 @@ def player(main_globals):
 
         def move(self, dx, dy):
             dt = self.main_globals['dt']
-            new_x = self.x + dx * self.speed * dt * 60
-            new_y = self.y + dy * self.speed * dt * 60
+            new_x = self.x + dx * self.speed * dt * 60 * main_globals['plr_spd_mult']
+            new_y = self.y + dy * self.speed * dt * 60 * main_globals['plr_spd_mult']
 
             # change mask depending on lock
             if self.locked:
@@ -107,8 +108,8 @@ def player(main_globals):
         def effect(self, effect_type, number): # i dont know why this is seperate
             if effect_type == "heal":
                 player.health += number
-                if player.health > 100:
-                    player.health = 100
+                if player.health > self.max_hp:
+                    player.health = self.max_hp
 
                 # remove item from inventory
                 for potion, heal in [('small_potion', 20), ('medium_potion', 40), ('large_potion', 60)]:
@@ -122,6 +123,15 @@ def player(main_globals):
                 player.health = 100
             elif effect_type == "money":
                 player.wealth += number
+            elif effect_type == "max_hp":
+                self.max_hp += number
+                self.hp = self.max_hp
+            elif effect_type == "ovr_damage":
+                main_globals['damage_mult'] += number
+            elif effect_type == "ovr_speed":
+                main_globals['plr_spd_mult'] += number
+                main_globals['proj_spd_mult'] += number
+                main_globals['cooldown_mult'] -= number
 
         def attack(self, main_globals):
             if len(self.weapons) != 0:

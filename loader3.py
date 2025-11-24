@@ -16,7 +16,7 @@ def loader3(main_globals):
     smallfont = pygame.font.Font("assets/font/editundo.ttf", 22)
     smallerfont = pygame.font.Font("assets/font/editundo.ttf", 16)
 
-    def crystal_effect(main_globals):
+    def crystal_ui(main_globals):
         screen = main_globals['screen']
         width, height = screen.get_size()
         background = main_globals['crystal_ui_bg']
@@ -36,6 +36,9 @@ def loader3(main_globals):
 
         rise_amount = 10 # pixels to raise selected crystal
 
+        if 'crystal_ui_rects' not in main_globals:
+            main_globals['crystal_ui_rects'] = [None] * len(main_globals['crystal_ui_buttons'])
+
         for i, button in enumerate(buttons):
             btn_img = button
             btn_x = bg_x + spacing * (i + 1) - btn_img.get_width() // 2
@@ -46,7 +49,7 @@ def loader3(main_globals):
                 draw_y -= rise_amount
 
             btn_rect = pygame.Rect(btn_x, draw_y, btn_img.get_width(), btn_img.get_height())
-            button.rect = btn_rect
+            main_globals['crystal_ui_rects'][i] = btn_rect
 
             screen.blit(btn_img, (btn_x, draw_y))
 
@@ -57,7 +60,7 @@ def loader3(main_globals):
                 screen.blit(overlay, (btn_x, draw_y))
 
             # select on click
-            if btn_rect.collidepoint(main_globals['mouse_pos']) and not main_globals['mouse_clicked']:
+            if btn_rect.collidepoint(main_globals['mouse_pos']) and not main_globals['mouse_clicked'] and main_globals['mouse_pressed']:
                 main_globals['mouse_clicked'] = True
                 main_globals['selected_crystal_effect'] = i
 
@@ -73,25 +76,27 @@ def loader3(main_globals):
                 confirm_text = font.render("Confirm", True, (255, 255, 255))
                 screen.blit(confirm_text, confirm_text.get_rect(center=confirm_button.center))
 
-                if confirm_button.collidepoint(main_globals['mouse_pos']) and not main_globals['mouse_clicked']:
+                if confirm_button.collidepoint(main_globals['mouse_pos']) and not main_globals['mouse_clicked'] and main_globals['mouse_pressed']:
                     main_globals['mouse_clicked'] = True
                     effect_index = main_globals['selected_crystal_effect']
                     effect_function = main_globals['crystal_effects'].get(effect_index)
                     if effect_function:
                         effect_function(main_globals)
                         main_globals['selected_crystal_effect'] = None
+                        main_globals['choosing'] = False
+                        main_globals['choosing_crystal'] = False
 
         if not main_globals['mouse_pressed']:
             main_globals['mouse_clicked'] = False
 
     def use_crystal(main_globals):
         player = main_globals['player']
-        screen = main_globals['screen']
         if player.inventory.get('crystal', 0) >= 1:
             player.inventory['crystal'] -= 1
             if player.inventory['crystal'] == 0:
                 del player.inventory['crystal']
-            main_globals['crystal_effect'](main_globals)
+            main_globals['choosing'] = True
+            main_globals['choosing_crystal'] = True
 
     def use_fragments(main_globals):
         player = main_globals['player']
