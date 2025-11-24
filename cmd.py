@@ -234,4 +234,5 @@ def cmd(main_globals):
             print(key, end="", flush=True)
 
     main_globals['shell'] = shell
+    main_globals['reset'] = reset
     print("cmd, ", end="")

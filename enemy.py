@@ -1,6 +1,6 @@
 # for bobbers
 
-import pygame, math
+import pygame, math, random
 
 def enemy(main_globals):
 
@@ -147,6 +147,13 @@ def enemy(main_globals):
                 if main_globals['most_enemies_killed'] < main_globals['enemies_killed']:
                     main_globals['most_enemies_killed'] = main_globals['enemies_killed']
                     main_globals['save'](main_globals, most_enemies_killed=main_globals['most_enemies_killed'])
+
+            # temporary way of getting fragments
+            randomnum = random.randint(0, 4) # 1/num2 chance
+            if randomnum == 0:
+                if 'crystal_fragments' not in main_globals['player'].inventory:
+                    main_globals['player'].inventory['crystal_fragments'] = 0
+                main_globals['player'].inventory['crystal_fragments'] += 1
 
     enemy = Enemy(main_globals, main_globals['spawn_x'], main_globals['spawn_y'], main_globals['enemy_type'])
 

@@ -86,11 +86,13 @@ def ui(main_globals):
             if main_globals['selected_crystal_effect'] is not None:
                 description = main_globals['crystals'][main_globals['selected_crystal_effect']]
                 desc_surf = smallfont.render(description, True, (255, 255, 255))
-                desc_x = (width - desc_surf.get_width()) // 2
-                screen.blit(desc_surf, (desc_x, height - desc_surf.get_height() - 10))
+                btn_rect = main_globals['crystal_ui_rects'][main_globals['selected_crystal_effect']]
+                desc_x = btn_rect.centerx - desc_surf.get_width() // 2
+                desc_y = btn_rect.bottom + 20 # y offset below crystal
+                screen.blit(desc_surf, (desc_x, desc_y))
 
-                confirm_button = pygame.rect.Rect((width - 150) // 2, height - 80, 150, 50)
-                pygame.draw.rect(screen, (70, 70, 70), confirm_button)
+                confirm_button = pygame.rect.Rect((width - 150) // 2, height - 110, 150, 50)
+                pygame.draw.rect(screen, (70, 70, 70), confirm_button, 2, 8)
                 confirm_text = font.render("Confirm", True, (255, 255, 255))
                 screen.blit(confirm_text, confirm_text.get_rect(center=confirm_button.center))
 
