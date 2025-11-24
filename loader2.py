@@ -181,6 +181,7 @@ def loader2(main_globals):
     main_globals['crystal_ui_bg'] = pygame.transform.scale(crystal_ui_bg, (screen_w, screen_h))
 
     base = pygame.image.load("assets/models/items/consumables/crystal/crystal_reg.png").convert_alpha()
+    base = pygame.transform.scale2x(base)
 
     green = base.copy()
     green.fill((0,255,0,0), special_flags=pygame.BLEND_RGBA_ADD)

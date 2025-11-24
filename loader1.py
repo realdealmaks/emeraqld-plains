@@ -24,6 +24,7 @@ def loader1(main_globals):
     main_globals['pressed_f'] = False
     main_globals['spawn_x'] = 0
     main_globals['spawn_y'] = 0
+    main_globals['player_max_health'] = 100
 
     # weapon variables
     main_globals['Weapon'] = None

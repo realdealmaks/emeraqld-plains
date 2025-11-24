@@ -3,8 +3,9 @@
 # loader 3
 
 try:
-    import random, pygame, pymunk, types
+    import random, pygame, pymunk, types, math
     from pygame import mixer as mx
+    import numpy as np
 except ModuleNotFoundError as e:
     print(f"you are missing module {e.name} man")
 
@@ -34,19 +35,29 @@ def loader3(main_globals):
         bg_width = background.get_width()
         spacing = bg_width // (num_buttons + 1)
 
-        rise_amount = 10 # pixels to raise selected crystal
+        rise_amount = 20 # pixels to raise selected crystal
+        rise_speed = 0.3 # fraction per frame to move
 
         if 'crystal_ui_rects' not in main_globals:
             main_globals['crystal_ui_rects'] = [None] * len(main_globals['crystal_ui_buttons'])
+        if 'crystal_ui_offsets' not in main_globals:
+            main_globals['crystal_ui_offsets'] = [0] * len(buttons)
 
         for i, button in enumerate(buttons):
             btn_img = button
             btn_x = bg_x + spacing * (i + 1) - btn_img.get_width() // 2
 
-            # raise if selected
-            draw_y = button_y - btn_img.get_height() // 2
             if main_globals.get('selected_crystal_effect') == i:
-                draw_y -= rise_amount
+                target_offset = -rise_amount
+            else:
+                target_offset = 0
+
+            # raise if selected
+            current_offset = main_globals['crystal_ui_offsets'][i]
+            current_offset += (target_offset - current_offset) * rise_speed
+            main_globals['crystal_ui_offsets'][i] = current_offset
+
+            draw_y = button_y - btn_img.get_height() // 2 + current_offset
 
             btn_rect = pygame.Rect(btn_x, draw_y, btn_img.get_width(), btn_img.get_height())
             main_globals['crystal_ui_rects'][i] = btn_rect
@@ -54,10 +65,21 @@ def loader3(main_globals):
             screen.blit(btn_img, (btn_x, draw_y))
 
             # overlay on hover
+            """
             if btn_rect.collidepoint(main_globals['mouse_pos']):
                 overlay = pygame.Surface(btn_img.get_size(), pygame.SRCALPHA)
                 overlay.fill((255, 255, 255, 100))
                 screen.blit(overlay, (btn_x, draw_y))
+            """
+
+            if main_globals.get('selected_crystal_effect') == i:
+                # alpha pulse
+                t = pygame.time.get_ticks() / 500 # speed of pulse
+                shine_img = btn_img.copy().convert_alpha()
+                arr = pygame.surfarray.pixels3d(shine_img)
+                arr[:, :, :] = np.clip(arr[:, :, :] + (255 - arr[:, :, :]) * (0.5 + 0.5 * math.sin(t)), 0, 255) # this was such a fucking pain to make
+                del arr
+                screen.blit(shine_img, (btn_x, draw_y))
 
             # select on click
             if btn_rect.collidepoint(main_globals['mouse_pos']) and not main_globals['mouse_clicked'] and main_globals['mouse_pressed']:
@@ -79,12 +101,14 @@ def loader3(main_globals):
                 if confirm_button.collidepoint(main_globals['mouse_pos']) and not main_globals['mouse_clicked'] and main_globals['mouse_pressed']:
                     main_globals['mouse_clicked'] = True
                     effect_index = main_globals['selected_crystal_effect']
-                    effect_function = main_globals['crystal_effects'].get(effect_index)
+                    effect_function = main_globals['crystal_effects'][effect_index]
                     if effect_function:
                         effect_function(main_globals)
                         main_globals['selected_crystal_effect'] = None
                         main_globals['choosing'] = False
                         main_globals['choosing_crystal'] = False
+                        print(f"used crystal for {main_globals['crystals'][effect_index]}")
+                        print(f"stats : {main_globals['damage_mult']=:.2f}, {main_globals['plr_spd_mult']=:.2f}, {main_globals['cooldown_mult']=:.2f}, {main_globals['player_max_health']=:.2f}")
 
         if not main_globals['mouse_pressed']:
             main_globals['mouse_clicked'] = False

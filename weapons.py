@@ -44,7 +44,7 @@ def weapons(main_globals):
 
         def can_attack(self):
             current_time = time.time()
-            return (current_time - self.last_attack_time) >= self.cooldown * self.cooldown_mult
+            return (current_time - self.last_attack_time) >= self.cooldown * main_globals['cooldown_mult']
 
         def attack(self, player, main_globals):
             if self.can_attack():

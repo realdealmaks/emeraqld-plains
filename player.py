@@ -12,7 +12,7 @@ def player(main_globals):
             self.y = y
             self.speed = 2
             self.health = 100
-            self.max_hp = 100
+            self.max_hp = main_globals['player_max_health']
             self.alive = True
             self.shake_timer = 0
             self.main_globals = main_globals
@@ -124,8 +124,9 @@ def player(main_globals):
             elif effect_type == "money":
                 player.wealth += number
             elif effect_type == "max_hp":
-                self.max_hp += number
-                self.hp = self.max_hp
+                main_globals['player_max_health'] += number
+                self.max_hp = main_globals['player_max_health']
+                self.hp = main_globals['player_max_health']
             elif effect_type == "ovr_damage":
                 main_globals['damage_mult'] += number
             elif effect_type == "ovr_speed":
