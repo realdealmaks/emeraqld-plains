@@ -278,4 +278,7 @@ you cant make shopping its own state because you wont know what to do with the d
 
 tile images are now texture
 
-# 
+# 25 11
+optimise textures a little more
+fix draw tiles that was diagnosed with a case of low fps with replacing the rects with surface
+change how floors are built (almost)

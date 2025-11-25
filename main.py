@@ -9,7 +9,7 @@ except ModuleNotFoundError as e:
 pygame.init()
 mx.init(frequency=44100, size=-16, channels=16, buffer=8192)
 screen_h, screen_w = 750, 1080
-screen = pygame.display.set_mode((screen_w, screen_h))
+screen = pygame.display.set_mode((screen_w, screen_h), pygame.HWSURFACE | pygame.DOUBLEBUF)
 pygame.display.set_icon(pygame.image.load("assets/models/player/naganou_icon.png"))
 resolution = screen_w, screen_h
 
@@ -47,7 +47,7 @@ class DictNamespace:
         self._d[k] = v
 
 main_globals = {
-    'screen_w': 1080, 'screen_h': 750, 'screen': pygame.display.set_mode((1080, 750))
+    'screen_w': screen_w, 'screen_h': screen_h, 'screen': screen
 }
 
 # import the importer

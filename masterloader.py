@@ -15,12 +15,11 @@ def superloader():
     start_time = time.time()
 
     # pre defines some variables
-    screen_w = 1080
-    screen_h = 750
-    screen = pygame.display.set_mode((1080, 750))
+    screen_w, screen_h = 1080, 750
+    screen = pygame.display.set_mode((screen_w, screen_h), pygame.HWSURFACE | pygame.DOUBLEBUF)
     main_globals = {}
     main_globals = {
-        'screen_w': 1080, 'screen_h': 750, 'screen': pygame.display.set_mode((1080, 750))
+        'screen_w': screen_w, 'screen_h': screen_h, 'screen': screen
     }
 
     last_context = "preparing"

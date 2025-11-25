@@ -37,16 +37,14 @@ def loader1(main_globals):
 
     # dungeon variables
     main_globals['tilemap'] = [
-        [0, 0, 0, 0, 88, 0, 0, 0, 0, 0], # 0 = void
-        [0, 99, 1, 2, 98, 0, 0, 0, 0, 0], # 1 = empty
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], # 99 = spawn tile
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], # 88 = shop tile
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], # 2 = weapon tile
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], # 3 = enemy tile
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], # 98 = end tile
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 88, 0, 0, 0], # 0 = void
+        [0, 99, 1, 2, 98, 0, 0, 0], # 1 = empty
+        [0, 0, 0, 0, 0, 0, 0, 0], # 99 = spawn tile
+        [0, 0, 0, 0, 0, 0, 0, 0], # 88 = shop tile
+        [0, 0, 0, 0, 0, 0, 0, 0], # 2 = weapon tile
+        [0, 0, 0, 0, 0, 0, 0, 0], # 3 = enemy tile
+        [0, 0, 0, 0, 0, 0, 0, 0], # 98 = end tile
+        [0, 0, 0, 0, 0, 0, 0, 0],
     ]
 
     main_globals['textures_ready'] = False
@@ -219,7 +217,7 @@ def loader1(main_globals):
     main_globals['resolution'] = resolutions[closest_index]
 
     # synced settings - frame cap
-    frame_caps = [1, 10, 15, 20, 25, 30, 40, 60, 75, 120, 67, 61, 41]
+    frame_caps = [1, 10, 15, 20, 25, 30, 40, 60, 75, 120, 67, 61, 41, 175]
     frame_caps.sort()
     main_globals['frame_caps'] = frame_caps
     main_globals['frame_cap'] = main_globals.get('max_fps', 60)
