@@ -18,14 +18,15 @@ def weapons(main_globals):
                     if any(math.isclose(w.x, center_x, abs_tol=1) and math.isclose(w.y, center_y, abs_tol=1) for w in main_globals['weapons_on_map']):
                         continue
 
-                    # pick random weapon
-                    weapon_name = random.randint(0, len(weapon_types) - 1) # remake this with %s
-                    weapon_name = weapon_types[weapon_name]
+                    # pick weapon to spawn
+                    weights = [main_globals['weapon_stats'][w]['chance'] for w in weapon_types]
+                    weapon_name = random.choices(weapon_types, weights=weights, k=1)[0]
                     new_weapon = main_globals['Weapon'](weapon_name)
                     new_weapon.x = center_x
                     new_weapon.y = center_y
                     main_globals['weapons_on_map'].append(new_weapon)
-                    print(f"spawned {weapon_name} on ({row_idx}, {col_idx}), ", end="")
+                    chance = main_globals['weapon_stats'][weapon_name]['chance']
+                    print(f"spawned {weapon_name} on ({row_idx} {col_idx}), with chance {chance*100}%, ", end="")
 
     class Weapon():
         def __init__(self, name):

@@ -206,7 +206,7 @@ def loader1(main_globals):
     resolutions = [
         (1, 1), (50, 50), (200, 200), (420, 800), (1920, 1080), (2560, 1440),
         (3840, 2160), (1280, 720), (1280, 1024), (1600, 900), (1920, 1200),
-        (2560, 1600), (800, 600), (1080, 750), (1024, 2048)
+        (2560, 1600), (800, 600), (1080, 750), (1024, 2048), (670, 410),
     ]
     resolutions.sort()
     main_globals['resolutions'] = resolutions
@@ -219,7 +219,7 @@ def loader1(main_globals):
     main_globals['resolution'] = resolutions[closest_index]
 
     # synced settings - frame cap
-    frame_caps = [1, 10, 15, 20, 25, 30, 40, 60, 75, 120, 67]
+    frame_caps = [1, 10, 15, 20, 25, 30, 40, 60, 75, 120, 67, 61, 41]
     frame_caps.sort()
     main_globals['frame_caps'] = frame_caps
     main_globals['frame_cap'] = main_globals.get('max_fps', 60)

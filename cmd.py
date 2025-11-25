@@ -170,7 +170,7 @@ def cmd(main_globals):
                         print(f"\nstage set to {value}")
 
                 except Exception:
-                    print(f"\nerror: invalid \n>")
+                    print(f"\nerror: invalid")
 
                 main_globals['waiting_for_input'] = None
                 print("> ", end="", flush=True)

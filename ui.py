@@ -13,6 +13,216 @@ def ui(main_globals):
     smallfont = pygame.font.Font("assets/font/editundo.ttf", 22)
     smallerfont = pygame.font.Font("assets/font/editundo.ttf", 16)
 
+    def draw_apply_button(main_globals, x, y, function): # apply the changes to save data
+
+        screen = main_globals['screen']
+        if main_globals['apply_button'] is not pygame.rect.Rect(x, y, 100, 40): # make it with x and y
+            main_globals['apply_button'] = pygame.rect.Rect(x, y, 100, 40)
+
+        pygame.draw.rect(screen, (70, 70, 70), main_globals['apply_button'])
+        text_surf = font.render("Apply", True, (255, 255, 255))
+        text_rect = text_surf.get_rect(center=main_globals['apply_button'].center)
+        screen.blit(text_surf, text_rect)
+
+        if main_globals['apply_button'].collidepoint(main_globals['mouse_pos']) and pygame.mouse.get_pressed()[0]:
+            # apply the change if clicked
+            if function == "resolution": # changes resolution
+                new_res = main_globals['resolutions'][main_globals['resolution_index']]
+                main_globals['resolution'] = new_res
+                main_globals['save'](main_globals, resolution=new_res)
+
+            elif function == "framerate": # changes max fps of real screen
+                new_fps = main_globals['frame_caps'][main_globals['frame_cap_index']]
+                main_globals['max_fps'] = new_fps
+                main_globals['save'](main_globals, max_fps=new_fps)
+
+            elif function == "music": # changes music volume
+                new_volume = main_globals.get('volume_preview', main_globals.get('music_volume', mx.music.get_volume()))
+                main_globals['music_volume'] = new_volume
+                main_globals.pop('volume_preview', None) # reset bar preview
+                mx.music.set_volume(new_volume)
+                main_globals['save'](main_globals, music=new_volume)
+
+    def draw_mode_selection(main_globals, mouse_pos):
+        screen = main_globals['screen']
+        screen.fill((0, 0, 0))
+        dt = main_globals['dt']
+
+        base_size = (200, 50)
+        hover_size = (220, 60)
+        anim_speed = 5.5
+        hover_scale = 1.1 # how much to scale when hovered
+        shrink_scale = 0.9 # scale opposing down
+
+        main_globals.setdefault('mode1_scaled', main_globals['mode1img'])
+        main_globals.setdefault('mode2_scaled', main_globals['mode2img'])
+
+        main_globals.setdefault('mode1_last_size', main_globals['mode1img'].get_size())
+        main_globals.setdefault('mode2_last_size', main_globals['mode2img'].get_size())
+
+        button1 = main_globals['mode1button']
+        button2 = main_globals['mode2button']
+        hover1 = button1.collidepoint(mouse_pos)
+        hover2 = button2.collidepoint(mouse_pos)
+
+        for key, value in [
+            ('mode1_scale', 1.0),
+            ('mode2_scale', 1.0),
+            ('mode1_dim', 150),
+            ('mode2_dim', 150),
+            ('mode1_btn_size', list(base_size)),
+            ('mode2_btn_size', list(base_size))
+        ]:
+            if key not in main_globals:
+                main_globals[key] = value
+
+        if hover1:
+            target_scale1, target_scale2 = hover_scale, shrink_scale
+            target_dim1, target_dim2 = 0, 150
+        elif hover2:
+            target_scale1, target_scale2 = shrink_scale, hover_scale
+            target_dim1, target_dim2 = 150, 0
+        else:
+            target_scale1 = target_scale2 = 1.0
+            target_dim1 = target_dim2 = 150
+
+        main_globals['mode1_scale'] += (target_scale1 - main_globals['mode1_scale']) * anim_speed * dt
+        main_globals['mode2_scale'] += (target_scale2 - main_globals['mode2_scale']) * anim_speed * dt
+        main_globals['mode1_dim'] += (target_dim1 - main_globals['mode1_dim']) * anim_speed * dt
+        main_globals['mode2_dim'] += (target_dim2 - main_globals['mode2_dim']) * anim_speed * dt
+
+        new_size1 = (
+            int(main_globals['mode1img'].get_width() * main_globals['mode1_scale']),
+            int(main_globals['mode1img'].get_height() * main_globals['mode1_scale'])
+        )
+        new_size2 = (
+            int(main_globals['mode2img'].get_width() * main_globals['mode2_scale']),
+            int(main_globals['mode2img'].get_height() * main_globals['mode2_scale'])
+        )
+
+        new_size1 = (max(1, new_size1[0]), max(1, new_size1[1]))
+        new_size2 = (max(1, new_size2[0]), max(1, new_size2[1]))
+
+        if new_size1 != main_globals['mode1_last_size']:
+            main_globals['mode1_scaled'] = pygame.transform.smoothscale(
+                main_globals['mode1img'], new_size1
+            )
+            main_globals['mode1_last_size'] = new_size1
+
+        if new_size2 != main_globals['mode2_last_size']:
+            main_globals['mode2_scaled'] = pygame.transform.smoothscale(
+                main_globals['mode2img'], new_size2
+            )
+            main_globals['mode2_last_size'] = new_size2
+
+        bg1 = main_globals['mode1_scaled']
+        bg2 = main_globals['mode2_scaled']
+
+        bg1_pos = (0, 0)
+        bg2_pos = (screen.get_width() - bg2.get_width(), 0)
+
+        screen.blit(bg1, bg1_pos)
+        if main_globals['mode1_dim'] > 0:
+            dim1 = pygame.Surface(bg1.get_size(), pygame.SRCALPHA)
+            dim1.fill((0, 0, 0, int(main_globals['mode1_dim'])))
+            screen.blit(dim1, bg1_pos)
+
+        screen.blit(bg2, bg2_pos)
+        if main_globals['mode2_dim'] > 0:
+            dim2 = pygame.Surface(bg2.get_size(), pygame.SRCALPHA)
+            dim2.fill((0, 0, 0, int(main_globals['mode2_dim'])))
+            screen.blit(dim2, bg2_pos)
+
+        for key, target in [('mode1_btn_size', hover_size if hover1 else base_size), ('mode2_btn_size', hover_size if hover2 else base_size)]:
+            curr = main_globals[key]
+            curr[0] += (target[0] - curr[0]) * anim_speed * dt
+            curr[1] += (target[1] - curr[1]) * anim_speed * dt
+
+        button1.width, button1.height = map(int, main_globals['mode1_btn_size'])
+        button1.topleft = (screen.get_width() // 4 - base_size[0] // 2, screen.get_height() // 2)
+        color1 = (70, 70, 70) if hover1 else (40, 40, 40)
+        pygame.draw.rect(screen, color1, button1, border_radius=8)
+        text_surf1 = main_globals['font'].render("1", True, (255, 255, 255))
+        screen.blit(text_surf1, text_surf1.get_rect(center=button1.center))
+
+        button2.width, button2.height = map(int, main_globals['mode2_btn_size'])
+        button2.left = screen.get_width() * 3 // 4 - button2.width // 2
+        button2.top = screen.get_height() // 2
+        color2 = (70, 70, 70) if hover2 else (40, 40, 40)
+        pygame.draw.rect(screen, color2, button2, border_radius=8)
+        text_surf2 = main_globals['font'].render("2", True, (255, 255, 255))
+        screen.blit(text_surf2, text_surf2.get_rect(center=button2.center))
+
+        # return
+        to_menu = main_globals['to_menu']
+        to_menu_color = (70, 70, 70) if to_menu.collidepoint(mouse_pos) else (40, 40, 40)
+        pygame.draw.rect(screen, to_menu_color, to_menu)
+        img_rect = main_globals['return_image'].get_rect(center=main_globals['to_menu'].center)
+        screen.blit(main_globals['return_image'], img_rect.topleft)
+
+    def transition_to_dungeon(main_globals, screen):
+
+        if not main_globals.get('transition_active', False):
+            return
+
+        dt = main_globals['dt']
+
+        for key, default in [
+            ('transition_phase', 'in'),
+            ('transition_progress', 0.0),
+            ('transition_hold_timer', 0.0)
+        ]:
+            if key not in main_globals:
+                main_globals[key] = default
+
+        phase = main_globals['transition_phase']
+        speed = main_globals.get('transition_speed', 2.2)
+
+        if phase == "in":
+            main_globals['transition_progress'] += speed * dt
+            if main_globals['transition_progress'] >= 1.0:
+                main_globals['transition_progress'] = 1.0
+                main_globals['transition_phase'] = "hold"
+                main_globals['transition_hold_timer'] = 0.0
+
+        elif phase == "hold":
+            main_globals['transition_hold_timer'] += dt
+            if main_globals['transition_hold_timer'] >= main_globals.get('transition_hold_duration', 0.5):
+                main_globals['transition_phase'] = "out"
+                main_globals['transition_progress'] = 1.0
+
+                selected_mode = main_globals.get('selected_mode')
+                if selected_mode == 1: # send to dungeon
+                    player = main_globals['player']
+                    player.weapons = []
+                    player.respawn()
+                    player.effect("healfull", 0)
+                    main_globals['musicswitcher'](main_globals, 0)
+                    main_globals['game_stage'] = "in dungeon"
+                    mx.music.unpause()
+                elif selected_mode == 2: # send to yo mama hous
+                    pass
+
+        elif phase == "out":
+            main_globals['transition_progress'] -= speed * dt
+            if main_globals['transition_progress'] <= 0.0:
+                main_globals['transition_progress'] = 0.0
+                main_globals['transition_active'] = False
+                main_globals['player'].alive = True
+                main_globals['player'].locked = False
+                main_globals['transition_phase'] = "in" # reset ...for next time
+
+        screen_width, screen_height = screen.get_size()
+        progress = main_globals['transition_progress']
+        side = main_globals.get('transition_side', 'left')
+
+        if side == 'left':
+            rect = pygame.Rect(0, 0, int(screen_width * progress), screen_height)
+        else:
+            rect = pygame.Rect(screen_width - int(screen_width * progress), 0, int(screen_width * progress), screen_height)
+
+        pygame.draw.rect(screen, (0, 0, 0), rect)
+
     def crystal_ui(main_globals):
         screen = main_globals['screen']
         width, height = screen.get_size()

@@ -143,11 +143,13 @@ def enemy(main_globals):
                     ammount = 15
                 main_globals['give_money'](ammount)
 
+                # count stats
                 main_globals['enemies_killed'] += 1
                 if main_globals['most_enemies_killed'] < main_globals['enemies_killed']:
                     main_globals['most_enemies_killed'] = main_globals['enemies_killed']
                     main_globals['save'](main_globals, most_enemies_killed=main_globals['most_enemies_killed'])
 
+                # dropped items
                 if random.random() < 0.9: # *100 in %
                     main_globals['add_to_inventory'](main_globals, "crystal_fragments", 1)
 

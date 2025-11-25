@@ -1,10 +1,18 @@
 # this file is for loading player logic
 
-import random
-from pygame import mixer as mx
-import pygame
+try:
+    import random, pygame, types
+    from pygame import mixer as mx
+except ImportError as e:
+    print(f"missing module{e}")
 
 def player(main_globals):
+
+    font = pygame.font.Font("assets/font/editundo.ttf", 24)
+    bigfont = pygame.font.Font("assets/font/editundo.ttf", 48)
+    setting_font = credits_font = pygame.font.Font("assets/font/editundo.ttf", 28)
+    smallfont = pygame.font.Font("assets/font/editundo.ttf", 22)
+    smallerfont = pygame.font.Font("assets/font/editundo.ttf", 16)
 
     class Player:
         def __init__(self, main_globals, x, y):
@@ -139,9 +147,68 @@ def player(main_globals):
             if len(self.weapons) != 0:
                 self.weapons[0].attack(self, main_globals)
 
+    def player_gif(main_globals): # makes the player gif to frames
+        frames = []
+        player_gif = main_globals['playergif']
+        try:
+            while True:
+                frame = player_gif.convert("RGBA")
+                mode = frame.mode
+                size = frame.size
+                data = frame.tobytes()
+                py_image = pygame.image.fromstring(data, size, mode).convert_alpha()
+                frames.append(py_image)
+                player_gif.seek(player_gif.tell() + 1)
+        except EOFError:
+            pass
+        main_globals['frames'] = frames
+
+    def give_money(amount): # some indicator for getting rich 🤑
+        if main_globals['money_texts']:
+            existing = main_globals['money_texts'][0]
+            existing['amount'] += amount
+            existing['text'] = font.render("+" + str(existing['amount']), True, (255, 255, 0))
+            existing['timer'] = 3.0 # reset timer
+        else:
+            main_globals['money_texts'] = [{
+                'amount': amount,
+                'text': font.render("+" + str(amount), True, (255, 255, 0)),
+                'timer': 3.0
+            }]
+
+    def add_to_inventory(main_globals, item_name, amount=1): # bottom right text to show what you got
+        player = main_globals['player']
+        inventory = player.inventory
+        inventory[item_name] = inventory.get(item_name, 0) + amount
+        img_size = 42
+
+        img = main_globals['items'][item_name]['image']
+        img = pygame.transform.scale(img, (img_size, img_size))
+
+        font = pygame.font.Font(None, 30)
+        text = font.render(f"+{amount}", True, (200, 200, 200))
+
+        for existing in main_globals['inventory_texts']:
+            if existing.get('item_name') == item_name:
+                existing['timer'] = 3.0
+                existing['amount'] += amount
+                existing['text'] = font.render(f"+{existing['amount']}", True, (200, 200, 200))
+                return
+
+        main_globals['inventory_texts'].append({
+            'item_name': item_name,
+            'image': img,
+            'text': text,
+            'timer': 3.0,
+            'amount': amount
+        })
+
     player = Player(main_globals, main_globals['spawn_x'], main_globals['spawn_y'])
 
     main_globals['player'] = player
-    main_globals['Player'] = Player
+
+    for name, obj in locals().items():
+        if isinstance(obj, (types.FunctionType, type)):
+            main_globals[name] = obj
 
     print("player, " , end = "")

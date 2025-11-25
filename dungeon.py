@@ -1,6 +1,6 @@
 # this file is for loading the dungeon
 try:
-    import pygame, random, math, types
+    import pygame, random, math, types, threading
     from pygame import mixer as mx
 except ImportError as e:
     print(f"missing module{e}")
@@ -553,6 +553,130 @@ def dungeon(main_globals):
         offset_x = tile_x * (tile_size + main_globals['tile_offset']) + tile_size // 2 - main_globals['screen'].get_width() // 2
         offset_y = tile_y * (tile_size + main_globals['tile_offset']) + tile_size // 2 - main_globals['screen'].get_height() // 2
         return offset_x, offset_y
+
+    def tile_texturer(main_globals, mask, store_key='textured_tiles'):
+        texture = main_globals['tile_texture']
+        main_globals['textures_ready'] = False
+        tex_w, tex_h = texture.get_size()
+        map_w, map_h = mask.get_size()
+
+        # map sized surface
+        texture_surface = pygame.Surface((map_w, map_h), pygame.SRCALPHA)
+
+        # progress
+        main_globals['texturing_progress'] = {'rows_done': 0, 'total_rows': map_h}
+
+        for y in range(0, map_h, tex_h):
+            for x in range(0, map_w, tex_w):
+                texture_surface.blit(texture, (x, y))
+            main_globals['texturing_progress']['rows_done'] = y + tex_h
+
+        # green to white
+        mask_array = pygame.surfarray.pixels3d(mask) # get array
+        mask_copy = mask.copy()
+        mask_copy_array = pygame.surfarray.pixels3d(mask_copy)
+        green_mask = mask_array[:, :, 1] > 0 # all pixels with green
+        mask_copy_array[:, :, 0][green_mask] = 255 # r
+        mask_copy_array[:, :, 1][green_mask] = 255 # g
+        mask_copy_array[:, :, 2][green_mask] = 255 # b
+        del mask_array, mask_copy_array
+
+        # apply
+        texture_surface.blit(mask_copy, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
+        main_globals[store_key] = texture_surface
+
+        main_globals['textures_ready'] = True
+
+        # remove progress
+        if 'texturing_progress' in main_globals:
+            del main_globals['texturing_progress']
+
+    def tt_thread(main_globals, mask, store_key='textured_tiles'):
+        thread = threading.Thread(target=main_globals['tile_texturer'], args=(main_globals, mask, store_key))
+        thread.start()
+        return thread
+
+    def draw_texturing_progress(main_globals):
+        if 'texturing_progress' in main_globals:
+            screen = main_globals['screen']
+            progress = main_globals['texturing_progress']
+            total = progress['total_rows']
+            done = progress['rows_done']
+            screen_w, screen_h = screen.get_size()
+
+            bar_width = int(screen_w * done / total)
+            pygame.draw.rect(screen, (0, 255, 0), (0, screen_h - 20, bar_width, 20))
+            pygame.draw.rect(screen, (255, 255, 255), (0, screen_h - 20, screen_w, 20), 2)
+            pygame.display.flip()
+
+    def draw_tiles(main_globals):
+        screen = main_globals['screen']
+        camera_x = int(main_globals['camera_x'])
+        camera_y = int(main_globals['camera_y'])
+        screen_w, screen_h = screen.get_size()
+        texture = main_globals['textured_tiles'] if main_globals['player'].locked == False else main_globals['locked_textured_tiles']
+
+        screen.blit(texture, (0, 0), pygame.Rect(camera_x, camera_y, screen_w, screen_h))
+
+    def make_initial_walkable_surface(tilemap, main_globals, bridging=True, counter=0): # make the initial walkable mask as its own surface
+        ts = main_globals['tile_size'] + main_globals['tile_offset']
+        tile_size = main_globals['tile_size']
+        mask = pygame.Surface((len(tilemap[0]) * ts, len(tilemap) * ts))
+        mask.fill((0, 0, 0)) # black is not walkable
+
+        bridge_fraction = 0.25 # *100 in % of tile size
+        bridge_size = int(tile_size * bridge_fraction)
+
+        for row_idx, row in enumerate(tilemap):
+            for col_idx, tile_type in enumerate(row):
+                if tile_type in main_globals['walkable_tiles']:
+                    tx = col_idx * ts
+                    ty = row_idx * ts
+                    # draw main tile in mask
+                    pygame.draw.rect(mask, (0, 255, 0), (tx, ty, tile_size, tile_size))
+
+                    if bridging == True: # for enabling bridges/pathing between tiles
+                        # horizontal bridge
+                        if col_idx + 1 < len(row) and tilemap[row_idx][col_idx + 1] in main_globals['walkable_tiles']:
+                            pygame.draw.rect(mask, (0, 255, 0), (tx + tile_size, ty + tile_size//2 - bridge_size//2,bridge_size, bridge_size))
+
+                        # vertical bridge
+                        if row_idx + 1 < len(tilemap) and tilemap[row_idx + 1][col_idx] in main_globals['walkable_tiles']:
+                            pygame.draw.rect(mask, (0, 255, 0), (tx + tile_size//2 - bridge_size//2, ty + tile_size, bridge_size, bridge_size))
+
+        main_globals['spawn_weapons'](main_globals)
+        if counter == 0:
+            # cba to make a seperate mask so calls itself with a counter for looping
+            main_globals['locked_mask'] = main_globals['make_initial_walkable_surface'](tilemap, main_globals, False, counter + 1)
+            print(f"previous active tiles: {main_globals['active_tiles']}")
+            thread_reg = main_globals['tt_thread'](main_globals, mask)
+            thread_lock = main_globals['tt_thread'](main_globals, main_globals['locked_mask'], 'locked_textured_tiles')
+        main_globals['active_tiles'] = []
+        return mask
+
+    def rebuild_walkable_mask(main_globals): # rebuilds the mask if something changed
+
+        print("rebuilding walkable mask")
+        tilemap = main_globals['tilemap']
+        ts = main_globals['tile_size'] + main_globals['tile_offset']
+        mask_width = len(tilemap[0]) * ts
+        mask_height = len(tilemap) * ts
+
+        new_mask = pygame.Surface((mask_width, mask_height))
+        new_mask.fill((0, 0, 0)) # clear mask
+
+        main_globals['walkable_mask'] = new_mask
+
+        # remake the mask
+        main_globals['walkable_mask'] = main_globals['make_initial_walkable_surface'](tilemap, main_globals)
+
+    def is_on_active_tile(main_globals, x, y): # is something on a tile the player walked on?
+        ts = main_globals['tile_size'] + main_globals['tile_offset']
+        tile_x = (x + main_globals['player_size'] // 2) // ts
+        tile_y = (y + main_globals['player_size'] // 2) // ts
+        tile = (tile_x, tile_y)
+
+        return tile in main_globals['active_tiles']
 
     # define functions and classes into main globals
     for name, obj in locals().items():
