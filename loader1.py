@@ -37,15 +37,16 @@ def loader1(main_globals):
 
     # dungeon variables
     main_globals['tilemap'] = [
-        [0, 0, 0, 0, 88, 0, 0, 0], # 0 = void
-        [0, 99, 1, 2, 98, 0, 0, 0], # 1 = empty
-        [0, 0, 0, 0, 0, 0, 0, 0], # 99 = spawn tile
+        [0, 0, 0, 0, 0, 0, 0, 0], # 0 = void
+        [99, 2, 1, 3, 88, 0, 0, 0], # 1 = empty
+        [0, 0, 0, 0, 98, 0, 0, 0], # 99 = spawn tile
         [0, 0, 0, 0, 0, 0, 0, 0], # 88 = shop tile
         [0, 0, 0, 0, 0, 0, 0, 0], # 2 = weapon tile
         [0, 0, 0, 0, 0, 0, 0, 0], # 3 = enemy tile
         [0, 0, 0, 0, 0, 0, 0, 0], # 98 = end tile
         [0, 0, 0, 0, 0, 0, 0, 0],
     ]
+    main_globals['tutorial_floor'] = True
 
     main_globals['textures_ready'] = False
     main_globals['walkable_tiles'] = [1, 2, 3, 4, 99, 88, 98]

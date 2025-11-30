@@ -282,3 +282,14 @@ tile images are now texture
 optimise textures a little more
 fix draw tiles that was diagnosed with a case of low fps with replacing the rects with surface
 change how floors are built (almost)
+
+# 30 11
+wait for rdm...
+rdm never do some...
+do some
+the change on floors was actually good enough
+draw some text on first floor
+change loading of floors a little (visual)
+added something to cmd
+
+# 

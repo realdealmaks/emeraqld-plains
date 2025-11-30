@@ -643,7 +643,7 @@ def ui(main_globals):
         base_y = image_y + start_y_offset
 
         stats = {
-            "Health": main_globals['player'].health,
+            "Health": f"{main_globals['player'].health}/{main_globals['player'].max_hp}",
             "Wealth": main_globals['player'].wealth,
             "Enemies killed": main_globals['enemies_killed'],
             "Floor": main_globals['current_floor']

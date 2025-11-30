@@ -17,6 +17,62 @@ def loader3(main_globals):
     smallfont = pygame.font.Font("assets/font/editundo.ttf", 22)
     smallerfont = pygame.font.Font("assets/font/editundo.ttf", 16)
 
+    def tutorial_text(main_globals):
+        screen = main_globals['screen']
+        tilemap = main_globals['tilemap']
+        ts = main_globals['tile_size'] + main_globals['tile_offset']
+        player = main_globals['player']
+        font = main_globals['font']
+
+        # player tile
+        player_tile = (
+            (player.y + main_globals['player_size'] // 2) // ts,
+            (player.x + main_globals['player_size'] // 2) // ts
+        )
+
+        camera_x = int(main_globals['camera_x'])
+        camera_y = int(main_globals['camera_y'])
+
+        # what happens when player on tile
+        for row_idx, row in enumerate(tilemap):
+            for col_idx, tile in enumerate(row):
+                if tile == 1:
+                    if (row_idx, col_idx) == player_tile:
+                        text_surface = font.render("move along", True, (255, 255, 255))
+                        draw_x = col_idx * ts - camera_x
+                        draw_y = row_idx * ts - camera_y
+                        screen.blit(text_surface, (draw_x, draw_y))
+                if tile == 2:
+                    if (row_idx, col_idx) == player_tile:
+                        text_surface = font.render("take it", True, (255, 255, 255))
+                        draw_x = col_idx * ts - camera_x
+                        draw_y = row_idx * ts - camera_y
+                        screen.blit(text_surface, (draw_x, draw_y))
+                if tile == 99:
+                    if (row_idx, col_idx) == player_tile:
+                        text_surface = font.render("press esc", True, (255, 255, 255))
+                        draw_x = col_idx * ts - camera_x
+                        draw_y = row_idx * ts - camera_y
+                        screen.blit(text_surface, (draw_x, draw_y))
+                if tile == 88:
+                    if (row_idx, col_idx) == player_tile:
+                        text_surface = font.render("rdm get to work", True, (255, 255, 255))
+                        draw_x = col_idx * ts - camera_x
+                        draw_y = row_idx * ts - camera_y
+                        screen.blit(text_surface, (draw_x, draw_y))
+                if tile == 3:
+                    if (row_idx, col_idx) == player_tile:
+                        text_surface = font.render("beat bobbers", True, (255, 255, 255))
+                        draw_x = col_idx * ts - camera_x
+                        draw_y = row_idx * ts - camera_y
+                        screen.blit(text_surface, (draw_x, draw_y))
+                if tile == 98:
+                    if (row_idx, col_idx) == player_tile:
+                        text_surface = font.render("make new floor", True, (255, 255, 255))
+                        draw_x = col_idx * ts - camera_x
+                        draw_y = row_idx * ts - camera_y
+                        screen.blit(text_surface, (draw_x, draw_y))
+
     def use_crystal(main_globals):
         player = main_globals['player']
         if player.inventory.get('crystal', 0) >= 1:

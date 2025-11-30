@@ -1,7 +1,7 @@
 # for the in game terminal
 
 try:
-    import pygame
+    import pygame, difflib
 except ModuleNotFoundError as e:
     print(f"you are missing module {e.name} man")
 
@@ -26,6 +26,7 @@ def cmd(main_globals):
         main_globals['rebuild_walkable_mask'](main_globals)
         main_globals['active_tiles'] = []
         main_globals['current_floor'] = 0
+        main_globals['tutorial_floor'] = True
 
     def shell(main_globals, event):
         sections = {
@@ -35,6 +36,7 @@ def cmd(main_globals):
                 "health": "amount",
                 "stage": "stage name",
                 "inventory": "add/remove, item name+amount",
+                "search": "search a value/entry in game"
             },
             "regular commands": {
                 "rebuild": "rebuild floor",
@@ -169,6 +171,69 @@ def cmd(main_globals):
                         main_globals['game_stage'] = value
                         print(f"\nstage set to {value}")
 
+                    elif waiting == "search":
+                        query = value.lower()
+                        matches = []
+                        stack = [(main_globals, "", 0)] # search depth
+                        max_depth = 8 # how deep it can go
+                        matches_count = 6 # how many results it prints
+
+                        while stack:
+                            current, prefix, depth = stack.pop()
+                            if depth > max_depth:
+                                continue
+
+                            # dict
+                            if isinstance(current, dict):
+                                for k, v in current.items():
+                                    new_prefix = f"{prefix}.{k}" if prefix else k
+                                    stack.append((v, new_prefix, depth + 1))
+
+                            # list or tuple
+                            elif isinstance(current, (list, tuple)):
+                                for idx, v in enumerate(current):
+                                    new_prefix = f"{prefix}[{idx}]" if prefix else f"[{idx}]"
+                                    stack.append((v, new_prefix, depth + 1))
+
+                            # skip modules
+                            elif hasattr(current, "__dict__") and type(current).__module__ != "builtins":
+                                try:
+                                    for k, v in vars(current).items():
+                                        new_prefix = f"{prefix}.{k}" if prefix else k
+                                        stack.append((v, new_prefix, depth + 1))
+                                except Exception:
+                                    matches.append((prefix, current))
+
+                            # values
+                            else:
+                                matches.append((prefix, current))
+
+                        # score by similarity to search
+                        scored = []
+                        for path, val in matches:
+                            ratio = difflib.SequenceMatcher(None, query, path.lower()).ratio()
+                            scored.append((ratio, path, val))
+
+                        scored.sort(reverse=True, key=lambda x: x[0])
+                        top = scored[:matches_count]
+
+                        print("\nmatches:")
+                        for score, path, val in top:
+                            if callable(val):
+                                display_val = "<function>"
+                            elif isinstance(val, (list, tuple, dict)):
+                                display_val = repr(val)
+                            elif hasattr(val, "__dict__") and type(val).__module__ != "builtins":
+                                try:
+                                    display_val = repr(vars(val))
+                                except Exception:
+                                    display_val = repr(val)
+                            else:
+                                display_val = repr(val)
+                            print(f"  {path}: {display_val}")
+
+                        main_globals['waiting_for_input'] = None
+
                 except Exception:
                     print(f"\nerror: invalid")
 
@@ -197,7 +262,8 @@ def cmd(main_globals):
                     "weapon": " >> name: ",
                     "money": " >> amount: ",
                     "health": " >> amount: ",
-                    "stage": " >> stage name: "
+                    "stage": " >> stage name: ",
+                    "search": " >> name: ",
                 }[cmd_lower]
                 print(prompt, end="", flush=True)
 
@@ -226,6 +292,10 @@ def cmd(main_globals):
                 main_globals['waiting_for_input'] = "inventory_action"
                 main_globals['current_tab'] = "inventory"
                 print(" >> add/remove: ", end="", flush=True)
+
+            elif cmd_lower == "search":
+                main_globals['waiting_for_input'] = "search"
+                print(" >> name/value to search: ", end="", flush=True)
 
             # invalid command
             else:

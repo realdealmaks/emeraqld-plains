@@ -1,6 +1,6 @@
 # this file is for loading the dungeon
 try:
-    import pygame, random, math, types, threading
+    import pygame, random, math, types, threading, time
     from pygame import mixer as mx
 except ImportError as e:
     print(f"missing module{e}")
@@ -419,6 +419,9 @@ def dungeon(main_globals):
             player.move(dx, dy)
             main_globals['draw_hud'](main_globals, player)
 
+            if main_globals['tutorial_floor']:
+                main_globals['tutorial_text'](main_globals)
+
         else: # if paused
             main_globals['pause_menu'](main_globals)
 
@@ -433,98 +436,9 @@ def dungeon(main_globals):
         min_distance = 5 # minimum distance between start and end
         min_straight = 1 # minimum distance before turning again
         tile_choices = [1, 2, 3] # tiles the path can be filled with
-        tile_probs = [0.5, 0.1, 0.4] # in order of ^ # *100 in %
+        tile_probs = [0.6, 0.1, 0.3] # in order of ^ # *100 in %
 
-        # pick start and end far enough apart
-        while True:
-            start_r = random.randint(0, rows - 1)
-            start_c = random.randint(0, cols - 1)
-            end_r = random.randint(0, rows - 1)
-            end_c = random.randint(0, cols - 1)
-            distance = abs(start_r - end_r) + abs(start_c - end_c)
-            if distance >= min_distance:
-                break
-
-        # mark start and end
-        main_globals['update_tile'](main_globals, start_c, start_r, 99)
-        main_globals['update_tile'](main_globals, end_c, end_r, 98)
-
-        # r = hoRizontal c = vertiCal
-        current_r, current_c = start_r, start_c
-        current_dir = 'r' if random.random() < 0.5 else 'c'
-        straight_count = 0
-
-        path_tiles = [] # tiles between start and end
-
-        while (current_r, current_c) != (end_r, end_c):
-            dr = end_r - current_r
-            dc = end_c - current_c
-
-            can_turn = straight_count >= min_straight
-            if current_dir == 'r' and dc != 0:
-                step = 1 if dc > 0 else -1
-                current_c += step
-                straight_count += 1
-            elif current_dir == 'c' and dr != 0:
-                step = 1 if dr > 0 else -1
-                current_r += step
-                straight_count += 1
-            elif can_turn:
-                if current_dir == 'r' and dr != 0:
-                    step = 1 if dr > 0 else -1
-                    current_r += step
-                    current_dir = 'c'
-                    straight_count = 1
-                elif current_dir == 'c' and dc != 0:
-                    step = 1 if dc > 0 else -1
-                    current_c += step
-                    current_dir = 'r'
-                    straight_count = 1
-            else:
-                if current_dir == 'r' and dc == 0 and dr != 0:
-                    step = 1 if dr > 0 else -1
-                    current_r += step
-                    current_dir = 'c'
-                    straight_count = 1
-                elif current_dir == 'c' and dr == 0 and dc != 0:
-                    step = 1 if dc > 0 else -1
-                    current_c += step
-                    current_dir = 'r'
-                    straight_count = 1
-
-            # make tile in the path a random one
-            if tilemap[current_r][current_c] not in (99, 98):
-                tile_value = random.choices(tile_choices, weights=tile_probs)[0]
-                path_tiles.append((current_r, current_c, tile_value))
-
-        # force at least 1 tile 2 or 3
-        if not any(tile[2] in (2, 3) for tile in path_tiles):
-            idx = random.randint(0, len(path_tiles) - 1)
-            r, c, _ = path_tiles[idx]
-            path_tiles[idx] = (r, c, random.choice([2, 3]))
-
-        # update tilemap
-        for r, c, val in path_tiles:
-            main_globals['update_tile'](main_globals, c, r, val)
-
-        print("new tilemap is:")
-        main_globals['current_floor'] += 1 # save floors
-        if main_globals['current_floor'] > main_globals['best_floor']:
-            main_globals['best_floor'] = main_globals['current_floor']
-            main_globals['save'](main_globals, best_floor=main_globals['best_floor'])
-        for i in range(len(main_globals['tilemap'])):
-            print(main_globals['tilemap'][i])
-        main_globals['rebuild_walkable_mask'](main_globals)
-
-    """ IN PROGRESS ⚠️⚠️
-    def remake_floor(): # remakes the floor
-        tilemap = main_globals['tilemap']
-        rows = len(tilemap)
-        cols = len(tilemap[0])
-        min_distance = 5 # minimum distance between start and end
-        min_straight = 1 # minimum distance before turning again
-        tile_choices = [1, 2, 3] # tiles the path can be filled with
-        tile_probs = [0.5, 0.1, 0.4] # in order of ^ # *100 in %
+        main_globals['tutorial_floor'] = False # dont show tutorial text
 
         # pick start and end far enough apart
         while True:
@@ -656,12 +570,14 @@ def dungeon(main_globals):
                     branch_dir = 'c' if branch_dir == 'r' else 'r'
                     straight_count = 0
 
-
         # force at least 1 tile 2 or 3
         if not any(tile[2] in (2, 3) for tile in path_tiles):
             idx = random.randint(0, len(path_tiles) - 1)
             r, c, _ = path_tiles[idx]
             path_tiles[idx] = (r, c, random.choice([2, 3]))
+
+        # ts shit gets overwritten
+        main_globals['update_tile'](main_globals, end_c, end_r, 98)
 
         # update tilemap
         for r, c, val in path_tiles:
@@ -675,7 +591,6 @@ def dungeon(main_globals):
         for i in range(len(main_globals['tilemap'])):
             print(main_globals['tilemap'][i])
         main_globals['rebuild_walkable_mask'](main_globals)
-    """
 
     def update_tile(main_globals, col_idx, row_idx, new_tile_type): # updates a specific tile
         # ex. update_tilemap(main_globals, 0, 0, 99)
@@ -748,12 +663,15 @@ def dungeon(main_globals):
         if 'texturing_progress' in main_globals:
             del main_globals['texturing_progress']
 
-    def tt_thread(main_globals, mask, store_key='textured_tiles'):
+    def tt_thread(main_globals, mask, store_key='textured_tiles'): # tile texturers thread
         thread = threading.Thread(target=main_globals['tile_texturer'], args=(main_globals, mask, store_key))
         thread.start()
         return thread
 
     def draw_texturing_progress(main_globals):
+        screen = main_globals['screen']
+        screen.fill((0, 0, 0))
+        font = pygame.font.Font("assets/font/editundo.ttf", 20) # between small and smaller font
         if 'texturing_progress' in main_globals:
             screen = main_globals['screen']
             progress = main_globals['texturing_progress']
@@ -761,9 +679,35 @@ def dungeon(main_globals):
             done = progress['rows_done']
             screen_w, screen_h = screen.get_size()
 
-            bar_width = int(screen_w * done / total)
-            pygame.draw.rect(screen, (0, 255, 0), (0, screen_h - 20, bar_width, 20))
-            pygame.draw.rect(screen, (255, 255, 255), (0, screen_h - 20, screen_w, 20), 2)
+            if 'current_bar_width' not in progress:
+                progress['current_bar_width'] = 0
+                progress['start_time'] = time.time()
+
+            target_width = int(screen_w * done / total)
+            progress['current_bar_width'] += (target_width - progress['current_bar_width']) * 0.1
+            bar_width = int(progress['current_bar_width'])
+
+            # draw bar
+            bar_height = 20
+            bar_y = screen_h - bar_height
+            pygame.draw.rect(screen, (0, 255, 0), (0, bar_y, bar_width, bar_height))
+            pygame.draw.rect(screen, (0, 0, 0), (0, bar_y, screen_w, bar_height), 2)
+
+            # % done
+            percent = int(done / total * 100)
+            if percent > 100: # it goes to 103 btw
+                percent = 100
+            percent_text = font.render(f"{percent}%", True, (255, 255, 255))
+            percent_rect = percent_text.get_rect(center=(screen_w // 2, bar_y - 10))
+            screen.blit(percent_text, percent_rect)
+
+            # time left
+            elapsed = time.time() - progress['start_time']
+            if done > 0:
+                time_left = elapsed / done * (total - done)
+                approx_text = font.render(f"{int(time_left)} seconds left", True, (255, 255, 255))
+                screen.blit(approx_text, (5, percent_rect.y))
+
             pygame.display.flip()
 
     def draw_tiles(main_globals):
@@ -775,14 +719,20 @@ def dungeon(main_globals):
         # locked or unlocked player
         texture = main_globals['textured_tiles'] if not main_globals['player'].locked else main_globals['locked_textured_tiles']
 
-        # make surface
-        texture_rect = texture.get_rect()
-        view_rect = pygame.Rect(camera_x, camera_y, screen_w, screen_h)
+        tex_w, tex_h = texture.get_size()
 
-        # clamp so it doesnt go out of bounds
-        view_rect.clamp_ip(texture_rect)
+        # clamp camera to bounds
+        cam_x = max(0, min(camera_x, tex_w - screen_w))
+        cam_y = max(0, min(camera_y, tex_h - screen_h))
 
-        screen.blit(texture.subsurface(view_rect), (0, 0))
+        # how much the camera was clamped
+        offset_x = camera_x - cam_x
+        offset_y = camera_y - cam_y
+
+        subsurf = texture.subsurface((cam_x, cam_y, min(screen_w, tex_w), min(screen_h, tex_h)))
+
+        # blit what you can see
+        screen.blit(subsurf, (-offset_x, -offset_y))
 
     def make_initial_walkable_surface(tilemap, main_globals, bridging=True, counter=0): # make the initial walkable mask as its own surface
         ts = main_globals['tile_size'] + main_globals['tile_offset']
