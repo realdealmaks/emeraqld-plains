@@ -41,6 +41,12 @@ def enemy(main_globals):
                 self.is_staggered = True
                 self.stagger_end_time = pygame.time.get_ticks() + self.stagger_duration
 
+                main_globals['damages_takens'].append({ # show damage dealt
+                    'enemy_ref': self, # refrence
+                    'value': str(int(damage)),
+                    'timer': 1.0, # seconds
+                })
+
         def detect(self, player):
 
             if not main_globals['is_on_active_tile'](self.main_globals, self.x, self.y):

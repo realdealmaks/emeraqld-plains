@@ -166,8 +166,10 @@ def loader2(main_globals):
     }
 
     # special weapons attack image
+    katana_attack = pygame.image.load("assets/useful images/katanaslash.png").convert_alpha()
+
     main_globals['special_attack_images'] = {
-        "katana": main_globals['slash_image']
+        "katana": katana_attack
     }
 
     damage_mult = main_globals['damage_mult']

@@ -109,9 +109,9 @@ def weapons(main_globals):
             if type == "katana":
 
                 # stats
-                expiry = 100 # ms each attack is visible
+                expiry = 110 # ms each attack is visible
                 hits = 2 # how many attacks after the first
-                delay = 250 # ms between attacks
+                delay = 180 # ms between attacks
                 effect = None # special effect
 
                 attack_image = main_globals['special_attack_images'][type]

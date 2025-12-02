@@ -121,6 +121,7 @@ def loader1(main_globals):
     main_globals['enemy_list'] = [] # enemies in the current map
     main_globals['enemy_spawn_x'] = 0
     main_globals['enemy_spawn_y'] = 0
+    main_globals['damages_takens'] = []
 
     # menu variables
     main_globals['menu_bg_x'] = main_globals['screen_w']

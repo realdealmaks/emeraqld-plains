@@ -6,6 +6,7 @@ except ImportError as e:
     print(f"missing module{e}")
 
 def dungeon(main_globals):
+    smallfont = pygame.font.Font("assets/font/editundo.ttf", 22)
 
     def draw_dungeon(main_globals, player, is_paused, facing_left):
         screen = main_globals['screen']
@@ -52,7 +53,7 @@ def dungeon(main_globals):
         for row_idx, row in enumerate(main_globals['tilemap']):
             for col_idx, tile_type in enumerate(row):
 
-                if tile_type == 99: # makes player spawn here, its a spawn tile obviously
+                if tile_type == 99: # makes player spawn here
                     if main_globals['spawn_set'] == False:
                         ts = main_globals['tile_size'] + main_globals['tile_offset']
                         main_globals['spawn_x'] = col_idx * ts + (main_globals['tile_size'] - player_size) // 2
@@ -155,6 +156,10 @@ def dungeon(main_globals):
         # enemy groups
         for group in main_globals['enemy_groups']:
 
+            gx, gy = group['tile_pos']
+            if (gy, gx) not in main_globals['active_tiles']: # skip if not in active tile
+                continue
+
             # check if ANY enemy in the group detects the player
             group_should_activate = False
             for enemy in group['enemies']:
@@ -190,9 +195,19 @@ def dungeon(main_globals):
                     print(f"group at {group['tile_pos']} cleared, ", end="")
                     player.locked = False # unlock player once group is cleared
 
-        # draw bob
-        for enemy in enemy_list:
-            enemy.draw(enemy.type)
+        # check if slash hits enemy
+        if 'active_slashes' in main_globals and main_globals['active_slashes']:
+            active_slashes = main_globals['active_slashes']
+            for enemy in enemy_list:
+                if not enemy.alive: # skip if dead
+                    continue
+                for slash in active_slashes: # check if slash hits enemy ( for real ts time )
+                    if pygame.Rect.colliderect(enemy.rect, slash['rect']):
+                        if enemy not in slash['hit_enemies']:
+                            current_weapon = player.weapons
+                            damage = main_globals['weapon_stats'][current_weapon[0].name]['damage'] # or use weapon damage eh? # YES YES I KNOW!!
+                            enemy.damaged(damage)
+                            slash['hit_enemies'].add(enemy) # add to list that the slash hit ( so it doesnt spam )
 
         # draw slashes
         if 'active_slashes' in main_globals:
@@ -208,19 +223,9 @@ def dungeon(main_globals):
         if main_globals['facing_left']:
             player_frame = pygame.transform.flip(player_frame, True, False)
 
-        # check if slash hits enemy
-        if 'active_slashes' in main_globals and main_globals['active_slashes']:
-            active_slashes = main_globals['active_slashes']
-            for enemy in enemy_list:
-                if not enemy.alive: # skip if dead
-                    continue
-                for slash in active_slashes: # check if slash hits enemy ( for real ts time )
-                    if pygame.Rect.colliderect(enemy.rect, slash['rect']):
-                        if enemy not in slash['hit_enemies']:
-                            current_weapon = player.weapons
-                            damage = main_globals['weapon_stats'][current_weapon[0].name]['damage'] # or use weapon damage eh? # YES YES I KNOW!!
-                            enemy.damaged(damage)
-                            slash['hit_enemies'].add(enemy) # add to list that the slash hit ( so it doesnt spam )
+        # draw bob
+        for enemy in enemy_list:
+            enemy.draw(enemy.type)
 
         # draw special attacks
         if 'active_special_attacks' in main_globals or 'active_special_children' in main_globals:
@@ -286,7 +291,6 @@ def dungeon(main_globals):
                             damage = main_globals['weapon_stats'][current_weapon[0].name]['damage']
                             enemy.damaged(damage)
                             attack['hit_enemies'].add(enemy)
-                            print("hit, ", end="")
 
         # change player orientation? is it orientation? just change the way he is looking
         offset_x = (player_size * 3 - player_size) // 2
@@ -404,6 +408,37 @@ def dungeon(main_globals):
                 item['timer'] -= main_globals['dt']
                 if item['timer'] <= 0:
                     main_globals['inventory_texts'].remove(item)
+
+            # draw damage numbers (enemy)
+            new_damages = []
+
+            for dmg in main_globals['damages_takens']:
+                enemy_ref = dmg['enemy_ref']
+
+                if enemy_ref.alive:
+                    x = enemy_ref.x - main_globals['camera_x']
+                    y = enemy_ref.y - main_globals['camera_y'] - 20 # 20 px above
+
+                    # rise
+                    lifetime = dmg.get('lifetime', 1.0) # seconds to expire
+                    dmg.setdefault('lifetime', lifetime)
+                    progress = 1.0 - dmg['timer'] / lifetime
+                    y -= progress * 30 # rise 30 px
+
+                    # fade
+                    alpha = max(0, min(255, int((dmg['timer'] / lifetime) * 255)))
+
+                    # text
+                    text_surface = smallfont.render(dmg['value'], True, (255, 40, 40))
+                    text_surface.set_alpha(alpha)
+                    main_globals['screen'].blit(text_surface, (x, y))
+
+                # decrease timer
+                dmg['timer'] -= main_globals['dt']
+                if dmg['timer'] > 0:
+                    new_damages.append(dmg)
+
+            main_globals['damages_takens'] = new_damages
 
             main_globals['draw_vignette'](main_globals, player)
             mx.music.unpause()
@@ -631,10 +666,10 @@ def dungeon(main_globals):
     def tile_texturer(main_globals, mask, store_key='textured_tiles'):
         texture = main_globals['tile_texture']
         main_globals['textures_ready'] = False
-        tex_w, tex_h = texture.get_size()
-        map_w, map_h = mask.get_size()
+        tex_w, tex_h = texture.get_size() # texture image size
+        map_w, map_h = mask.get_size() # map size
+        ts = main_globals['tile_size'] + main_globals['tile_offset']
 
-        # map sized surface
         texture_surface = pygame.Surface((map_w, map_h), pygame.SRCALPHA)
 
         # progress
@@ -646,13 +681,34 @@ def dungeon(main_globals):
             main_globals['texturing_progress']['rows_done'] = y + tex_h
 
         mask_array = pygame.surfarray.pixels3d(mask).copy()
-        green_mask = mask_array[:, :, 1] > 0 # get green
-        mask_array[green_mask] = [255, 255, 255] # set to white
         mask_copy = mask.copy()
-        pygame.surfarray.blit_array(mask_copy, mask_array)
+
+        # check tilemap
+        tilemap = main_globals['tilemap']
+        for row_index, row in enumerate(tilemap):
+            for col_index, tile in enumerate(row):
+                if tile == 0:
+                    continue  # skip empty tile
+
+                x0 = col_index * ts
+                y0 = row_index * ts
+                x1 = min(x0 + ts, map_w)
+                y1 = min(y0 + ts, map_h)
+
+                if x1 <= x0 or y1 <= y0:
+                    continue
+
+                tile_region = mask_array[x0:x1, y0:y1]
+
+                green_mask = tile_region[:, :, 1] > 0 # get green
+                tile_region[green_mask] = [255, 255, 255] # set it to white
+
+                # apply
+                pygame.surfarray.blit_array(mask_copy.subsurface((x0, y0, x1 - x0, y1 - y0)), tile_region)
+
         del mask_array
 
-        # apply
+        # apply texture
         texture_surface.blit(mask_copy, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
         main_globals[store_key] = texture_surface
 

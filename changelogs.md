@@ -292,4 +292,10 @@ draw some text on first floor
 change loading of floors a little (visual)
 added something to cmd
 
+# 2 12
+happy new year
+make dmg text
+some optimisations
+updated texturer to check mask within tilemap excl.0s
+
 # 
