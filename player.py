@@ -9,16 +9,12 @@ except ImportError as e:
 def player(main_globals):
 
     font = pygame.font.Font("assets/font/editundo.ttf", 24)
-    bigfont = pygame.font.Font("assets/font/editundo.ttf", 48)
-    setting_font = credits_font = pygame.font.Font("assets/font/editundo.ttf", 28)
-    smallfont = pygame.font.Font("assets/font/editundo.ttf", 22)
-    smallerfont = pygame.font.Font("assets/font/editundo.ttf", 16)
 
     class Player:
         def __init__(self, main_globals, x, y):
             self.x = x
             self.y = y
-            self.speed = 2 * main_globals['plr_spd_mult']
+            self.speed = 2
             self.health = 100
             self.max_hp = main_globals['player_max_health']
             self.alive = True
@@ -34,8 +30,8 @@ def player(main_globals):
 
         def move(self, dx, dy):
             dt = self.main_globals['dt']
-            new_x = self.x + dx * self.speed * dt * 60
-            new_y = self.y + dy * self.speed * dt * 60
+            new_x = self.x + dx * self.speed * dt * 60  * main_globals['plr_spd_mult']
+            new_y = self.y + dy * self.speed * dt * 60  * main_globals['plr_spd_mult']
 
             # change mask depending on lock
             if self.locked:
@@ -116,9 +112,9 @@ def player(main_globals):
 
         def effect(self, effect_type, number):
             if effect_type == "heal":
-                player.health += number
-                if player.health > self.max_hp:
-                    player.health = self.max_hp
+                self.health += number
+                if self.health > self.max_hp:
+                    self.health = self.max_hp
 
                 # remove item from inventory
                 for potion, heal in [('small_potion', 20), ('medium_potion', 40), ('large_potion', 60)]:
@@ -129,9 +125,9 @@ def player(main_globals):
                         break
 
             elif effect_type == "healfull":
-                player.health = 100
+                self.health = 100
             elif effect_type == "money":
-                player.wealth += number
+                self.wealth += number
             elif effect_type == "max_hp":
                 main_globals['player_max_health'] += number
                 self.health += main_globals['player_max_health'] - self.max_hp # heal for change

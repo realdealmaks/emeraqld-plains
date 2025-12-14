@@ -7,28 +7,26 @@ except ModuleNotFoundError as e:
 
 # initiate things
 pygame.init()
-mx.init(frequency=44100, size=-16, channels=16, buffer=8192)
+mx.init(frequency=44100, size=-16, channels=2, buffer=8192)
 screen_h, screen_w = 750, 1080
 screen = pygame.display.set_mode((screen_w, screen_h), pygame.HWSURFACE | pygame.DOUBLEBUF)
 pygame.display.set_icon(pygame.image.load("assets/models/player/naganou_icon.png"))
 resolution = screen_w, screen_h
 
-virtual_fps = 0
 vfps_max = 175
 virtual_dt = 1 / vfps_max
 virtual_accumulator = 0
 virtual_prev_time = pygame.time.get_ticks() / 1000
 virtual_clock = pygame.time.Clock()
-virtual_w = 1080
-virtual_h = 750
+virtual_w, virtual_h = 1080, 750
 virtual_screen = pygame.Surface((virtual_w, virtual_h))
-dt = dt = virtual_clock.tick(vfps_max) / 1000
+dt = virtual_clock.tick(vfps_max) / 1000
 prev_time = pygame.time.get_ticks() / 1000
 max_fps = 60
 
 # pymunk space setup
 space = pymunk.Space()
-space.gravity = (0, 0)
+space.gravity = (0, 500)
 
 # this turns all of the main_globals[''] slop into actually non eye burning variables
 class DictNamespace:
@@ -57,8 +55,6 @@ main_globals = superloader()
 main = DictNamespace(main_globals) # converts some globals
 print("ready, ", end="")
 # dont use main_globals['🤖'] but instead use main.🤖
-# swoopy ce to vidite me je res prevec motilo da je vse bilo v neumni barvi vsega drugega "" texta in nisem hotel kopirati main_globals[''] cisto povsod
-
 
 # dont change ts diddybludd
 main.developer_tools = True
@@ -99,7 +95,6 @@ main.player_gif(main_globals) # loads the player gif
 
 # pass space to globals
 main.space = space
-space.gravity = (0, 500)
 
 time.sleep(0.3)
 
@@ -152,7 +147,13 @@ while main.running:
         screen = pygame.display.set_mode(resolution)
 
     # draw whatever is on virtual screen scaled to real screen
-    screen.blit(pygame.transform.scale(main.screen, resolution), (0, 0))
+    if main.resolution != resolution: # only if its not original
+        resolution = main.resolution
+        screen = pygame.display.set_mode(resolution)
+        scaled_screen = pygame.transform.scale(main.screen, resolution)
+    else:
+        scaled_screen = pygame.transform.scale(main.screen, resolution)
+    screen.blit(scaled_screen, (0,0))
 
     loop_fps = clock.tick(main.max_fps)
     pygame.display.flip()

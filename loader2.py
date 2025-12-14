@@ -1,8 +1,11 @@
 # this file is for images and audio
 
-import pygame
-from PIL import Image
-from pygame import mixer as mx
+try:
+    import pygame
+    from PIL import Image
+    from pygame import mixer as mx
+except ImportError as e:
+    print(f"missing module {e}")
 
 def loader2(main_globals):
     # player images
@@ -61,7 +64,10 @@ def loader2(main_globals):
     main_globals['shop_holder'] = pygame.image.load("assets/useful images/shop_holder.png").convert_alpha()
     stairs = pygame.image.load("assets/useful images/stairs.png").convert_alpha() # thing to rebuild tilemap
     main_globals['stairs_image'] = pygame.transform.scale2x(stairs)
-    main_globals['tile_texture'] = pygame.image.load("assets/useful images/tiles/tile600x600.png") # change sometime
+    main_globals['tile_texture'] = pygame.image.load("assets/useful images/tiles/tile600x600.png")
+    # main_globals['tile_texture'] = pygame.image.load("assets/random images/porco.png")
+    # main_globals['tile_texture'] = pygame.image.load("assets/random images/tony.png")
+    # main_globals['tile_texture'] = pygame.image.load("assets/random images/negro hitler bot.jpg")
 
     # background music
     main_globals['musics'] = ["assets/audio/music/testdroga.mp3", "assets/audio/music/game_over_loop.mp3", "assets/audio/music/bakus funk trim.mp3"]

@@ -22,11 +22,17 @@ def cmd(main_globals):
         main_globals['inventory_texts'] = []
         main_globals['money_texts'] = []
         for call in main_globals['default_tilemap_calls']:
-            eval(call)
+            eval(call) # set tilemap to default
         main_globals['rebuild_walkable_mask'](main_globals)
         main_globals['active_tiles'] = []
         main_globals['current_floor'] = 0
         main_globals['tutorial_floor'] = True
+        main_globals['player'].health = 100
+        main_globals['player'].max_hp = 100
+        main_globals['plr_spd_mult'] = 1
+        main_globals['player_max_health'] = 100
+        main_globals['damage_mult'] = 1
+        main_globals['cooldown_mult'] = 1
 
     def shell(main_globals, event):
         sections = {

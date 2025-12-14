@@ -270,7 +270,7 @@ def loader1(main_globals):
             'image': pygame.image.load("assets/models/items/consumables/crystal/crystalfragments.png").convert_alpha()
         },
         'crystal': {
-            'description': 'a crystal',
+            'description': 'temporary stat upgrades',
             'function': lambda main_globals: main_globals['use_crystal'](main_globals),
             'image': pygame.image.load("assets/models/items/consumables/crystal/crystal.png").convert_alpha()
         },
