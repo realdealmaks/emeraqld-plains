@@ -111,6 +111,7 @@ def superloader():
         ("ui", "ui"),
         ("weapons", "logic"),
         ("loader3", "logic"),
+        ("shop", "logic"),
         ("dungeon", "logic"),
         ("player", "logic"),
         ("enemy", "logic"),

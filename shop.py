@@ -6,13 +6,14 @@ def shop(main_globals):
     screen = main_globals['screen']
 
     def check_floor(main_globals, current_floor):
-        if current_floor % coefficient != 0: return False
-        else: return True
-        
+        return current_floor % coefficient == 0
+
     def draw(main_globals):
         screen.blit(main_globals['shopbase'], (0, 0))
         # etc
-    
+
     for name, obj in locals().items():
         if isinstance(obj, (types.FunctionType, type)):
             main_globals[name] = obj
+
+    print("shop, ", end="")

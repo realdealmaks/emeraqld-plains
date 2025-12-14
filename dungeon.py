@@ -134,7 +134,7 @@ def dungeon(main_globals):
                         screen.blit(main_globals['interact_image'],
                             (tile_center.x - camera_x - main_globals['interact_image'].get_width() // 2, tile_center.y - camera_y - main_globals['interact_image'].get_height() // 2))
                         if main_globals['pressed_e']:
-                            if main_globals['check_floor'](main_globals['current_floor']) and main_globals['current_floor'] != 1:
+                            if main_globals['check_floor'](main_globals, main_globals['current_floor']) and main_globals['current_floor'] != 1:
                                 main_globals['remake_floor']()
                             else:
                                 pass
