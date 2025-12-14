@@ -113,16 +113,16 @@ def dungeon(main_globals):
                         print(f"spawned group {main_globals['groups_spawned']} on ({row_idx}, {col_idx}), ", end="")
                         main_globals['groups_spawned'] += 1
 
-                elif tile_type == 88: # shop tile
-                    main_globals['shop'].stand_x = col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['shop_holder'].get_width() // 2
-                    main_globals['shop'].stand_y = row_idx * ts - camera_y + main_globals['tile_size'] // 2 - main_globals['shop_holder'].get_height() // 2 + 50
-                    screen.blit(main_globals['shop_holder'], (main_globals['shop'].stand_x, main_globals['shop'].stand_y))
+                #elif tile_type == 88: # shop tile (unused)
+                #    main_globals['shop'].stand_x = col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['shop_holder'].get_width() // 2
+                #    main_globals['shop'].stand_y = row_idx * ts - camera_y + main_globals['tile_size'] // 2 - main_globals['shop_holder'].get_height() // 2 + 50
+                #    screen.blit(main_globals['shop_holder'], (main_globals['shop'].stand_x, main_globals['shop'].stand_y))
 
                     # interact with shop
-                    if main_globals['distance_to'](player, (main_globals['shop'].stand_x, main_globals['shop'].stand_y)) < main_globals['interact_distance']:
-                        screen.blit(main_globals['interact_image'], (main_globals['shop'].stand_x, main_globals['shop'].stand_y + 50))
-                        if main_globals['pressed_e']:
-                            main_globals['game_stage'] = "shopping"
+                #    if main_globals['distance_to'](player, (main_globals['shop'].stand_x, main_globals['shop'].stand_y)) < main_globals['interact_distance']:
+                #        screen.blit(main_globals['interact_image'], (main_globals['shop'].stand_x, main_globals['shop'].stand_y + 50))
+                #        if main_globals['pressed_e']:
+                #            main_globals['game_stage'] = "shopping"
 
                 elif tile_type == 98: # end tile
                     tile_center = type('', (), {
@@ -134,7 +134,10 @@ def dungeon(main_globals):
                         screen.blit(main_globals['interact_image'],
                             (tile_center.x - camera_x - main_globals['interact_image'].get_width() // 2, tile_center.y - camera_y - main_globals['interact_image'].get_height() // 2))
                         if main_globals['pressed_e']:
-                            main_globals['remake_floor']()
+                            if main_globals['check_floor'](main_globals['current_floor']) and main_globals['current_floor'] != 1:
+                                main_globals['remake_floor']()
+                            else:
+                                pass
 
 
         # drawing things on tiles

@@ -21,6 +21,9 @@ def loader2(main_globals):
         player_health_images.append(img)
     main_globals['player_health_images'] = player_health_images
 
+    #shop images
+    shopbase = pygame.image.load("assets/useful images/shop/shopbase.png").convert_alpha()
+
     # sfx
     main_globals['death_sound'] = mx.Sound("assets/audio/sfx/vineboom.mp3")
     main_globals['hurt_sound'] = mx.Sound("assets/audio/sfx/new_hurt.ogg")

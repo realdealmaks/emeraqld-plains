@@ -91,16 +91,6 @@ def loader3(main_globals):
                 del player.inventory['crystal_fragments']
             main_globals['add_to_inventory'](main_globals, 'crystal', 1)
 
-    class Shop:
-        def __init__(self, main_globals, x = None, y = None):
-            self.image = main_globals['shop_holder']
-            self.x = x
-            self. y = y
-
-        def draw_shop(self, main_globals):
-            screen = main_globals['screen']
-            screen.fill((0, 0, 0)) # dont do this
-
     def spawn_blood_particles(space, player_x, player_y, player_size, amount=10):
         if main_globals['blood_text'] == "False": # if option disabled
             return
@@ -177,15 +167,9 @@ def loader3(main_globals):
             mx.music.play(start)
             main_globals['currently_playing_index'] = indexhere
 
-    # make instances
-    shop = Shop(main_globals)
-
     # define functions and classes into main globals
     for name, obj in locals().items():
         if isinstance(obj, (types.FunctionType, type)):
             main_globals[name] = obj
-
-    # add instances
-    main_globals['shop'] = shop
 
     print("loader3, ", end = "")
