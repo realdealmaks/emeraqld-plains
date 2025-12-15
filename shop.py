@@ -5,12 +5,12 @@ def shop(main_globals):
     coefficient = 10 # is that what coefficient means?
     screen = main_globals['screen']
 
-    def check_floor(main_globals, current_floor):
+    def check_floor(current_floor):
         return current_floor % coefficient == 0
 
-    def draw(main_globals):
+    def draw_shop(main_globals):
         screen.blit(main_globals['shopbase'], (0, 0))
-        # etc
+        print("drawing ts")
 
     for name, obj in locals().items():
         if isinstance(obj, (types.FunctionType, type)):

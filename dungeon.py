@@ -11,6 +11,7 @@ def dungeon(main_globals):
     def draw_dungeon(main_globals, player, is_paused, facing_left):
         screen = main_globals['screen']
         screen.fill((0, 0, 0))
+        in_shop = False
         main_globals['draw_tiles'](main_globals) # moved up for faster prio
         camera_x = main_globals['camera_x']
         camera_y = main_globals['camera_y']
@@ -113,10 +114,10 @@ def dungeon(main_globals):
                         print(f"spawned group {main_globals['groups_spawned']} on ({row_idx}, {col_idx}), ", end="")
                         main_globals['groups_spawned'] += 1
 
-                #elif tile_type == 88: # shop tile (unused)
-                #    main_globals['shop'].stand_x = col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['shop_holder'].get_width() // 2
-                #    main_globals['shop'].stand_y = row_idx * ts - camera_y + main_globals['tile_size'] // 2 - main_globals['shop_holder'].get_height() // 2 + 50
-                #    screen.blit(main_globals['shop_holder'], (main_globals['shop'].stand_x, main_globals['shop'].stand_y))
+                elif tile_type == 88: # shop tile (unused)
+                    the_x = col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['shop_holder'].get_width() // 2
+                    the_y = row_idx * ts - camera_y + main_globals['tile_size'] // 2 - main_globals['shop_holder'].get_height() // 2 + 50
+                    screen.blit(main_globals['shop_holder'], (the_x, the_y))
 
                     # interact with shop
                 #    if main_globals['distance_to'](player, (main_globals['shop'].stand_x, main_globals['shop'].stand_y)) < main_globals['interact_distance']:
@@ -134,11 +135,15 @@ def dungeon(main_globals):
                         screen.blit(main_globals['interact_image'],
                             (tile_center.x - camera_x - main_globals['interact_image'].get_width() // 2, tile_center.y - camera_y - main_globals['interact_image'].get_height() // 2))
                         if main_globals['pressed_e']:
-                            if main_globals['check_floor'](main_globals, main_globals['current_floor']) and main_globals['current_floor'] != 1:
-                                main_globals['remake_floor']()
+                            if main_globals['check_floor'](main_globals['current_floor']) and main_globals['current_floor'] != 1 and not in_shop: # if time for shop
+                                for call in main_globals['shop_tilemap_calls']:
+                                    eval(call) # set tilemap to that
+                                    rebuild_walkable_mask(main_globals, True)
+                                    in_shop = True
+                                    print(in_shop)
                             else:
-                                pass
-
+                                in_shop = False
+                                main_globals['remake_floor']()
 
         # drawing things on tiles
 
@@ -467,168 +472,176 @@ def dungeon(main_globals):
             if main_globals['choosing_crystal']: # if he is choosing a crystal effect
                 main_globals['crystal_ui'](main_globals)
 
-    def remake_floor(): # remakes the floor
-        tilemap = main_globals['tilemap']
-        rows = len(tilemap)
-        cols = len(tilemap[0])
-        min_distance = 5 # minimum distance between start and end
-        min_straight = 1 # minimum distance before turning again
-        tile_choices = [1, 2, 3] # tiles the path can be filled with
-        tile_probs = [0.6, 0.1, 0.3] # in order of ^ # *100 in %
+    def remake_floor(tilemap = None): # remakes the floor, use arg for specific floors (or don't it's not functional right now)
+        if not tilemap:
+            tilemap = main_globals['tilemap']
+            rows = len(tilemap)
+            cols = len(tilemap[0])
+            min_distance = 5 # minimum distance between start and end
+            min_straight = 1 # minimum distance before turning again
+            tile_choices = [1, 2, 3] # tiles the path can be filled with
+            tile_probs = [0.6, 0.1, 0.3] # in order of ^ # *100 in %
 
-        main_globals['tutorial_floor'] = False # dont show tutorial text
+            main_globals['tutorial_floor'] = False # dont show tutorial text
 
-        # pick start and end far enough apart
-        while True:
-            start_r = random.randint(0, rows - 1)
-            start_c = random.randint(0, cols - 1)
-            end_r = random.randint(0, rows - 1)
-            end_c = random.randint(0, cols - 1)
-            distance = abs(start_r - end_r) + abs(start_c - end_c)
-            if distance >= min_distance:
-                break
-
-        # mark start and end
-        main_globals['update_tile'](main_globals, start_c, start_r, 99)
-        main_globals['update_tile'](main_globals, end_c, end_r, 98)
-
-        # r = hoRizontal c = vertiCal
-        current_r, current_c = start_r, start_c
-        current_dir = 'r' if random.random() < 0.5 else 'c'
-        straight_count = 0
-
-        path_tiles = [] # tiles between start and end
-
-        turn_chance = 0.3
-
-        while (current_r, current_c) != (end_r, end_c):
-            dr = end_r - current_r
-            dc = end_c - current_c
-
-            # random turn
-            if straight_count >= min_straight and random.random() < turn_chance:
-                # flip direction
-                current_dir = 'c' if current_dir == 'r' else 'r'
-                straight_count = 0
-
-                # move exactly 1 tile in the new direction
-                if current_dir == 'r':
-                    current_c += 1 if dc > 0 else -1
-                else:
-                    current_r += 1 if dr > 0 else -1
-
-                # clamp
-                current_r = max(0, min(rows - 1, current_r))
-                current_c = max(0, min(cols - 1, current_c))
-
-                # write tile
-                tile_value = random.choices(tile_choices, weights=tile_probs)[0]
-                path_tiles.append((current_r, current_c, tile_value))
-                continue
-
-            can_turn = straight_count >= min_straight
-
-            if current_dir == 'r' and dc != 0:
-                step = 1 if dc > 0 else -1
-                current_c += step
-                straight_count += 1
-            elif current_dir == 'c' and dr != 0:
-                step = 1 if dr > 0 else -1
-                current_r += step
-                straight_count += 1
-            elif can_turn:
-                if current_dir == 'r' and dr != 0:
-                    step = 1 if dr > 0 else -1
-                    current_r += step
-                    current_dir = 'c'
-                    straight_count = 1
-                elif current_dir == 'c' and dc != 0:
-                    step = 1 if dc > 0 else -1
-                    current_c += step
-                    current_dir = 'r'
-                    straight_count = 1
-            else:
-                if current_dir == 'r' and dc == 0 and dr != 0:
-                    step = 1 if dr > 0 else -1
-                    current_r += step
-                    current_dir = 'c'
-                    straight_count = 1
-                elif current_dir == 'c' and dr == 0 and dc != 0:
-                    step = 1 if dc > 0 else -1
-                    current_c += step
-                    current_dir = 'r'
-                    straight_count = 1
-
-            # clamp again
-            current_r = max(0, min(len(tilemap) - 1, current_r))
-            current_c = max(0, min(len(tilemap[0]) - 1, current_c))
-
-            # append tile if not start or end
-            if (current_r, current_c) not in [(start_r, start_c), (end_r, end_c)]:
-                tile_value = random.choices(tile_choices, weights=tile_probs)[0]
-                path_tiles.append((current_r, current_c, tile_value))
-
-        # add branches
-        num_branches = random.randint(0, 2) # how many
-        branch_length_range = (1, 4) # how long
-
-        for _ in range(num_branches):
-            if not path_tiles:
-                break
-            # pick a random tile in the path as branch start
-            br, bc, _ = random.choice(path_tiles)
-            branch_dir = random.choice(['r', 'c'])
-            branch_length = random.randint(*branch_length_range)
-            straight_count = 0
-
-            for _ in range(branch_length):
-                if branch_dir == 'r':
-                    step = random.choice([-1, 1])
-                    bc += step
-                else:
-                    step = random.choice([-1, 1])
-                    br += step
-
-                # clamp as always
-                br = max(0, min(rows - 1, br))
-                bc = max(0, min(cols - 1, bc))
-
-                # dont overlap start and end
-                if (br, bc) in [(start_r, start_c), (end_r, end_c)]:
+            # pick start and end far enough apart
+            while True:
+                start_r = random.randint(0, rows - 1)
+                start_c = random.randint(0, cols - 1)
+                end_r = random.randint(0, rows - 1)
+                end_c = random.randint(0, cols - 1)
+                distance = abs(start_r - end_r) + abs(start_c - end_c)
+                if distance >= min_distance:
                     break
 
-                # make tile only if not already in path
-                if not any(t[0] == br and t[1] == bc for t in path_tiles):
-                    tile_value = random.choices(tile_choices, weights=tile_probs)[0]
-                    path_tiles.append((br, bc, tile_value))
+            # mark start and end
+            main_globals['update_tile'](main_globals, start_c, start_r, 99)
+            main_globals['update_tile'](main_globals, end_c, end_r, 98)
 
-                straight_count += 1
-                # only turn after min straight
-                if straight_count >= min_straight and random.random() < 0.3:
-                    branch_dir = 'c' if branch_dir == 'r' else 'r'
+            # r = hoRizontal c = vertiCal
+            current_r, current_c = start_r, start_c
+            current_dir = 'r' if random.random() < 0.5 else 'c'
+            straight_count = 0
+
+            path_tiles = [] # tiles between start and end
+
+            turn_chance = 0.3
+
+            while (current_r, current_c) != (end_r, end_c):
+                dr = end_r - current_r
+                dc = end_c - current_c
+
+                # random turn
+                if straight_count >= min_straight and random.random() < turn_chance:
+                    # flip direction
+                    current_dir = 'c' if current_dir == 'r' else 'r'
                     straight_count = 0
 
-        # force at least 1 tile 2 or 3
-        if not any(tile[2] in (2, 3) for tile in path_tiles):
-            idx = random.randint(0, len(path_tiles) - 1)
-            r, c, _ = path_tiles[idx]
-            path_tiles[idx] = (r, c, random.choice([2, 3]))
+                    # move exactly 1 tile in the new direction
+                    if current_dir == 'r':
+                        current_c += 1 if dc > 0 else -1
+                    else:
+                        current_r += 1 if dr > 0 else -1
 
-        # ts shit gets overwritten
-        main_globals['update_tile'](main_globals, end_c, end_r, 98)
+                    # clamp
+                    current_r = max(0, min(rows - 1, current_r))
+                    current_c = max(0, min(cols - 1, current_c))
 
-        # update tilemap
-        for r, c, val in path_tiles:
-            main_globals['update_tile'](main_globals, c, r, val)
+                    # write tile
+                    tile_value = random.choices(tile_choices, weights=tile_probs)[0]
+                    path_tiles.append((current_r, current_c, tile_value))
+                    continue
 
-        print("new tilemap is:")
-        main_globals['current_floor'] += 1 # save floors
-        if main_globals['current_floor'] > main_globals['best_floor']:
-            main_globals['best_floor'] = main_globals['current_floor']
-            main_globals['save'](main_globals, best_floor=main_globals['best_floor'])
-        for i in range(len(main_globals['tilemap'])):
-            print(main_globals['tilemap'][i])
-        main_globals['rebuild_walkable_mask'](main_globals)
+                can_turn = straight_count >= min_straight
+
+                if current_dir == 'r' and dc != 0:
+                    step = 1 if dc > 0 else -1
+                    current_c += step
+                    straight_count += 1
+                elif current_dir == 'c' and dr != 0:
+                    step = 1 if dr > 0 else -1
+                    current_r += step
+                    straight_count += 1
+                elif can_turn:
+                    if current_dir == 'r' and dr != 0:
+                        step = 1 if dr > 0 else -1
+                        current_r += step
+                        current_dir = 'c'
+                        straight_count = 1
+                    elif current_dir == 'c' and dc != 0:
+                        step = 1 if dc > 0 else -1
+                        current_c += step
+                        current_dir = 'r'
+                        straight_count = 1
+                else:
+                    if current_dir == 'r' and dc == 0 and dr != 0:
+                        step = 1 if dr > 0 else -1
+                        current_r += step
+                        current_dir = 'c'
+                        straight_count = 1
+                    elif current_dir == 'c' and dr == 0 and dc != 0:
+                        step = 1 if dc > 0 else -1
+                        current_c += step
+                        current_dir = 'r'
+                        straight_count = 1
+
+                # clamp again
+                current_r = max(0, min(len(tilemap) - 1, current_r))
+                current_c = max(0, min(len(tilemap[0]) - 1, current_c))
+
+                # append tile if not start or end
+                if (current_r, current_c) not in [(start_r, start_c), (end_r, end_c)]:
+                    tile_value = random.choices(tile_choices, weights=tile_probs)[0]
+                    path_tiles.append((current_r, current_c, tile_value))
+
+            # add branches
+            num_branches = random.randint(0, 2) # how many
+            branch_length_range = (1, 4) # how long
+
+            for _ in range(num_branches):
+                if not path_tiles:
+                    break
+                # pick a random tile in the path as branch start
+                br, bc, _ = random.choice(path_tiles)
+                branch_dir = random.choice(['r', 'c'])
+                branch_length = random.randint(*branch_length_range)
+                straight_count = 0
+
+                for _ in range(branch_length):
+                    if branch_dir == 'r':
+                        step = random.choice([-1, 1])
+                        bc += step
+                    else:
+                        step = random.choice([-1, 1])
+                        br += step
+
+                    # clamp as always
+                    br = max(0, min(rows - 1, br))
+                    bc = max(0, min(cols - 1, bc))
+
+                    # dont overlap start and end
+                    if (br, bc) in [(start_r, start_c), (end_r, end_c)]:
+                        break
+
+                    # make tile only if not already in path
+                    if not any(t[0] == br and t[1] == bc for t in path_tiles):
+                        tile_value = random.choices(tile_choices, weights=tile_probs)[0]
+                        path_tiles.append((br, bc, tile_value))
+
+                    straight_count += 1
+                    # only turn after min straight
+                    if straight_count >= min_straight and random.random() < 0.3:
+                        branch_dir = 'c' if branch_dir == 'r' else 'r'
+                        straight_count = 0
+
+            # force at least 1 tile 2 or 3
+            if not any(tile[2] in (2, 3) for tile in path_tiles):
+                idx = random.randint(0, len(path_tiles) - 1)
+                r, c, _ = path_tiles[idx]
+                path_tiles[idx] = (r, c, random.choice([2, 3]))
+
+            # ts shit gets overwritten
+            main_globals['update_tile'](main_globals, end_c, end_r, 98)
+
+            # update tilemap
+            for r, c, val in path_tiles:
+                main_globals['update_tile'](main_globals, c, r, val)
+
+            print("new tilemap is:")
+            main_globals['current_floor'] += 1 # save floors
+            if main_globals['current_floor'] > main_globals['best_floor']:
+                main_globals['best_floor'] = main_globals['current_floor']
+                main_globals['save'](main_globals, best_floor=main_globals['best_floor'])
+            for i in range(len(main_globals['tilemap'])):
+                print(main_globals['tilemap'][i])
+            main_globals['rebuild_walkable_mask'](main_globals)
+        else:
+            # use provided tilemap instead
+            main_globals['tilemap'] = tilemap
+
+            #print("loaded provided tilemap:")
+            #for i in range(len(main_globals['tilemap'])):
+            #    print(main_globals['tilemap'][i])
 
     def update_tile(main_globals, col_idx, row_idx, new_tile_type): # updates a specific tile
         # ex. update_tilemap(main_globals, 0, 0, 99)
@@ -829,10 +842,13 @@ def dungeon(main_globals):
         main_globals['active_tiles'] = []
         return mask
 
-    def rebuild_walkable_mask(main_globals): # rebuilds the mask if something changed
+    def rebuild_walkable_mask(main_globals, sharting = False): # rebuilds the mask if something changed
 
         print("rebuilding walkable mask")
-        tilemap = main_globals['tilemap']
+        if not sharting:
+            tilemap = main_globals['tilemap']
+        elif sharting:
+            tilemap = main_globals['shop_tilemap']
         ts = main_globals['tile_size'] + main_globals['tile_offset']
         mask_width = len(tilemap[0]) * ts
         mask_height = len(tilemap) * ts
