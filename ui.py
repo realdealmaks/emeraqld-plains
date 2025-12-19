@@ -646,8 +646,9 @@ def ui(main_globals):
             "Health": f"{main_globals['player'].health}/{main_globals['player'].max_hp}",
             "Wealth": main_globals['player'].wealth,
             "Enemies killed": main_globals['enemies_killed'],
-            "Floor": main_globals['current_floor']
         }
+        if main_globals['in_shop']: stats['Floor'] = f"{main_globals['current_floor']} (shop)"
+        else: stats['Floor'] = main_globals['current_floor']
 
         y = base_y
         for label, value in stats.items():

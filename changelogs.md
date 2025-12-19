@@ -298,4 +298,5 @@ make dmg text
 some optimisations
 updated texturer to check mask within tilemap excl.0s
 
-# 
+# 20 12 / m
+rdm do some but not done yet

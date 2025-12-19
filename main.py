@@ -101,7 +101,7 @@ time.sleep(0.3)
 print(f"started, {"dev" if main.developer_tools else "reg"}")
 # loop setup
 clock = pygame.time.Clock() # makes some clocks and sets the titles
-pygame.display.set_caption(' naganou :)))') # change to naganou? :))) # sure man
+pygame.display.set_caption('Naganou') # change to naganou? :))) # sure man
 
 # makes the initial walkable surface along with what is made in it
 main.walkable_mask = main.make_initial_walkable_surface(main.tilemap, main_globals) 
