@@ -46,9 +46,6 @@ def loader1(main_globals):
         [0, 0, 0, 0, 0, 0, 0, 0], # 98 = end tile
         [0, 0, 0, 0, 0, 0, 0, 0],
     ]
-    main_globals['shop_tilemap'] = [
-        [99, 88, 98]
-    ]
     main_globals['tutorial_floor'] = True
 
     main_globals['textures_ready'] = False
@@ -111,7 +108,6 @@ def loader1(main_globals):
         return calls
 
     main_globals['default_tilemap_calls'] = generate_update_tile_calls(main_globals['tilemap'])
-    main_globals['shop_tilemap_calls'] = generate_update_tile_calls(main_globals['shop_tilemap'])
 
     # camera variables
     main_globals['camera_x'] = 0
