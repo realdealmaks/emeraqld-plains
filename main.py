@@ -110,7 +110,7 @@ main.walkable_mask = main.make_initial_walkable_surface(main.tilemap, main_globa
 for i in range(10):
     time.sleep(0.1) # actually what it does is prevents 5 fps at start
     pygame.event.pump()
- 
+
 # makes some game loops
 running = True # https://cdn.discordapp.com/emojis/1234577960414085271.webp?size=96
 main.running = running
