@@ -299,4 +299,5 @@ some optimisations
 updated texturer to check mask within tilemap excl.0s
 
 # 20 12 / m
-rdm do some but not done yet
+rdm do some
+shop is 75% done

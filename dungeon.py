@@ -113,18 +113,73 @@ def dungeon(main_globals):
                         print(f"spawned group {main_globals['groups_spawned']} on ({row_idx}, {col_idx}), ", end="")
                         main_globals['groups_spawned'] += 1
 
-                elif tile_type == 88: # shop tile
-                    shops_x = col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_width() // 2
-                    shops_y = row_idx * ts - camera_y + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_height() // 2 + 50
+                elif tile_type == 88: # shop tile with literal yanderedev code
+                    shops_x = col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['shop_item_info_box'].get_width() // 2
+                    shops_y = row_idx * ts - camera_y + main_globals['tile_size'] // 2 - main_globals['shop_item_info_box'].get_height() // 2 + 50
+
                     pedestal_x_left = col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_width() // 2 - 200
                     pedestal_x_right = col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_width() // 2 + 200
                     pedestal_x_center = col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_width() // 2
                     pedestal_y = row_idx * ts - camera_y + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_height() // 2 + 200
                     
-                    screen.blit(main_globals['shop_holder'], (shops_x, shops_y))
+                    #screen.blit(main_globals['shop_holder'], (shops_x, shops_y))
                     screen.blit(main_globals['pedistal_image'], (pedestal_x_center, pedestal_y))
                     screen.blit(main_globals['pedistal_image'], (pedestal_x_left, pedestal_y))
                     screen.blit(main_globals['pedistal_image'], (pedestal_x_right, pedestal_y))
+                    screen.blit(main_globals['pedistal_image'], (pedestal_x_right, pedestal_y))
+
+                    # rcon_name, rcon_desc, rcon_func, rcon_img = random.choice(list(main_globals['items'].items()))
+                    excluded_c = ['fuck', 'crystal', 'crystal_fragments']
+                    available_c = [key for key in main_globals['items'].keys() if key not in excluded_c]
+
+                    # create items you can purchase
+                    if not main_globals['shop_initialised']:
+                        for article_key in ['article1', 'article2', 'article3']:
+                            random_c = random.choice(available_c) # select it
+                            main_globals[article_key] = random_c
+                            article = main_globals[article_key] # get it
+                            print(f"article: {article}, random item: {random_c}")
+                        main_globals['shop_initialised'] = True
+                        print(main_globals['article1'], main_globals['article2'], main_globals['article3'])
+                    
+                    # and blit them too
+                    if main_globals['article1']: screen.blit(main_globals['items'][main_globals['article1']]['image'], (col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['items'][main_globals['article1']]['image'].get_width() // 2, pedestal_y - 20))
+                    if main_globals['article2']: screen.blit(main_globals['items'][main_globals['article2']]['image'], (col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['items'][main_globals['article2']]['image'].get_width() // 2 - 200, pedestal_y - 20))
+                    if main_globals['article3']: screen.blit(main_globals['items'][main_globals['article3']]['image'], (col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['items'][main_globals['article3']]['image'].get_width() // 2 + 200, pedestal_y - 20))
+
+                    screen.blit(main_globals['shop_item_info_box'], (shops_x, shops_y))
+
+                    # left pedestal check
+                    if main_globals['article1'] is not None:
+                        if main_globals['distance_to'](player, (
+                            col_idx * ts + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_width() // 2 - 200,
+                            row_idx * ts + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_height() // 2 + 200
+                        )) < main_globals['interact_distance']:
+                            screen.blit(main_globals['interact_image'], (
+                                pedestal_x_left + main_globals['pedistal_image'].get_width() // 2
+                                - main_globals['interact_image'].get_width() // 2,
+                                pedestal_y - main_globals['interact_image'].get_height() - 10
+                            ))
+                            if main_globals['pressed_e']:
+                                main_globals['add_to_inventory'](main_globals, main_globals['article1'])
+                                main_globals['article1'] = None
+                    
+                    # center pedestal check
+                    if main_globals['distance_to'](player, (col_idx * ts + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_width() // 2, row_idx * ts + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_height() // 2 + 200)) < main_globals['interact_distance']:
+                        screen.blit(main_globals['interact_image'], (
+                            pedestal_x_center + main_globals['pedistal_image'].get_width() // 2 - main_globals['interact_image'].get_width() // 2, pedestal_y - main_globals['interact_image'].get_height() - 10  # float above pedestal
+                        ))
+                        if main_globals['pressed_e']:
+                            main_globals['add_to_inventory'](main_globals, main_globals['article2'])
+                    
+                    # right pedestal check
+                    if main_globals['distance_to'](player, (col_idx * ts + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_width() // 2 + 200, row_idx * ts + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_height() // 2 + 200)) < main_globals['interact_distance']:
+                        screen.blit(main_globals['interact_image'], (
+                            pedestal_x_right + main_globals['pedistal_image'].get_width() // 2 - main_globals['interact_image'].get_width() // 2, pedestal_y - main_globals['interact_image'].get_height() - 10  # float above pedestal
+                        ))
+                        if main_globals['pressed_e']:
+                            main_globals['add_to_inventory'](main_globals, main_globals['article3'])
+
                     #screen.blit(main_globals['shop_item_info_box'], (row_idx * ts - camera_y + main_globals['tile_size'] // 2 - main_globals['shop_item_info_box'].get_height() // 2, row_idx * ts - camera_y + main_globals['tile_size'] // 2 - main_globals['shop_item_info_box'].get_height() // 2 - 200))
 
                     # interact with shop
@@ -149,12 +204,15 @@ def dungeon(main_globals):
                             elif main_globals['in_shop']:
                                 main_globals['remake_floor']()
                                 main_globals['in_shop'] = False
+                                main_globals['article1'], main_globals['article2'], main_globals['article3'] = None
+                                main_globals['shop_initialised'] = False
                             else:
                                 for call in main_globals['shop_tilemap_calls']:
                                     eval(call)
                                 rebuild_walkable_mask(main_globals)
                                 main_globals['in_shop'] = True
                                 # print(main_globals['in_shop'])
+                        print(tile_center)
 
         # drawing things on tiles
 

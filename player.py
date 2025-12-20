@@ -22,6 +22,7 @@ def player(main_globals):
             self.main_globals = main_globals
             self.weapons = []
             self.wealth = 0 # broke ass bitch
+            self.wealth_mult = 1
             self.locked = False # if locked to current tile
             self.inventory = {}
 
@@ -127,7 +128,7 @@ def player(main_globals):
             elif effect_type == "healfull":
                 self.health = 100
             elif effect_type == "money":
-                self.wealth += number
+                self.wealth += number * self.wealth_mult
             elif effect_type == "max_hp":
                 main_globals['player_max_health'] += number
                 self.health += main_globals['player_max_health'] - self.max_hp # heal for change

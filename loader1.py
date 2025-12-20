@@ -51,6 +51,8 @@ def loader1(main_globals):
     ]
     main_globals['tutorial_floor'] = True
     main_globals['in_shop'] = False
+    main_globals['shop_initialised'] = False
+    main_globals['article1'], main_globals['article2'], main_globals['article3'] = None, None, None
 
     main_globals['textures_ready'] = False
     main_globals['walkable_tiles'] = [1, 2, 3, 4, 99, 88, 98]
@@ -245,27 +247,30 @@ def loader1(main_globals):
             # 'image': image
         # }
 
-        'fuck': { # test item
-            'description': 'item description',
-            'function': lambda main_globals: main_globals['player'].effect('heal', 10),
-            'image': pygame.image.load("assets/models/items/weapons/katana.png").convert_alpha()
-        },
+        #'fuck': { # test item
+        #    'description': 'item description',
+        #    'function': lambda main_globals: main_globals['player'].effect('heal', 10),
+        #    'image': pygame.image.load("assets/models/items/weapons/katana.png").convert_alpha()
+        #},
 
         # health potions
         'small_potion': {
             'description': 'heals you a little',
             'function': lambda main_globals: main_globals['player'].effect('heal', 20),
-            'image': pygame.image.load("assets/models/items/consumables/potions/health/potion20.png").convert_alpha()
+            'image': pygame.image.load("assets/models/items/consumables/potions/health/potion20.png").convert_alpha(),
+            'price': 25
         },
         'medium_potion': {
             'description': 'heals you a bit',
             'function': lambda main_globals: main_globals['player'].effect('heal', 40),
-            'image': pygame.image.load("assets/models/items/consumables/potions/health/potion40.png").convert_alpha()
+            'image': pygame.image.load("assets/models/items/consumables/potions/health/potion40.png").convert_alpha(),
+            'price': 50
         },
         'large_potion': {
             'description': 'heals you a lot',
             'function': lambda main_globals: main_globals['player'].effect('heal', 60),
-            'image': pygame.image.load("assets/models/items/consumables/potions/health/potion60.png").convert_alpha()
+            'image': pygame.image.load("assets/models/items/consumables/potions/health/potion60.png").convert_alpha(),
+            'price': 75
         },
 
         # crystals
@@ -284,6 +289,12 @@ def loader1(main_globals):
     main_globals['other_consumables'] = [ # consumables you can use in combat: name
             #
         ]
+    main_globals['permanent_buffs'] = {
+        'wealth_mult': {
+            'description': 'increases money gain by 15%',
+            'function': lambda player: setattr(player, 'wealth_mult', player.wealth_mult * 1.15)
+        }
+}
 
     main_globals['items'] = items
 

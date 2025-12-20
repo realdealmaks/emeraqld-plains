@@ -1,4 +1,4 @@
-# this file is mostly unused
+# this file is mostly unused, for shop things check tile update loop at tile 88
 
 import types
 

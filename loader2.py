@@ -22,7 +22,7 @@ def loader2(main_globals):
     main_globals['player_health_images'] = player_health_images
 
     #shop images
-    main_globals['shopbase'] = pygame.image.load("assets/useful images/shop/shopbase.png").convert_alpha()
+    main_globals['shopbase'] = pygame.image.load("assets/useful images/shop/shop_holder.png").convert_alpha()
 
     # sfx
     main_globals['death_sound'] = mx.Sound("assets/audio/sfx/vineboom.mp3")
@@ -64,8 +64,9 @@ def loader2(main_globals):
     pedestal = pygame.image.load("assets/useful images/pedestal.png").convert_alpha()
     main_globals['pedistal_image'] = pygame.transform.scale2x(pedestal) # pedestal
     main_globals['shop_item_info_box'] = pygame.image.load("assets/useful images/shop_item_info_box.png").convert_alpha()
+    main_globals['shop_item_info_box_rect'] = main_globals['shop_item_info_box'].get_rect()
     main_globals['floorboard'] = pygame.image.load("assets/useful images/tiles/image.png")
-    main_globals['shop_holder'] = pygame.image.load("assets/useful images/shop_holder.png").convert_alpha()
+    main_globals['shop_holder'] = pygame.image.load("assets/useful images/shop/shop_holder.png").convert_alpha()
     stairs = pygame.image.load("assets/useful images/stairs.png").convert_alpha() # thing to rebuild tilemap
     main_globals['stairs_image'] = pygame.transform.scale2x(stairs)
     main_globals['tile_texture'] = pygame.image.load("assets/useful images/tiles/tile600x600.png")
