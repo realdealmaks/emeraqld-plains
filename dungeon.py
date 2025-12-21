@@ -53,8 +53,12 @@ def dungeon(main_globals):
 
         # tile checking systems
 
+        just_a_list = [7, 3, 5, 8, 1]
+        if not main_globals['its_11_pm_50_minutes_before_the_deadline_i_dont_even_care_anymore']:
+            main_globals['its_11_pm_50_minutes_before_the_deadline_i_dont_even_care_anymore'] = random.choice(just_a_list)
+
         if not any(88 in tile for tile in main_globals['tilemap']):
-            main_globals['musicswitcher'](main_globals, 0) # play shop music
+            main_globals['musicswitcher'](main_globals, main_globals['its_11_pm_50_minutes_before_the_deadline_i_dont_even_care_anymore'])
         else:
             main_globals['musicswitcher'](main_globals, 6)
 
@@ -77,50 +81,6 @@ def dungeon(main_globals):
 
                 elif tile_type == 2:
                     screen.blit(main_globals['pedistal_image'], (col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_width() // 2, row_idx * ts - camera_y + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_height() // 2 + 50))
-
-                elif tile_type == 3: # enemy spawn tile
-                    ts = main_globals['tile_size'] + main_globals['tile_offset']
-                    if main_globals['groups_spawned'] >= sum(i.count(3) for i in tilemap): # not dIh
-                        pass
-                    else:
-                        tile_center_x = col_idx * ts + main_globals['tile_size'] // 2
-                        tile_center_y = row_idx * ts + main_globals['tile_size'] // 2
-                        # i dont know what this is for and im not going to question it \/
-                        '''upper limit :D''' # ookay?
-                        upper = random.randrange(2, 10)
-                        previous_coords = []
-                        min_distance = 100
-                        hemorrhoids_in_tile = []
-                        for i in range(1, upper): # adds x through y
-                            attempts = 0
-                            max_attempts = 500 # give him some tries
-                            while attempts < max_attempts: # to get a valid pos
-                                deviation = random.randrange(50, 200)
-                                enemy_x = tile_center_x - enemy_size // 2 + random.choice((deviation, -deviation))
-                                enemy_y = tile_center_y - enemy_size // 2 + random.choice((deviation, -deviation))
-
-                                # check distance to the previous cocks
-                                too_close = False
-                                for (px, py) in previous_coords:
-                                    if math.isclose(enemy_x, px, abs_tol=min_distance) and math.isclose(enemy_y, py, abs_tol=min_distance):
-                                        too_close = True
-                                        break # too close to another cock
-
-                                if not too_close: # wow he did it
-                                    new_enemy = main_globals['Enemy'](main_globals, enemy_x, enemy_y, random.choice([0, 1]))
-                                    enemy_list.append(new_enemy)
-                                    hemorrhoids_in_tile.append(new_enemy)
-                                    previous_coords.append((enemy_x, enemy_y))
-                                    break  # valid position found
-                                attempts += 1
-
-                        main_globals['enemy_groups'].append({
-                            'tile_pos': (row_idx, col_idx),
-                            'enemies': hemorrhoids_in_tile,
-                            'active': True
-                        })
-                        print(f"spawned group {main_globals['groups_spawned']} on ({row_idx}, {col_idx}), ", end="")
-                        main_globals['groups_spawned'] += 1
 
                 elif tile_type == 88: # shop tile with literal yanderedev code # dont worry makus im here
                     shops_x = col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['shop_item_info_box'].get_width() // 2
@@ -231,22 +191,76 @@ def dungeon(main_globals):
                         screen.blit(main_globals['interact_image'],
                             (tile_center.x - camera_x - main_globals['interact_image'].get_width() // 2, tile_center.y - camera_y - main_globals['interact_image'].get_height() // 2))
                         if main_globals['pressed_e']:
-                            if main_globals['check_floor'](main_globals, main_globals['current_floor']) and main_globals['in_shop']:
-                                main_globals['remake_floor']()
-                                main_globals['shop_initialised'] = False
-                                # print(main_globals['in_shop'])
-                            elif main_globals['in_shop']:
+                            main_globals['enemy_list'].clear()
+                            main_globals['enemy_groups'].clear()
+                            if 'groups_spawned' in main_globals:
+                                main_globals['groups_spawned'] = 0
+
+                            if main_globals['in_shop']:
+                                # leaving shop -> normal floor
                                 main_globals['remake_floor']()
                                 main_globals['in_shop'] = False
-                                main_globals['article1'], main_globals['article2'], main_globals['article3'] = None, None, None
+                                main_globals['article1'] = None
+                                main_globals['article2'] = None
+                                main_globals['article3'] = None
                                 main_globals['shop_initialised'] = False
-                            else:
+
+                            elif main_globals['check_floor'](main_globals, main_globals['current_floor']):
+                                # entering shop
                                 for call in main_globals['shop_tilemap_calls']:
                                     eval(call)
                                 rebuild_walkable_mask(main_globals)
                                 main_globals['in_shop'] = True
-                                # print(main_globals['in_shop'])
-                        # print(tile_center)
+                                main_globals['its_11_pm_50_minutes_before_the_deadline_i_dont_even_care_anymore'] = None
+
+                            else:
+                                # normal -> normal
+                                main_globals['remake_floor']()
+                                main_globals['shop_initialised'] = False
+
+                elif tile_type == 3: # enemy spawn tile
+                    ts = main_globals['tile_size'] + main_globals['tile_offset']
+                    if main_globals['groups_spawned'] >= sum(i.count(3) for i in tilemap): # not dIh
+                        pass
+                    else:
+                        tile_center_x = col_idx * ts + main_globals['tile_size'] // 2
+                        tile_center_y = row_idx * ts + main_globals['tile_size'] // 2
+                        # i dont know what this is for and im not going to question it \/
+                        '''upper limit :D''' # ookay?
+                        upper = random.randrange(2, 10)
+                        previous_coords = []
+                        min_distance = 100
+                        hemorrhoids_in_tile = []
+                        for i in range(1, upper): # adds x through y
+                            attempts = 0
+                            max_attempts = 500 # give him some tries
+                            while attempts < max_attempts: # to get a valid pos
+                                deviation = random.randrange(50, 200)
+                                enemy_x = tile_center_x - enemy_size // 2 + random.choice((deviation, -deviation))
+                                enemy_y = tile_center_y - enemy_size // 2 + random.choice((deviation, -deviation))
+
+                                # check distance to the previous cocks
+                                too_close = False
+                                for (px, py) in previous_coords:
+                                    if math.isclose(enemy_x, px, abs_tol=min_distance) and math.isclose(enemy_y, py, abs_tol=min_distance):
+                                        too_close = True
+                                        break # too close to another cock
+
+                                if not too_close: # wow he did it
+                                    new_enemy = main_globals['Enemy'](main_globals, enemy_x, enemy_y, random.choice([0, 1]))
+                                    enemy_list.append(new_enemy)
+                                    hemorrhoids_in_tile.append(new_enemy)
+                                    previous_coords.append((enemy_x, enemy_y))
+                                    break  # valid position found
+                                attempts += 1
+
+                        main_globals['enemy_groups'].append({
+                            'tile_pos': (row_idx, col_idx),
+                            'enemies': hemorrhoids_in_tile,
+                            'active': True
+                        })
+                        print(f"spawned group {main_globals['groups_spawned']} on ({row_idx}, {col_idx}), ", end="")
+                        main_globals['groups_spawned'] += 1
 
         # drawing things on tiles
 
@@ -587,8 +601,6 @@ def dungeon(main_globals):
 
     def remake_floor(): # remakes the floor
         main_globals['active_tiles'] = []
-        main_globals['enemy_list'] = []
-        main_globals['enemy_groups'] = []
         tilemap = main_globals['tilemap']
         rows = len(tilemap)
         cols = len(tilemap[0])
@@ -777,8 +789,6 @@ def dungeon(main_globals):
 
         print(f"updating tilemap with {col_idx, row_idx} as type {new_tile_type}, ", end="")
         main_globals['tilemap'][row_idx][col_idx] = new_tile_type # actually updates the tile
-        if 'groups_spawned' in main_globals:
-            main_globals['groups_spawned'] = 0
 
     def get_camera_offset(main_globals, player, tile_size): # offset of the camera depending on tile with player
         player_center_x = player.x + main_globals['player_size'] // 2
