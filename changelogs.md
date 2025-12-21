@@ -301,3 +301,7 @@ updated texturer to check mask within tilemap excl.0s
 # 20 12 / m
 rdm do some
 shop is 75% done
+
+# 21 12 / m
+shop done
+shmuby do the thing plz

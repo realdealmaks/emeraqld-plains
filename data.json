@@ -1,0 +1,19 @@
+{
+    "music": 1.0,
+    "max_fps": 175,
+    "resolution": [
+        1080,
+        750
+    ],
+    "best_floor": 10,
+    "most_groups_cleared": 19,
+    "most_enemies_killed": 84,
+    "richest_player": 1060,
+    "total_deaths": 0,
+    "blood": [
+        "False"
+    ],
+    "hints": [
+        "False"
+    ]
+}
