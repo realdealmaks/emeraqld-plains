@@ -1,5 +1,7 @@
 # for the in game terminal
 
+
+# these commands are mostly jokes or testing
 try:
     import pygame, difflib
 except ModuleNotFoundError as e:
@@ -49,6 +51,7 @@ def cmd(main_globals):
                 "reset": "reset dungeon",
                 "respawn": "respawn player",
                 "ccache": "clear data",
+                "library": "all* main_globals entries",
             },
             "exit commands": {
                 "quit, q, exit, x": "",
@@ -302,6 +305,59 @@ def cmd(main_globals):
             elif cmd_lower == "search":
                 main_globals['waiting_for_input'] = "search"
                 print(" >> name/value to search: ", end="", flush=True)
+
+            elif cmd_lower == "library":
+                max_depth = 5 # how deep to search
+                stack = [(main_globals, "", 0)]
+                entries = []
+
+                while stack:
+                    current, prefix, depth = stack.pop()
+                    if depth > max_depth:
+                        continue
+
+                    # dict
+                    if isinstance(current, dict):
+                        for k, v in current.items():
+                            new_prefix = f"{prefix}.{k}" if prefix else k
+                            stack.append((v, new_prefix, depth + 1))
+
+                    # list or tuple
+                    elif isinstance(current, (list, tuple)):
+                        for idx, v in enumerate(current):
+                            new_prefix = f"{prefix}[{idx}]" if prefix else f"[{idx}]"
+                            stack.append((v, new_prefix, depth + 1))
+
+                    # objects
+                    elif hasattr(current, "__dict__") and type(current).__module__ != "builtins":
+                        try:
+                            for k, v in vars(current).items():
+                                new_prefix = f"{prefix}.{k}" if prefix else k
+                                stack.append((v, new_prefix, depth + 1))
+                        except Exception:
+                            entries.append((prefix, current))
+
+                    # primitive
+                    else:
+                        entries.append((prefix, current))
+
+                # print results
+                print("\nso you like to read books huh? here have one of my favourites, its from this library\nmain_globals library:")
+                for path, val in entries:
+                    if callable(val):
+                        display_val = "<function>"
+                    elif isinstance(val, (list, tuple, dict)):
+                        display_val = repr(val)
+                    elif hasattr(val, "__dict__") and type(val).__module__ != "builtins":
+                        try:
+                            display_val = repr(vars(val))
+                        except Exception:
+                            display_val = repr(val)
+                    else:
+                        display_val = repr(val)
+                    print(f"  {path}: {display_val}")
+                print(f"\n{len(entries)} entries with depth {max_depth}") # total entries
+                print("> ", end="", flush=True)
 
             # invalid command
             else:
