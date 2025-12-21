@@ -50,6 +50,12 @@ def dungeon(main_globals):
                     print(f"added active tile {tile}, ", end="")
 
         # tile checking systems
+        if not any(88 in tile for tile in main_globals['tilemap']):
+            main_globals['musicswitcher'](main_globals, 0)
+        else:
+            main_globals['musicswitcher'](main_globals, 6)
+
+
         for row_idx, row in enumerate(main_globals['tilemap']):
             for col_idx, tile_type in enumerate(row):
 
