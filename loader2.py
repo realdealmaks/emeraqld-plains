@@ -1,7 +1,7 @@
 # this file is for images and audio
 
 try:
-    import pygame
+    import pygame, time
     from PIL import Image
     from pygame import mixer as mx
 except ImportError as e:
@@ -85,15 +85,17 @@ def loader2(main_globals):
 
     # background music
     main_globals['musics'] = ["assets/audio/music/testdroga.mp3", "assets/audio/music/game_over_loop.mp3", "assets/audio/music/bakus funk trim.mp3", "assets/audio/music/theme_loop.ogg", "assets/audio/music/settings.ogg", "assets/audio/music/credits.mp3", "assets/audio/music/shop.mp3"]
-    #mx.music.load(main_globals['musics'][0])
-    #mx.music.play(-1)
-    #mx.music.pause()
-    #mx.music.set_volume(1)
+    # mx.music.load(main_globals['musics'][0])
+    # mx.music.play(-1)
+    # mx.music.pause()
+    # mx.music.set_volume(1)
 
     # interaction image
     interact = pygame.image.load("assets/useful images/interact.png").convert_alpha()
     main_globals['interact_image'] = pygame.transform.scale(interact, (50, 50))
-    main_globals['new_mutation_image'] = pygame.image.load("assets/useful images/mutation.png").convert_alpha()
+    main_globals['mutation_image'] = pygame.image.load("assets/useful images/mutation.png").convert_alpha()
+    main_globals['mutation_image'] = pygame.transform.scale(main_globals['mutation_image'], (main_globals['screen_w'] // 2, main_globals['screen_h'] // 2))
+    main_globals['mutation_state'] = {'phase': 'fade_in', 'alpha': 0, 'start_time': time.time()}
 
     # hint images - keys
     key_hints = ["a", "s", "d", "w", "e"]
