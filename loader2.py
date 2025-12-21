@@ -199,9 +199,9 @@ def loader2(main_globals):
 
     main_globals['weapon_stats'] = {
         "sword": {"damage": 15 * damage_mult, "range": 50, "cooldown": 0.6 * cooldown_mult, 'chance': 0.4},
-        "axe": {"damage": 20 * damage_mult, "range": 75, "cooldown": 1 * cooldown_mult, 'chance': 0.4},
+        "axe": {"damage": 22 * damage_mult, "range": 75, "cooldown": 1 * cooldown_mult, 'chance': 0.4},
         "book": {"damage": 25 * damage_mult, "range": 100, "cooldown": 2 * cooldown_mult, 'chance': 0.0},
-        "katana": {"damage": 5 * damage_mult, "range": 60, "cooldown": 0.8 * cooldown_mult, 'chance': 0.2}
+        "katana": {"damage": 9 * damage_mult, "range": 45, "cooldown": 0.7 * cooldown_mult, 'chance': 0.2}
     }
 
     # crystals

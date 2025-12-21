@@ -709,14 +709,14 @@ def ui(main_globals):
             main_globals['enemy_damage_scaler'] += 5
             if main_globals['enemy_damage_scaler'] > 20:
                 main_globals['enemy_damage_scaler'] = 20
-                print("max enemy strenght reached (20)")
+                print("max enemy bonus strenght reached (20)")
                 effect = "healthy"
             else: 
-                print(f"enemy damage now at {2 * main_globals['enemy_damage_scaler']}")
+                print(f"enemy bonus damage now at {2 * main_globals['enemy_damage_scaler']}")
         elif effect == "healthy":
             text = "enemies are now healthier"
             main_globals['enemy_hp_scaler'] += 2
-            print(f"enemy hp now at {5 * main_globals['enemy_hp_scaler']}")
+            print(f"enemy bonus hp now at {5 * main_globals['enemy_hp_scaler']}")
         else:
             return
 
