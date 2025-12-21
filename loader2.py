@@ -23,6 +23,15 @@ def loader2(main_globals):
 
     #shop images
     main_globals['shopbase'] = pygame.image.load("assets/useful images/shop/shop_holder.png").convert_alpha()
+    main_globals['small_potion_big'] = pygame.transform.scale2x(
+        main_globals['items']['small_potion']['image']
+    )
+    main_globals['medium_potion_big'] = pygame.transform.scale2x(
+        main_globals['items']['medium_potion']['image']
+    )
+    main_globals['large_potion_big'] = pygame.transform.scale2x(
+        main_globals['items']['large_potion']['image']
+    )
 
     # sfx
     main_globals['death_sound'] = mx.Sound("assets/audio/sfx/vineboom.mp3")
@@ -75,7 +84,7 @@ def loader2(main_globals):
     # main_globals['tile_texture'] = pygame.image.load("assets/random images/negro hitler bot.jpg")
 
     # background music
-    main_globals['musics'] = ["assets/audio/music/testdroga.mp3", "assets/audio/music/game_over_loop.mp3", "assets/audio/music/bakus funk trim.mp3"]
+    main_globals['musics'] = ["assets/audio/music/testdroga.mp3", "assets/audio/music/game_over_loop.mp3", "assets/audio/music/bakus funk trim.mp3", "assets/audio/music/theme_loop.ogg", "assets/audio/music/settings.ogg", "assets/audio/music/credits.mp3"]
     mx.music.load(main_globals['musics'][0])
     mx.music.play(-1)
     mx.music.pause()

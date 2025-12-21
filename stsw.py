@@ -13,7 +13,7 @@ def stsw(main_globals):
 
             case "in menu":
                 main_globals['draw_menu'](main_globals, main_globals['mouse_pos'])
-                main_globals['musicswitcher'](main_globals, 2)
+                main_globals['musicswitcher'](main_globals, 3)
 
             case "choosing mode" | "in dungeon":
 
@@ -33,12 +33,14 @@ def stsw(main_globals):
 
             case "in settings":
                 main_globals['draw_settings'](main_globals, main_globals['mouse_pos'])
+                main_globals['musicswitcher'](main_globals, 4)
 
             case "dead":
                 main_globals['draw_dead'](main_globals, main_globals['mouse_pos'])
 
             case "in credits":
                 main_globals['draw_credits'](main_globals, main_globals['mouse_pos']) # cursed with low fps
+                main_globals['musicswitcher'](main_globals, 5)
 
             case "in battle pass": # kek # https://cdn.discordapp.com/attachments/773066547525582860/1429558008089804883/speed.gif?ex=6903c225&is=690270a5&hm=e337ff15ddec125110c8135df1c5b8a56ba220bb733b0207d4f5040a3156a4a4&
                 main_globals['draw_battle_pass'](main_globals, main_globals['mouse_pos'])

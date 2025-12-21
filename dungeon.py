@@ -65,6 +65,7 @@ def dungeon(main_globals):
                             main_globals['player'].x = main_globals['spawn_x']
                             main_globals['player'].y = main_globals['spawn_y']
                         main_globals['spawn_set'] = True
+                    print(main_globals['shop_initialised'])
 
                 elif tile_type == 2:
                     screen.blit(main_globals['pedistal_image'], (col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_width() // 2, row_idx * ts - camera_y + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_height() // 2 + 50))
@@ -134,6 +135,8 @@ def dungeon(main_globals):
 
                     # create items you can purchase
                     if not main_globals['shop_initialised']:
+                        main_globals['article1'], main_globals['article2'], main_globals['article3'] = None, None, None
+                        print('articles reset')
                         for article_key in ['article1', 'article2', 'article3']:
                             random_c = random.choice(available_c) # select it
                             main_globals[article_key] = random_c
@@ -141,13 +144,18 @@ def dungeon(main_globals):
                             print(f"article: {article}, random item: {random_c}")
                         main_globals['shop_initialised'] = True
                         print(main_globals['article1'], main_globals['article2'], main_globals['article3'])
+                    else:
+                        print('shop already init')
 
-                    # and blit them too # swapped 1 and 2 because you are not positioning them in order
+                    # and blit them too
                     if main_globals['article2']: screen.blit(main_globals['items'][main_globals['article2']]['image'], (col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['items'][main_globals['article2']]['image'].get_width() // 2, pedestal_y - 20))
                     if main_globals['article1']: screen.blit(main_globals['items'][main_globals['article1']]['image'], (col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['items'][main_globals['article1']]['image'].get_width() // 2 - 200, pedestal_y - 20))
                     if main_globals['article3']: screen.blit(main_globals['items'][main_globals['article3']]['image'], (col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['items'][main_globals['article3']]['image'].get_width() // 2 + 200, pedestal_y - 20))
 
                     screen.blit(main_globals['shop_item_info_box'], (shops_x, shops_y))
+
+                    info_box_width, info_box_height = main_globals['shop_item_info_box'].get_size()
+                    info_box_center_y = shops_y + info_box_height // 2
 
                     # check pedestals
 
@@ -157,6 +165,13 @@ def dungeon(main_globals):
                         {'key': 'article3', 'x': pedestal_x_right}
                     ]
 
+                    positions = {
+                        'potion_x': col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['small_potion_big'].get_width() // 2,
+                        'potion_y': #row_idx * ts - camera_y + main_globals['tile_size'] // 2 - main_globals['shop_item_info_box'].get_height() // 2
+                        info_box_center_y,
+                        'offset': info_box_width // 4
+                    }
+                    
                     for pedestal in pedestals:
                         article_key = pedestal['key']
                         article_x = pedestal['x']
@@ -175,6 +190,9 @@ def dungeon(main_globals):
                                         pedestal_y - main_globals['interact_image'].get_height() - 10
                                     )
                                 )
+
+                                # main_globals['items'][main_globals[article_key]]['image']
+                                screen.blit(main_globals[f'{main_globals[article_key]}_big'], (positions['potion_x'] - positions['offset'], positions['potion_y'] - 10))
 
                                 if main_globals['pressed_e']:
                                     item = main_globals['items'][main_globals[article_key]]
@@ -204,11 +222,12 @@ def dungeon(main_globals):
                         if main_globals['pressed_e']:
                             if main_globals['check_floor'](main_globals, main_globals['current_floor']) and main_globals['current_floor'] != 1 or 0 and main_globals['in_shop']:
                                 main_globals['remake_floor']()
+                                main_globals['shop_initialised'] = False
                                 # print(main_globals['in_shop'])
                             elif main_globals['in_shop']:
                                 main_globals['remake_floor']()
                                 main_globals['in_shop'] = False
-                                main_globals['article1'] = main_globals['article2'] = main_globals['article3'] = None
+                                main_globals['article1'], main_globals['article2'], main_globals['article3'] = None, None, None
                                 main_globals['shop_initialised'] = False
                             else:
                                 for call in main_globals['shop_tilemap_calls']:

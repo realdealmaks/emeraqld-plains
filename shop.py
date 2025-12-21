@@ -4,7 +4,7 @@ import types
 
 def shop(main_globals):
 
-    coefficient = 10 # is that what coefficient means?
+    coefficient = 5 # is that what coefficient means?
     screen = main_globals['screen']
 
     def check_floor(main_globals, current_floor):
