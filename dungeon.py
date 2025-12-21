@@ -587,6 +587,9 @@ def dungeon(main_globals):
 
     def remake_floor(): # remakes the floor
         main_globals['active_tiles'] = []
+        main_globals['enemy_list'] = []
+        main_globals['enemy_groups'] = []
+        main_globals['groups_cleared'] = 0
         tilemap = main_globals['tilemap']
         rows = len(tilemap)
         cols = len(tilemap[0])
