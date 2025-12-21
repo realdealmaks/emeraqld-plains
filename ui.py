@@ -694,30 +694,38 @@ def ui(main_globals):
         text = smallfont.render(str(weapon.cooldown), True, (255, 255, 255))
         screen.blit(text, (screen_w // 2 - text.get_width() // 2, screen_h // 2 - main_globals['weapon_frame'].get_height() // 2 + 110))
 
-    def new_mutation(main_globals, effect, number): # remake this shit sometime
+    def new_mutation(main_globals, effect, state):
         screen = main_globals['screen']
-        mutation_alpha = 0
-        while mutation_alpha < 255:
-            mutation_alpha += 20
-            if mutation_alpha > 255:
-                mutation_alpha = 255
-            screen.fill((0, 0, 0))
-            main_globals['mutation_image'].set_alpha(mutation_alpha)
-            screen.blit(main_globals['mutation_image'], (0, 0))
-            time.sleep(0.01)
-            pygame.display.flip()
-        main_globals['player'].effect(effect, number)
-        time.sleep(1)
-        while mutation_alpha > 0:
-            mutation_alpha -= 25
-            if mutation_alpha < 0:
-                mutation_alpha = 0
-            screen.fill((0, 0, 0))
-            main_globals['mutation_image'].set_alpha(mutation_alpha)
-            screen.blit(main_globals['mutation_image'], (0, 0))
-            time.sleep(0.01)
-            pygame.display.flip()
-        main_globals['mutation_image'].set_alpha(255)
+        screen_w = main_globals['screen'].get_width()
+        screen_h = main_globals['screen'].get_height()
+        image = main_globals['mutation_image']
+        now = time.time()
+
+        if state['phase'] == 'fade_in':
+            elapsed = now - state['start_time']
+            state['alpha'] += 20 * main_globals['dt'] * 10
+            image.set_alpha(state['alpha'])
+            screen.blit(image, (screen_w // 2 - image.get_width() // 2, screen_h // 2 - image.get_height() // 2))
+            if state['alpha'] >= 255:
+                state['phase'] = 'hold'
+                state['start_time'] = now
+
+        elif state['phase'] == 'hold':
+            time_held = now - state['start_time']
+            image.set_alpha(255)
+            screen.blit(image, (screen_w // 2 - image.get_width() // 2, screen_h // 2 - image.get_height() // 2))
+            if time_held >= 1:
+                state['phase'] = 'fade_out'
+                state['start_time'] = now
+
+        elif state['phase'] == 'fade_out':
+            elapsed = now - state['start_time']
+            state['alpha'] = max(0, 255 - int(elapsed / 0.01 * 25))
+            image.set_alpha(state['alpha'])
+            screen.blit(image, (screen_w // 2 - image.get_width() // 2, screen_h // 2 - image.get_height() // 2))
+            if state['alpha'] <= 0:
+                state['phase'] = 'done'
+                image.set_alpha(255) # reset alpha
 
     def draw_vignette(main_globals, player):
         if main_globals['blood_text'] == "False":

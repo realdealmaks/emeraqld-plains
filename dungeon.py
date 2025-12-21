@@ -718,6 +718,10 @@ def dungeon(main_globals):
         for r, c, val in path_tiles:
             main_globals['update_tile'](main_globals, c, r, val)
 
+        if not any(98 in row for row in main_globals['tilemap']):
+            main_globals['remake_floor']()
+            print("failed building floor, retrying")
+
         print("new tilemap is:")
         main_globals['current_floor'] += 1 # save floors
         if main_globals['current_floor'] > main_globals['best_floor']:
