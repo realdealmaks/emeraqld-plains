@@ -56,7 +56,7 @@ def loader3(main_globals):
                         screen.blit(text_surface, (draw_x, draw_y))
                 if tile == 88:
                     if (row_idx, col_idx) == player_tile:
-                        text_surface = font.render("rdm get to work", True, (255, 255, 255))
+                        text_surface = font.render("shop for items", True, (255, 255, 255))
                         draw_x = col_idx * ts - camera_x
                         draw_y = row_idx * ts - camera_y
                         screen.blit(text_surface, (draw_x, draw_y))
@@ -68,7 +68,7 @@ def loader3(main_globals):
                         screen.blit(text_surface, (draw_x, draw_y))
                 if tile == 98:
                     if (row_idx, col_idx) == player_tile:
-                        text_surface = font.render("make new floor", True, (255, 255, 255))
+                        text_surface = font.render("enter a new floor", True, (255, 255, 255))
                         draw_x = col_idx * ts - camera_x
                         draw_y = row_idx * ts - camera_y
                         screen.blit(text_surface, (draw_x, draw_y))

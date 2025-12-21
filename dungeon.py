@@ -7,6 +7,7 @@ except ImportError as e:
 
 def dungeon(main_globals):
     smallfont = pygame.font.Font("assets/font/editundo.ttf", 22)
+    smallerfont = pygame.font.Font("assets/font/editundo.ttf", 16)
     font = pygame.font.Font("assets/font/editundo.ttf", 24)
 
     def draw_dungeon(main_globals, player, is_paused, facing_left):
@@ -130,7 +131,7 @@ def dungeon(main_globals):
                     pedestal_x_right = col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_width() // 2 + offset
                     pedestal_x_center = col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_width() // 2
                     pedestal_y = row_idx * ts - camera_y + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_height() // 2 + offset
-                    
+
                     #screen.blit(main_globals['shop_holder'], (shops_x, shops_y))
                     screen.blit(main_globals['pedistal_image'], (pedestal_x_center, pedestal_y))
                     screen.blit(main_globals['pedistal_image'], (pedestal_x_left, pedestal_y))
@@ -180,9 +181,6 @@ def dungeon(main_globals):
                         'offset': info_box_width // 4
                     }
 
-                    # shop text
-                    font.render("shop", True, (255, 255, 255), (shops_x, info_box_center_y + offset))
-
                     for pedestal in pedestals:
                         article_key = pedestal['key']
                         article_x = pedestal['x']
@@ -206,14 +204,14 @@ def dungeon(main_globals):
                                 item = main_globals['items'][main_globals[article_key]]
 
                                 # selected item info
-                                desc_surface = font.render(item['description'], True, (255, 255, 255))
-                                screen.blit(desc_surface, (shops_x + 20, info_box_center_y - 20))
+                                desc_surface = smallfont.render(item['description'], True, (255, 255, 255))
+                                screen.blit(desc_surface, (shops_x + 20 + main_globals[f'{main_globals[article_key]}_big'].get_width() * 2, info_box_center_y - 20))
 
-                                price_surface = font.render(f"{item['price']} gold", True, (255, 215, 0))
-                                screen.blit(price_surface, (shops_x + 20, info_box_center_y + 10))
+                                price_surface = smallfont.render(f"{item['price']} gold", True, (255, 215, 0))
+                                screen.blit(price_surface, (shops_x + 20 + main_globals[f'{main_globals[article_key]}_big'].get_width() * 2, info_box_center_y + 10))
 
                                 # draw big image of the item
-                                screen.blit(main_globals[f'{main_globals[article_key]}_big'], (positions['potion_x'] - positions['offset'], positions['potion_y'] - 10))
+                                screen.blit(main_globals[f'{main_globals[article_key]}_big'], (positions['potion_x'] - positions['offset'] - 60, positions['potion_y'] - 10))
 
                                 if main_globals['pressed_e']:
                                     item = main_globals['items'][main_globals[article_key]]
@@ -233,7 +231,7 @@ def dungeon(main_globals):
                         screen.blit(main_globals['interact_image'],
                             (tile_center.x - camera_x - main_globals['interact_image'].get_width() // 2, tile_center.y - camera_y - main_globals['interact_image'].get_height() // 2))
                         if main_globals['pressed_e']:
-                            if main_globals['check_floor'](main_globals, main_globals['current_floor']) and main_globals['current_floor'] != 1 or 0 and main_globals['in_shop']:
+                            if main_globals['check_floor'](main_globals, main_globals['current_floor']) and main_globals['in_shop']:
                                 main_globals['remake_floor']()
                                 main_globals['shop_initialised'] = False
                                 # print(main_globals['in_shop'])
@@ -578,14 +576,17 @@ def dungeon(main_globals):
                 main_globals['crystal_ui'](main_globals)
 
         if main_globals['shop_initialised'] and not main_globals['tutorial_floor']:
-            main_globals['new_mutation'](main_globals, "effect", main_globals['mutation_state'])
+            main_globals['new_mutation'](main_globals, main_globals['mutation_state']['type'], main_globals['mutation_state'])
+            main_globals['mutation_state']['type'] = 'none'
         else:
             if main_globals['mutation_state']['phase'] != 'fade_in' or main_globals['mutation_state']['alpha'] != 0:
                 main_globals['mutation_state']['phase'] = 'fade_in'
                 main_globals['mutation_state']['alpha'] = 0
                 main_globals['mutation_state']['start_time'] = time.time()
+                main_globals['mutation_state']['type'] = random.choice(["strong", "healthy"]) if main_globals['mutation_state']['type'] == 'none' else main_globals['mutation_state']['type']
 
     def remake_floor(): # remakes the floor
+        main_globals['active_tiles'] = []
         tilemap = main_globals['tilemap']
         rows = len(tilemap)
         cols = len(tilemap[0])
@@ -740,7 +741,7 @@ def dungeon(main_globals):
             main_globals['update_tile'](main_globals, c, r, val)
 
         if not any(98 in row for row in main_globals['tilemap']):
-            main_globals['remake_floor']()
+            main_globals['remake_floor']() # try again nigger
             print("failed building floor, retrying")
 
         print("new tilemap is:")
@@ -852,7 +853,7 @@ def dungeon(main_globals):
     def draw_texturing_progress(main_globals):
         screen = main_globals['screen']
         screen.fill((0, 0, 0))
-        font = pygame.font.Font("assets/font/editundo.ttf", 20) # between small and smaller font
+        this_font = pygame.font.Font("assets/font/editundo.ttf", 20) # between small and smaller font
         if 'texturing_progress' in main_globals:
             screen = main_globals['screen']
             progress = main_globals['texturing_progress']
@@ -878,7 +879,7 @@ def dungeon(main_globals):
             percent = int(done / total * 100)
             if percent > 100: # it goes to 103 btw
                 percent = 100
-            percent_text = font.render(f"{percent}%", True, (255, 255, 255))
+            percent_text = this_font.render(f"{percent}%", True, (255, 255, 255))
             percent_rect = percent_text.get_rect(center=(screen_w // 2, bar_y - 10))
             screen.blit(percent_text, percent_rect)
 
@@ -886,7 +887,7 @@ def dungeon(main_globals):
             elapsed = time.time() - progress['start_time']
             if done > 0:
                 time_left = elapsed / done * (total - done)
-                approx_text = font.render(f"{int(time_left)} seconds left", True, (255, 255, 255))
+                approx_text = this_font.render(f"{int(time_left)} seconds left", True, (255, 255, 255))
                 screen.blit(approx_text, (5, percent_rect.y))
 
             pygame.display.flip()

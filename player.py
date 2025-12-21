@@ -31,8 +31,8 @@ def player(main_globals):
 
         def move(self, dx, dy):
             dt = self.main_globals['dt']
-            new_x = self.x + dx * self.speed * dt * 60  * main_globals['plr_spd_mult']
-            new_y = self.y + dy * self.speed * dt * 60  * main_globals['plr_spd_mult']
+            new_x = self.x + dx * self.speed * dt * 60
+            new_y = self.y + dy * self.speed * dt * 60
 
             # change mask depending on lock
             if self.locked:

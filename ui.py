@@ -685,13 +685,13 @@ def ui(main_globals):
         text = smallfont.render(weapon.name, True, (255, 255, 255))
         screen.blit(text, (screen_w // 2 - text.get_width() // 2, screen_h // 2 - main_globals['weapon_frame'].get_height() // 2 + 20))
 
-        text = smallfont.render(str(weapon.damage), True, (255, 255, 255))
+        text = smallfont.render(str(weapon.damage * main_globals['damage_mult']), True, (255, 255, 255))
         screen.blit(text, (screen_w // 2 - text.get_width() // 2, screen_h // 2 - main_globals['weapon_frame'].get_height() // 2 + 50))
 
         text = smallfont.render(str(weapon.range), True, (255, 255, 255))
         screen.blit(text, (screen_w // 2 - text.get_width() // 2, screen_h // 2 - main_globals['weapon_frame'].get_height() // 2 + 80))
 
-        text = smallfont.render(str(weapon.cooldown), True, (255, 255, 255))
+        text = smallfont.render(str(weapon.cooldown * main_globals['cooldown_mult']), True, (255, 255, 255))
         screen.blit(text, (screen_w // 2 - text.get_width() // 2, screen_h // 2 - main_globals['weapon_frame'].get_height() // 2 + 110))
 
     def new_mutation(main_globals, effect, state):
@@ -701,11 +701,43 @@ def ui(main_globals):
         image = main_globals['mutation_image']
         now = time.time()
 
+        if effect == 'none':
+            # keep the last text instead of clearing
+            text = main_globals.get('last_mutation_text', None)
+        elif effect == "strong":
+            text = "enemies are now stronger"
+            main_globals['enemy_damage_scaler'] += 5
+            if main_globals['enemy_damage_scaler'] > 20:
+                main_globals['enemy_damage_scaler'] = 20
+                print("max enemy strenght reached (20)")
+                effect = "healthy"
+            else: 
+                print(f"enemy damage now at {2 * main_globals['enemy_damage_scaler']}")
+        elif effect == "healthy":
+            text = "enemies are now healthier"
+            main_globals['enemy_hp_scaler'] += 2
+            print(f"enemy hp now at {5 * main_globals['enemy_hp_scaler']}")
+        else:
+            return
+
+        # save last text
+        if text:
+            main_globals['last_mutation_text'] = text
+
+        if text:
+            text_surf = main_globals['font'].render(text, True, (255, 20, 20))
+            text_rect = text_surf.get_rect()
+            text_rect.center = (screen_w // 2, screen_h // 2 + image.get_height() // 2 + 75)
+            screen.blit(text_surf, text_rect.topleft)
+
         if state['phase'] == 'fade_in':
             elapsed = now - state['start_time']
             state['alpha'] += 20 * main_globals['dt'] * 10
             image.set_alpha(state['alpha'])
             screen.blit(image, (screen_w // 2 - image.get_width() // 2, screen_h // 2 - image.get_height() // 2))
+            if text:
+                text_surf.set_alpha(state['alpha'])
+                screen.blit(text_surf, text_rect.topleft)
             if state['alpha'] >= 255:
                 state['phase'] = 'hold'
                 state['start_time'] = now
@@ -714,7 +746,10 @@ def ui(main_globals):
             time_held = now - state['start_time']
             image.set_alpha(255)
             screen.blit(image, (screen_w // 2 - image.get_width() // 2, screen_h // 2 - image.get_height() // 2))
-            if time_held >= 1:
+            if text:
+                text_surf.set_alpha(state['alpha'])
+                screen.blit(text_surf, text_rect.topleft)
+            if time_held >= 3:
                 state['phase'] = 'fade_out'
                 state['start_time'] = now
 
@@ -723,9 +758,13 @@ def ui(main_globals):
             state['alpha'] = max(0, 255 - int(elapsed / 0.01 * 25))
             image.set_alpha(state['alpha'])
             screen.blit(image, (screen_w // 2 - image.get_width() // 2, screen_h // 2 - image.get_height() // 2))
+            if text:
+                text_surf.set_alpha(state['alpha'])
+                screen.blit(text_surf, text_rect.topleft)
             if state['alpha'] <= 0:
                 state['phase'] = 'done'
                 image.set_alpha(255) # reset alpha
+            main_globals['last_mutation_text'] = None
 
     def draw_vignette(main_globals, player):
         if main_globals['blood_text'] == "False":

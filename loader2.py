@@ -1,7 +1,7 @@
 # this file is for images and audio
 
 try:
-    import pygame, time
+    import pygame, time, random
     from PIL import Image
     from pygame import mixer as mx
 except ImportError as e:
@@ -95,7 +95,7 @@ def loader2(main_globals):
     main_globals['interact_image'] = pygame.transform.scale(interact, (50, 50))
     main_globals['mutation_image'] = pygame.image.load("assets/useful images/mutation.png").convert_alpha()
     main_globals['mutation_image'] = pygame.transform.scale(main_globals['mutation_image'], (main_globals['screen_w'] // 2, main_globals['screen_h'] // 2))
-    main_globals['mutation_state'] = {'phase': 'fade_in', 'alpha': 0, 'start_time': time.time()}
+    main_globals['mutation_state'] = {'phase': 'fade_in', 'alpha': 0, 'start_time': time.time(), 'type': random.choice(["strong", "healthy"])}
 
     # hint images - keys
     key_hints = ["a", "s", "d", "w", "e"]

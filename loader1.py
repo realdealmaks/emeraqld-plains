@@ -87,8 +87,8 @@ def loader1(main_globals):
     main_globals['selected_crystal_effect'] = None
     main_globals['crystals'] = [ # list of descriptions of crystals
         "increases max hp", # green
-        "increases overall damage", # red
-        "increases overall speed", # blue
+        "increases damage dealt", # red
+        "increases attack speed", # blue
     ]
     main_globals['inventory_texts'] = [] # + amount text image for inventory
 
@@ -258,24 +258,24 @@ def loader1(main_globals):
             'description': 'heals you a little (20)',
             'function': lambda main_globals: main_globals['player'].effect('heal', 20),
             'image': pygame.image.load("assets/models/items/consumables/potions/health/potion20.png").convert_alpha(),
-            'price': 25
+            'price': 50
         },
         'medium_potion': {
             'description': 'heals you a bit (40)',
             'function': lambda main_globals: main_globals['player'].effect('heal', 40),
             'image': pygame.image.load("assets/models/items/consumables/potions/health/potion40.png").convert_alpha(),
-            'price': 50
+            'price': 80
         },
         'large_potion': {
             'description': 'heals you a lot (60)',
             'function': lambda main_globals: main_globals['player'].effect('heal', 60),
             'image': pygame.image.load("assets/models/items/consumables/potions/health/potion60.png").convert_alpha(),
-            'price': 75
+            'price': 100
         },
 
         # crystals
         'crystal_fragments': {
-            'description': 'fragments of a crystal, \nyou require 6',
+            'description': 'some pieces/6',
             'function': lambda main_globals: main_globals['use_fragments'](main_globals),
             'image': pygame.image.load("assets/models/items/consumables/crystal/crystalfragments.png").convert_alpha()
         },
@@ -295,6 +295,9 @@ def loader1(main_globals):
             'function': lambda player: setattr(player, 'wealth_mult', player.wealth_mult * 1.15)
         }
 }
+
+    main_globals['enemy_hp_scaler'] = 0
+    main_globals['enemy_damage_scaler'] = 0
 
     main_globals['items'] = items
 

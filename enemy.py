@@ -11,16 +11,16 @@ def enemy(main_globals):
             self.y = y
             self.size = main_globals['enemy_size']
             if type == 0:
-                self.health = 40
+                self.health = 40 + 5 * main_globals['enemy_hp_scaler']
             elif type == 1:
-                self.health = 60
+                self.health = 60 + 5 * main_globals['enemy_hp_scaler']
             self.alive = True
             self.speed = 0.9
             self.type = type
             self.active = False
             self.facing_left = False
             self.cooldown = 1500 # ms, 1 1/2 seconds
-            self.damage = 10 # why not right?
+            self.damage = 10 + 2 * main_globals['enemy_damage_scaler'] # why not right?
             self.active_counter = 10 # frames until ! disappears
             self.last_attack_time = 0
             self.images = [
@@ -156,7 +156,7 @@ def enemy(main_globals):
                     main_globals['save'](main_globals, most_enemies_killed=main_globals['most_enemies_killed'])
 
                 # dropped items
-                if random.random() < 0.9: # *100 in %
+                if random.random() < 0.05: # *100 in %
                     main_globals['add_to_inventory'](main_globals, "crystal_fragments", 1)
 
     enemy = Enemy(main_globals, main_globals['spawn_x'], main_globals['spawn_y'], main_globals['enemy_type'])
