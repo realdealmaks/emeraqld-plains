@@ -1,0 +1,7 @@
+# install with: pip install -r requirements.txt
+# these are tested versions
+
+pygame==2.6.1
+pymunk==7.1.0
+Pillow==11.1.0
+numpy==2.2.6

@@ -13,14 +13,15 @@ screen = pygame.display.set_mode((screen_w, screen_h), pygame.HWSURFACE | pygame
 pygame.display.set_icon(pygame.image.load("assets/models/player/naganou_icon.png"))
 resolution = screen_w, screen_h
 
+# fps shit for virtual shit
 vfps_max = 175
 virtual_dt = 1 / vfps_max
-virtual_accumulator = 0
+virtual_accumulator = 0 # overflow frames
 virtual_prev_time = pygame.time.get_ticks() / 1000
 virtual_clock = pygame.time.Clock()
 virtual_w, virtual_h = 1080, 750
 virtual_screen = pygame.Surface((virtual_w, virtual_h))
-dt = virtual_clock.tick(vfps_max) / 1000
+dt = virtual_clock.tick(vfps_max) / 1000 # time passed since last frame
 prev_time = pygame.time.get_ticks() / 1000
 max_fps = 60
 
@@ -29,20 +30,6 @@ space = pymunk.Space()
 space.gravity = (0, 500)
 
 # this turns all of the main_globals[''] slop into actually non eye burning variables
-class DictNamespace:
-    def __init__(self, d):
-        self._d = d
-    def __getattr__(self, k):
-        return self._d[k]
-    def __setattr__(self, k, v):
-        if k == "_d":
-            super().__setattr__(k, v)
-        else:
-            self._d[k] = v
-    def __getitem__(self, k):
-        return self._d[k]
-    def __setitem__(self, k, v):
-        self._d[k] = v
 
 main_globals = {
     'screen_w': screen_w, 'screen_h': screen_h, 'screen': screen
@@ -50,15 +37,14 @@ main_globals = {
 
 # import the importer
 from masterloader import superloader
-main_globals = superloader()
+main_globals = superloader() # load with the importer
 
-main = DictNamespace(main_globals) # converts some globals
 print("ready, ", end="")
-# dont use main_globals['🤖'] but instead use main.🤖
+
 
 # dont change ts diddybludd
-main.developer_tools = True
-# well obvi unless you are a dev :(
+main_globals['developer_tools'] = True
+# well obvi unless you are a dev ;(
 # https://tenor.com/en-GB/view/diddyblud-diddy-einstein-albert-einstein-calc-gif-9528529477851089865
 
 
@@ -69,42 +55,42 @@ for key, value in saved_data.items():
         main_globals[key] = value
 print(f"loaded data: {saved_data}")
 
-# redo getting data because they dont have the same names
-frame_caps = main.frame_caps
-main.frame_cap = main_globals.get('max_fps', 60)
-main.frame_cap_index = min(range(len(frame_caps)), key=lambda i: abs(frame_caps[i] - main.frame_cap))
-main.frame_cap = frame_caps[main.frame_cap_index]
+# redo getting some data because they dont have the same names
+frame_caps = main_globals['frame_caps']
+main_globals['frame_cap'] = main_globals.get('max_fps', 60)
+main_globals['frame_cap_index'] = min(range(len(frame_caps)), key=lambda i: abs(frame_caps[i] - main_globals['frame_cap']))
+main_globals['frame_cap'] = frame_caps[main_globals['frame_cap_index']]
 
-resolutions = main.resolutions
-main.resolution = main_globals.get('resolution', (1080, 750))
-main.resolution_index = min(range(len(resolutions)), key=lambda i: abs(resolutions[i][0] - main.resolution[0]))
-main.resolution = resolutions[main.resolution_index]
+resolutions = main_globals['resolutions']
+main_globals['resolution'] = main_globals.get('resolution', (1080, 750))
+main_globals['resolution_index'] = min(range(len(resolutions)), key=lambda i: abs(resolutions[i][0] - main_globals['resolution'][0]))
+main_globals['resolution'] = resolutions[main_globals['resolution_index']]
 
 music_volume = saved_data.get("music", 1)
-main.music_volume = music_volume
+main_globals['music_volume'] = music_volume
 mx.music.set_volume(music_volume)
 
-# virtual screen setup
+# virtual screen setup into globales
 current_time = pygame.time.get_ticks() / 1000
-main.dt = current_time - main.prev_time
-main.prev_time = current_time
-main.screen = virtual_screen
-main.resolution = resolutions[main.resolution_index]
+main_globals['dt'] = current_time - main_globals['prev_time']
+main_globals['prev_time'] = current_time
+main_globals['screen'] = virtual_screen # globals screen = virtual, here local = real
+main_globals['resolution'] = resolutions[main_globals['resolution_index']]
 
-main.player_gif(main_globals) # loads the player gif
+main_globals['player_gif'](main_globals) # loads the player gif
 
 # pass space to globals
-main.space = space
+main_globals['space'] = space
 
 time.sleep(0.3)
 
-print(f"started, {"dev" if main.developer_tools else "reg"}")
+print(f"started, {"developer" if main_globals['developer_tools'] else "regular"}")
 # loop setup
 clock = pygame.time.Clock() # makes some clocks and sets the titles
 pygame.display.set_caption('Naganou') # change to naganou? :))) # sure man
 
 # makes the initial walkable surface along with what is made in it
-main.walkable_mask = main.make_initial_walkable_surface(main.tilemap, main_globals) 
+main_globals['walkable_mask'] = main_globals['make_initial_walkable_surface'](main_globals['tilemap'], main_globals) 
 
 # calm the fuck down man
 for i in range(10):
@@ -113,18 +99,18 @@ for i in range(10):
 
 # makes some game loops
 running = True # https://cdn.discordapp.com/emojis/1234577960414085271.webp?size=96
-main.running = running
-while main.running:
-    main.space.step(main.dt) # physixx step for space particles
+main_globals['running'] = running
+while main_globals['running']:
+    main_globals['space'].step(main_globals['dt']) # physixx step for space particles
     real_mx, real_my = pygame.mouse.get_pos()
     # transform mouse coords to virtual if resolution mismatch
     mouse_pos = pygame.mouse.get_pos()
-    main.mouse_pos = (
+    main_globals['mouse_pos'] = (
         real_mx * virtual_w / screen.get_width(),
         real_my * virtual_h / screen.get_height()
     )
 
-    main.input_controller(main_globals) # check inputs
+    main_globals['input_controller'](main_globals) # check inputs
 
     # update main screen with virtual screen
     current_time = pygame.time.get_ticks() / 1000
@@ -137,31 +123,27 @@ while main.running:
     steps = 0
     # skip overflow frames ( if fps is below vfps (it always is))
     while virtual_accumulator >= virtual_dt and steps < max_virtual_steps:
-        main.dt = virtual_dt
-        main.match_state(main_globals, main.game_stage)
+        main_globals['dt'] = virtual_dt
+        main_globals['match_state'](main_globals, main_globals['game_stage'])
         virtual_accumulator -= virtual_dt
         steps += 1
 
-    if main.resolution != resolution:
-        resolution = main.resolution
-        screen = pygame.display.set_mode(resolution)
-
     # draw whatever is on virtual screen scaled to real screen
-    if main.resolution != resolution: # only if its not original
-        resolution = main.resolution
+    if main_globals['resolution'] != resolution: # only if its not original
+        resolution = main_globals['resolution']
         screen = pygame.display.set_mode(resolution)
-        scaled_screen = pygame.transform.scale(main.screen, resolution)
+        scaled_screen = pygame.transform.scale(main_globals['screen'], resolution)
     else:
-        scaled_screen = pygame.transform.scale(main.screen, resolution)
+        scaled_screen = pygame.transform.scale(main_globals['screen'], resolution)
     screen.blit(scaled_screen, (0,0))
 
-    loop_fps = clock.tick(main.max_fps)
+    loop_fps = clock.tick(main_globals['max_fps'])
     pygame.display.flip()
 
     # debug caption
-    if main.developer_tools:
+    if main_globals['developer_tools']:
         vfps = int(1 / virtual_dt)
-        pygame.display.set_caption(f"fps: {int(clock.get_fps())} / {main.max_fps}, vfps: {vfps}, mouse pos: {pygame.mouse.get_pos()}, vmouse pos: {int(main.mouse_pos[0]), int(main.mouse_pos[1])}, player pos: {main_globals['player'].x, main_globals['player'].y}")
+        pygame.display.set_caption(f"fps: {int(clock.get_fps())} / {main_globals['max_fps']}, vfps: {vfps}, mouse pos: {pygame.mouse.get_pos()}, vmouse pos: {int(main_globals['mouse_pos'][0]), int(main_globals['mouse_pos'][1])}, player pos: {main_globals['player'].x, main_globals['player'].y}")
 
 from connector_db import save_db
 save_db("data.json", "game_data.db")

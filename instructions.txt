@@ -1,0 +1,10 @@
+run install_requirements.bat or manually install software from requirements.txt
+run run_game.bat
+
+real time data is stored in data.json
+per close data is stored in game_data.db
+
+cmd is an in game terminal that helps with testing
+
+__pycache__ stores pre compiled python scripts of non main files
+

@@ -763,7 +763,7 @@ def ui(main_globals):
         if main_globals['menu_bg_can_animate']== False and main_globals['flash_active'] == False:
 
             # title
-            title_text = main_globals['font'].render("Title", True, (255, 255, 255))
+            title_text = main_globals['font'].render("naganou", True, (255, 255, 255))
             title_rect = title_text.get_rect(topleft=(10, 5)) # for some reason top looks way bigger even if its same number
             screen.blit(title_text, title_rect)
 
