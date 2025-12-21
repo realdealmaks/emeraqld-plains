@@ -52,11 +52,14 @@ def dungeon(main_globals):
                     print(f"added active tile {tile}, ", end="")
 
         # tile checking systems
-
+        
+        just_a_list = [7, 3, 5, 8, 1]
+        if not main_globals['its_11_pm_50_minutes_before_the_deadline_i_dont_even_care_anymore']:
+            main_globals['its_11_pm_50_minutes_before_the_deadline_i_dont_even_care_anymore'] = random.choice(just_a_list)
         if not any(88 in tile for tile in main_globals['tilemap']):
-            main_globals['musicswitcher'](main_globals, 0) # play shop music
+            main_globals['musicswitcher'](main_globals, main_globals['its_11_pm_50_minutes_before_the_deadline_i_dont_even_care_anymore']) # play shop music not
         else:
-            main_globals['musicswitcher'](main_globals, 6)
+            main_globals['musicswitcher'](main_globals, 6) # play shop music
 
         for row_idx, row in enumerate(main_globals['tilemap']):
             for col_idx, tile_type in enumerate(row):
@@ -231,20 +234,26 @@ def dungeon(main_globals):
                         screen.blit(main_globals['interact_image'],
                             (tile_center.x - camera_x - main_globals['interact_image'].get_width() // 2, tile_center.y - camera_y - main_globals['interact_image'].get_height() // 2))
                         if main_globals['pressed_e']:
-                            if main_globals['check_floor'](main_globals, main_globals['current_floor']) and main_globals['in_shop']:
-                                main_globals['remake_floor']()
-                                main_globals['shop_initialised'] = False
-                                # print(main_globals['in_shop'])
-                            elif main_globals['in_shop']:
+                            main_globals['enemy_groups'] = []
+                            if main_globals['in_shop']:
+                                # leaving shop -> normal floor
                                 main_globals['remake_floor']()
                                 main_globals['in_shop'] = False
-                                main_globals['article1'], main_globals['article2'], main_globals['article3'] = None, None, None
+                                main_globals['article1'] = None
+                                main_globals['article2'] = None
+                                main_globals['article3'] = None
                                 main_globals['shop_initialised'] = False
-                            else:
+                                main_globals['its_11_pm_50_minutes_before_the_deadline_i_dont_even_care_anymore'] = None
+                            elif main_globals['check_floor'](main_globals, main_globals['current_floor']):
+                                # entering shop
                                 for call in main_globals['shop_tilemap_calls']:
                                     eval(call)
                                 rebuild_walkable_mask(main_globals)
                                 main_globals['in_shop'] = True
+                            else:
+                                # normal -> normal
+                                main_globals['remake_floor']()
+                                main_globals['shop_initialised'] = False
                                 # print(main_globals['in_shop'])
                         # print(tile_center)
 
@@ -587,8 +596,8 @@ def dungeon(main_globals):
 
     def remake_floor(): # remakes the floor
         main_globals['active_tiles'] = []
-        main_globals['enemy_list'] = []
-        main_globals['enemy_groups'] = []
+        #main_globals['enemy_list'] = []
+        #main_globals['enemy_groups'] = []
         tilemap = main_globals['tilemap']
         rows = len(tilemap)
         cols = len(tilemap[0])

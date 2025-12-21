@@ -8,6 +8,7 @@ except ModuleNotFoundError as e:
 # initiate things
 pygame.init()
 mx.init(frequency=44100, size=-16, channels=2, buffer=8192)
+pygame.mixer.set_num_channels(8)
 screen_h, screen_w = 750, 1080
 screen = pygame.display.set_mode((screen_w, screen_h), pygame.HWSURFACE | pygame.DOUBLEBUF)
 pygame.display.set_icon(pygame.image.load("assets/models/player/naganou_icon.png"))

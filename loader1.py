@@ -157,6 +157,7 @@ def loader1(main_globals):
     main_globals['match'] = None # current match for switch case
     main_globals['interact_distance'] = 75 # distance to interact with things
     main_globals['currently_playing_index'] = 0 # music index
+    main_globals['its_11_pm_50_minutes_before_the_deadline_i_dont_even_care_anymore'] = None# fuck my chud life
     main_globals['blood_text'] = "True" # blood toggle
     main_globals['blood'] = main_globals['blood_text'].split(", ")
     main_globals['dttv'] = 0 # i forgot what dttv stands for but its no. of letters until cmd
@@ -289,7 +290,7 @@ def loader1(main_globals):
     main_globals['other_consumables'] = [ # consumables you can use in combat: name
             #
         ]
-    main_globals['permanent_buffs'] = {
+    main_globals['permanent_buffs'] = { # unused
         'wealth_mult': {
             'description': 'increases money gain by 15%',
             'function': lambda player: setattr(player, 'wealth_mult', player.wealth_mult * 1.15)
