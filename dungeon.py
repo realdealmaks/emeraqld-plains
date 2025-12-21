@@ -7,6 +7,7 @@ except ImportError as e:
 
 def dungeon(main_globals):
     smallfont = pygame.font.Font("assets/font/editundo.ttf", 22)
+    font = pygame.font.Font("assets/font/editundo.ttf", 24)
 
     def draw_dungeon(main_globals, player, is_paused, facing_left):
         screen = main_globals['screen']
@@ -50,6 +51,12 @@ def dungeon(main_globals):
                     print(f"added active tile {tile}, ", end="")
 
         # tile checking systems
+
+        if not any(88 in tile for tile in main_globals['tilemap']):
+            main_globals['musicswitcher'](main_globals, 0) # play shop music
+        else:
+            main_globals['musicswitcher'](main_globals, 6)
+
         for row_idx, row in enumerate(main_globals['tilemap']):
             for col_idx, tile_type in enumerate(row):
 
@@ -65,7 +72,7 @@ def dungeon(main_globals):
                             main_globals['player'].x = main_globals['spawn_x']
                             main_globals['player'].y = main_globals['spawn_y']
                         main_globals['spawn_set'] = True
-                    print(main_globals['shop_initialised'])
+                    # print(main_globals['shop_initialised'])
 
                 elif tile_type == 2:
                     screen.blit(main_globals['pedistal_image'], (col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_width() // 2, row_idx * ts - camera_y + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_height() // 2 + 50))
@@ -145,7 +152,8 @@ def dungeon(main_globals):
                         main_globals['shop_initialised'] = True
                         print(main_globals['article1'], main_globals['article2'], main_globals['article3'])
                     else:
-                        print('shop already init')
+                        # print('shop already init')
+                        pass
 
                     # and blit them too
                     if main_globals['article2']: screen.blit(main_globals['items'][main_globals['article2']]['image'], (col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['items'][main_globals['article2']]['image'].get_width() // 2, pedestal_y - 20))
@@ -171,7 +179,10 @@ def dungeon(main_globals):
                         info_box_center_y,
                         'offset': info_box_width // 4
                     }
-                    
+
+                    # shop text
+                    font.render("shop", True, (255, 255, 255), (shops_x, info_box_center_y + offset))
+
                     for pedestal in pedestals:
                         article_key = pedestal['key']
                         article_x = pedestal['x']
@@ -191,7 +202,17 @@ def dungeon(main_globals):
                                     )
                                 )
 
-                                # main_globals['items'][main_globals[article_key]]['image']
+                                # get the item info
+                                item = main_globals['items'][main_globals[article_key]]
+
+                                # selected item info
+                                desc_surface = font.render(item['description'], True, (255, 255, 255))
+                                screen.blit(desc_surface, (shops_x + 20, info_box_center_y - 20))
+
+                                price_surface = font.render(f"{item['price']} gold", True, (255, 215, 0))
+                                screen.blit(price_surface, (shops_x + 20, info_box_center_y + 10))
+
+                                # draw big image of the item
                                 screen.blit(main_globals[f'{main_globals[article_key]}_big'], (positions['potion_x'] - positions['offset'], positions['potion_y'] - 10))
 
                                 if main_globals['pressed_e']:
@@ -201,14 +222,6 @@ def dungeon(main_globals):
                                         main_globals['player'].wealth -= item['price']
                                         main_globals[article_key] = None
                                         main_globals['pressed_e'] = False
-
-                    #screen.blit(main_globals['shop_item_info_box'], (row_idx * ts - camera_y + main_globals['tile_size'] // 2 - main_globals['shop_item_info_box'].get_height() // 2, row_idx * ts - camera_y + main_globals['tile_size'] // 2 - main_globals['shop_item_info_box'].get_height() // 2 - 200))
-
-                    # interact with shop
-                    #if main_globals['distance_to'](player, (main_globals['shop'].stand_x, main_globals['shop'].stand_y)) < main_globals['interact_distance']:
-                    #    screen.blit(main_globals['interact_image'], (main_globals['shop'].stand_x, main_globals['shop'].stand_y + 50))
-                    #    if main_globals['pressed_e']:
-                    #        main_globals['game_stage'] = "shopping"
 
                 elif tile_type == 98: # end tile
                     tile_center = type('', (), {
@@ -563,6 +576,14 @@ def dungeon(main_globals):
         if main_globals['choosing']: # if he is in some menu
             if main_globals['choosing_crystal']: # if he is choosing a crystal effect
                 main_globals['crystal_ui'](main_globals)
+
+        if main_globals['shop_initialised'] and not main_globals['tutorial_floor']:
+            main_globals['new_mutation'](main_globals, "effect", main_globals['mutation_state'])
+        else:
+            if main_globals['mutation_state']['phase'] != 'fade_in' or main_globals['mutation_state']['alpha'] != 0:
+                main_globals['mutation_state']['phase'] = 'fade_in'
+                main_globals['mutation_state']['alpha'] = 0
+                main_globals['mutation_state']['start_time'] = time.time()
 
     def remake_floor(): # remakes the floor
         tilemap = main_globals['tilemap']

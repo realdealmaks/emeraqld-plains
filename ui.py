@@ -197,7 +197,7 @@ def ui(main_globals):
                     player.weapons = []
                     player.respawn()
                     player.effect("healfull", 0)
-                    main_globals['musicswitcher'](main_globals, 0)
+                    # main_globals['musicswitcher'](main_globals, 0)
                     main_globals['game_stage'] = "in dungeon"
                     mx.music.unpause()
                 elif selected_mode == 2: # send to yo mama hous

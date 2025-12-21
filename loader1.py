@@ -255,19 +255,19 @@ def loader1(main_globals):
 
         # health potions
         'small_potion': {
-            'description': 'heals you a little',
+            'description': 'heals you a little (20)',
             'function': lambda main_globals: main_globals['player'].effect('heal', 20),
             'image': pygame.image.load("assets/models/items/consumables/potions/health/potion20.png").convert_alpha(),
             'price': 25
         },
         'medium_potion': {
-            'description': 'heals you a bit',
+            'description': 'heals you a bit (40)',
             'function': lambda main_globals: main_globals['player'].effect('heal', 40),
             'image': pygame.image.load("assets/models/items/consumables/potions/health/potion40.png").convert_alpha(),
             'price': 50
         },
         'large_potion': {
-            'description': 'heals you a lot',
+            'description': 'heals you a lot (60)',
             'function': lambda main_globals: main_globals['player'].effect('heal', 60),
             'image': pygame.image.load("assets/models/items/consumables/potions/health/potion60.png").convert_alpha(),
             'price': 75
