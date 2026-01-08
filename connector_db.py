@@ -45,5 +45,6 @@ def save_db(json_filename="data.json", db_filename="game_data.db"):
     print("db contents:")
     for row in rows:
         print(row)
+    conn.commit()
 
     conn.close()
