@@ -1,9 +1,6 @@
 # databes
 
-try:
-    import sqlite3, json, os
-except ImportError as e:
-    print(f"missing module {e}")
+import sqlite3, json, os
 
 # stores data from json to db when quit
 
@@ -29,16 +26,6 @@ def save_db(json_filename="data.json", db_filename="game_data.db"):
             value TEXT
         )
     """)
-
-    for key, value in data.items():
-        # convert tuple to str
-        if isinstance(value, tuple):
-            value = ",".join(map(str, value))
-        cursor.execute("""
-            INSERT INTO game_data (key, value)
-            VALUES (?, ?)
-            ON CONFLICT(key) DO UPDATE SET value=excluded.value
-        """, (key, str(value)))
 
     cursor.execute("SELECT * FROM game_data")
     rows = cursor.fetchall()

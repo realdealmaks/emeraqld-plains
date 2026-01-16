@@ -4,11 +4,12 @@ try:
     from pygame import mixer as mx
 except ModuleNotFoundError as e:
     print(f"you are missing module {e.name} man")
+    raise e
 
 # initiate things
 pygame.init()
-mx.init(frequency=44100, size=-16, channels=8, buffer=8192)
-screen_h, screen_w = 750, 1080
+mx.init(frequency=44100, size=-16, channels=8, buffer=512)
+screen_w, screen_h = 1080, 750
 screen = pygame.display.set_mode((screen_w, screen_h), pygame.HWSURFACE | pygame.DOUBLEBUF)
 pygame.display.set_icon(pygame.image.load("assets/models/player/naganou_icon.png"))
 resolution = screen_w, screen_h
@@ -28,12 +29,6 @@ max_fps = 60
 # pymunk space setup
 space = pymunk.Space()
 space.gravity = (0, 500)
-
-# this turns all of the main_globals[''] slop into actually non eye burning variables
-
-main_globals = {
-    'screen_w': screen_w, 'screen_h': screen_h, 'screen': screen
-}
 
 # import the importer
 from masterloader import superloader
@@ -82,8 +77,6 @@ main_globals['player_gif'](main_globals) # loads the player gif
 # pass space to globals
 main_globals['space'] = space
 
-time.sleep(0.3)
-
 print(f"started, {"developer" if main_globals['developer_tools'] else "regular"}")
 # loop setup
 clock = pygame.time.Clock() # makes some clocks and sets the titles
@@ -94,7 +87,7 @@ main_globals['walkable_mask'] = main_globals['make_initial_walkable_surface'](ma
 
 # calm the fuck down man
 for i in range(10):
-    time.sleep(0.1) # actually what it does is prevents 5 fps at start
+    time.sleep(0.1) # actually what it does is warm up pytish
     pygame.event.pump()
 
 # makes some game loops
@@ -129,23 +122,20 @@ while main_globals['running']:
         steps += 1
 
     # draw whatever is on virtual screen scaled to real screen
-    if main_globals['resolution'] != resolution: # only if its not original
+    if main_globals['resolution'] != resolution:
         resolution = main_globals['resolution']
         screen = pygame.display.set_mode(resolution)
-        scaled_screen = pygame.transform.scale(main_globals['screen'], resolution)
-    else:
-        scaled_screen = pygame.transform.scale(main_globals['screen'], resolution)
+
+    scaled_screen = pygame.transform.scale(main_globals['screen'], resolution)
     screen.blit(scaled_screen, (0,0))
 
     loop_fps = clock.tick(main_globals['max_fps'])
     pygame.display.flip()
 
     # debug caption
-    if main_globals['developer_tools']:
+    if main_globals['developer_tools'] and pygame.time.get_ticks() % 100 == 0:
         vfps = int(1 / virtual_dt)
         pygame.display.set_caption(f"fps: {int(clock.get_fps())} / {main_globals['max_fps']}, vfps: {vfps}, mouse pos: {pygame.mouse.get_pos()}, vmouse pos: {int(main_globals['mouse_pos'][0]), int(main_globals['mouse_pos'][1])}, player pos: {main_globals['player'].x, main_globals['player'].y}")
 
-from connector_db import save_db
-save_db("data.json", "game_data.db")
 print("exiting")
 pygame.quit()

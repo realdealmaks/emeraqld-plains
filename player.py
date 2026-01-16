@@ -41,30 +41,42 @@ def player(main_globals):
                 mask = self.main_globals.get('walkable_mask') # bridge
 
             # horizontal movement
-            new_x = self.x + dx * self.speed
+            new_x = self.x + dx * self.speed * dt * 175
             can_move_x = True
             for cy_offset in (25, self.main_globals['player_size'] + 25):
                 cx = new_x + 6 if dx < 0 else new_x + self.main_globals['player_size'] - 6
                 cy = self.y + cy_offset
-                if cx < 0 or cy < 0 or cx >= mask.get_width() or cy >= mask.get_height() or mask.get_at((int(cx), int(cy)))[:3] != (0, 255, 0):
+                # boundary check
+                if not (0 <= cx < mask.get_width() and 0 <= cy < mask.get_height()):
+                    can_move_x = False
+                    break
+
+                # color check
+                if mask.get_at((int(cx), int(cy)))[:3] != (0, 255, 0):
                     can_move_x = False
                     break
 
             # vertical movement
-            new_y = self.y + dy * self.speed
+            new_y = self.y + dy * self.speed * dt * 175
             can_move_y = True
             for cx_offset in (6, self.main_globals['player_size'] - 6):
                 cx = self.x + cx_offset
                 cy = new_y + 25 if dy < 0 else new_y + self.main_globals['player_size'] + 25
-                if cx < 0 or cy < 0 or cx >= mask.get_width() or cy >= mask.get_height() or mask.get_at((int(cx), int(cy)))[:3] != (0, 255, 0):
+                # boundary check
+                if not (0 <= cx < mask.get_width() and 0 <= cy < mask.get_height()):
+                    can_move_y = False
+                    break
+
+                # color check
+                if mask.get_at((int(cx), int(cy)))[:3] != (0, 255, 0):
                     can_move_y = False
                     break
 
             # actually move
             if can_move_x:
-                self.x = new_x
+                self.x = round(new_x)
             if can_move_y:
-                self.y = new_y
+                self.y = round(new_y)
             if can_move_x or can_move_y:
                 self.rect.topleft = (self.x, self.y)
 
@@ -95,11 +107,13 @@ def player(main_globals):
                 """self.main_globals['hurt_sound'].play()
                 please fix this man"""
                 # this has and will be broken since day 1
+                # pygame.mixer.Channel(7).play(self.main_globals['hurt_sound']) # fuck you and your python
 
         def die(self):
             self.main_globals['game_stage'] = "dead"
             main_globals['deaths'] += 1
             if main_globals['deaths'] > main_globals['total_deaths']:
+                main_globals['total_deaths'] = main_globals['deaths']
                 main_globals['save'](main_globals, total_deaths=main_globals['total_deaths'])
             main_globals['reset'](main_globals)
             print("player died")
@@ -111,22 +125,23 @@ def player(main_globals):
             self.y = self.main_globals['spawn_y']
             self.main_globals['blood_particles'] = []
 
-        def effect(self, effect_type, number):
+        def effect(self, effect_type, number, item=False):
             if effect_type == "heal":
                 self.health += number
                 if self.health > self.max_hp:
                     self.health = self.max_hp
 
                 # remove item from inventory
-                for potion, heal in [('small_potion', 20), ('medium_potion', 40), ('large_potion', 60)]:
-                    if potion in main_globals['player'].inventory and heal == number:
-                        main_globals['player'].inventory[potion] -= 1
-                        if main_globals['player'].inventory[potion] <= 0:
-                            del main_globals['player'].inventory[potion]
-                        break
+                if item:
+                    for potion, heal in [('small_potion', 20), ('medium_potion', 40), ('large_potion', 60)]:
+                        if potion in main_globals['player'].inventory and heal == number:
+                            main_globals['player'].inventory[potion] -= 1
+                            if main_globals['player'].inventory[potion] <= 0:
+                                del main_globals['player'].inventory[potion]
+                            break
 
             elif effect_type == "healfull":
-                self.health = 100
+                self.health = self.max_hp
             elif effect_type == "money":
                 self.wealth += number * self.wealth_mult
             elif effect_type == "max_hp":

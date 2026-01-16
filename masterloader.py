@@ -102,8 +102,7 @@ def superloader():
 
         pygame.display.flip()
 
-    # modules to load
-    modules_to_load = [
+    modules_to_load = [ # file name, context
         ("stsw", "stager"),
         ("loader1", "variables"),
         ("connector", "data"),

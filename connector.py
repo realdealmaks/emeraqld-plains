@@ -61,7 +61,7 @@ def connector(main_globals):
 
 # test to see if the file gets written anything
 test = False
-if test == True:
+if test:
     main_globals = {}
     connector(main_globals)
     print(main_globals['connector_instance'].get_data())

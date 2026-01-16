@@ -3,11 +3,16 @@
 # loader 3
 
 try:
-    import random, pygame, pymunk, types
+    import random, pygame, pymunk, types, threading
     from pygame import mixer as mx
     import numpy as np
 except ModuleNotFoundError as e:
     print(f"you are missing module {e.name} man")
+
+try:
+    from connector_db import save_db
+except ImportError as e:
+    print("couldnt import save_db")
 
 def loader3(main_globals):
 
@@ -16,6 +21,15 @@ def loader3(main_globals):
     setting_font = credits_font = pygame.font.Font("assets/font/editundo.ttf", 28)
     smallfont = pygame.font.Font("assets/font/editundo.ttf", 22)
     smallerfont = pygame.font.Font("assets/font/editundo.ttf", 16)
+
+    tutorial_texts = {
+        1: font.render("move along", True, (255, 255, 255)),
+        2: font.render("take it", True, (255, 255, 255)),
+        99: font.render("press esc", True, (255, 255, 255)),
+        88: font.render("shop for items", True, (255, 255, 255)),
+        3: font.render("beat bobbers", True, (255, 255, 255)),
+        98: font.render("enter a new floor", True, (255, 255, 255)),
+    }
 
     def tutorial_text(main_globals):
         screen = main_globals['screen']
@@ -34,44 +48,73 @@ def loader3(main_globals):
         camera_y = int(main_globals['camera_y'])
 
         # what happens when player on tile
-        for row_idx, row in enumerate(tilemap):
-            for col_idx, tile in enumerate(row):
-                if tile == 1:
-                    if (row_idx, col_idx) == player_tile:
-                        text_surface = font.render("move along", True, (255, 255, 255))
-                        draw_x = col_idx * ts - camera_x
-                        draw_y = row_idx * ts - camera_y
-                        screen.blit(text_surface, (draw_x, draw_y))
-                if tile == 2:
-                    if (row_idx, col_idx) == player_tile:
-                        text_surface = font.render("take it", True, (255, 255, 255))
-                        draw_x = col_idx * ts - camera_x
-                        draw_y = row_idx * ts - camera_y
-                        screen.blit(text_surface, (draw_x, draw_y))
-                if tile == 99:
-                    if (row_idx, col_idx) == player_tile:
-                        text_surface = font.render("press esc", True, (255, 255, 255))
-                        draw_x = col_idx * ts - camera_x
-                        draw_y = row_idx * ts - camera_y
-                        screen.blit(text_surface, (draw_x, draw_y))
-                if tile == 88:
-                    if (row_idx, col_idx) == player_tile:
-                        text_surface = font.render("shop for items", True, (255, 255, 255))
-                        draw_x = col_idx * ts - camera_x
-                        draw_y = row_idx * ts - camera_y
-                        screen.blit(text_surface, (draw_x, draw_y))
-                if tile == 3:
-                    if (row_idx, col_idx) == player_tile:
-                        text_surface = font.render("beat bobbers", True, (255, 255, 255))
-                        draw_x = col_idx * ts - camera_x
-                        draw_y = row_idx * ts - camera_y
-                        screen.blit(text_surface, (draw_x, draw_y))
-                if tile == 98:
-                    if (row_idx, col_idx) == player_tile:
-                        text_surface = font.render("enter a new floor", True, (255, 255, 255))
-                        draw_x = col_idx * ts - camera_x
-                        draw_y = row_idx * ts - camera_y
-                        screen.blit(text_surface, (draw_x, draw_y))
+        row_idx, col_idx = player_tile
+        if 0 <= row_idx < len(tilemap) and 0 <= col_idx < len(tilemap[0]):
+            tile = tilemap[row_idx][col_idx]
+
+            # if tile has tutorial text display it
+            if tile in tutorial_texts:
+                text_surface = tutorial_texts[tile]
+                draw_x = col_idx * ts - camera_x
+                draw_y = row_idx * ts - camera_y
+                screen.blit(text_surface, (draw_x, draw_y))
+
+    def auto_save(main_globals):
+        if main_globals.get('autosaving'):
+            return
+
+    def auto_save(main_globals):
+        if main_globals.get('autosaving'):
+            return
+
+        def save_task():
+            main_globals['autosaving'] = True
+            main_globals['spinner_active'] = True
+            main_globals['autosave_start_time'] = pygame.time.get_ticks()
+
+            save_db("data.json", "game_data.db")
+
+            main_globals['autosave_finished'] = True
+            print("auto saved, ", end="")
+
+        main_globals['autosave_finished'] = False
+        threading.Thread(target=save_task, daemon=True).start()
+
+    def draw_autosave_spinner(main_globals):
+        if 'loading_icon' not in main_globals:
+            icon = pygame.image.load("assets/useful images/save.png").convert_alpha()
+            main_globals['loading_icon'] = pygame.transform.scale2x(icon)
+
+        if main_globals.get('spinner_active', False):
+            now = pygame.time.get_ticks()
+            start = main_globals.get('autosave_start_time', now)
+            min_show_ms = 1200 # minimum display time in ms
+
+            if 'autosave_angle' not in main_globals:
+                main_globals['autosave_angle'] = 0
+            main_globals['autosave_angle'] = (main_globals['autosave_angle'] + 6) % 360
+
+            icon = main_globals['loading_icon']
+
+            fixed_x = main_globals['screen_w'] - 20 - icon.get_width() // 2
+            fixed_y = 20 + icon.get_height() // 2
+
+            rotated_icon = pygame.transform.rotate(icon, main_globals['autosave_angle'])
+            rotated_icon.set_alpha(180)
+            rect = rotated_icon.get_rect(center=(fixed_x, fixed_y))
+            main_globals['screen'].blit(rotated_icon, rect.topleft)
+
+            smallfont = pygame.font.Font(None, 24)
+            text = smallfont.render("autosaving", True, (255, 255, 255))
+            text_rect = text.get_rect(midright=(fixed_x - icon.get_width() // 2 - 10, fixed_y))
+            main_globals['screen'].blit(text, text_rect)
+
+            if main_globals.get('autosave_finished', False) and (now - start >= min_show_ms) or main_globals['textures_ready'] and main_globals.get('autosave_finished', False):
+                main_globals['spinner_active'] = False
+                main_globals['autosaving'] = False
+                main_globals.pop('autosave_start_time', None)
+                main_globals.pop('autosave_finished', None)
+                main_globals.pop('autosave_angle', None)
 
     def use_crystal(main_globals):
         player = main_globals['player']

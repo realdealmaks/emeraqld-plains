@@ -208,3 +208,4 @@ __marimo__/
 .vscode/PythonImportHelper-v2-Completion.json
 data.json
 game_data.db
+test.py

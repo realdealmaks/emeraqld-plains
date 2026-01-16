@@ -172,6 +172,10 @@ def loader2(main_globals):
     w, h = katana.get_size()
     katana = pygame.transform.scale(katana, (int(w * 0.7), int(h * 0.7)))
 
+    gun = pygame.image.load("assets/models/weapons/katana.png").convert_alpha()
+    w, h = gun.get_size()
+    gun = pygame.transform.scale(gun, (int(w * 0.7), int(h * 0.7)))
+
     # reg atk
     main_globals['slash_image'] = pygame.image.load("assets/useful images/slash.png").convert_alpha()
     main_globals['slash_image'] = pygame.transform.scale(main_globals['slash_image'], (50, 50))
@@ -180,28 +184,83 @@ def loader2(main_globals):
     main_globals['active_slash'] = None
     main_globals['active_special_attacks'] = []
 
+    # projectiles
+    main_globals['active_projectiles'] = []
+
     main_globals['weapon_images'] = {
         "sword": sword,
         "axe": axe,
         "book": book,
-        "katana": katana
+        "katana": katana,
+        "gun": gun,
+        "knife": sword,
     }
 
     # special weapons attack image
     katana_attack = pygame.image.load("assets/useful images/katanaslash.png").convert_alpha()
+    knife_attack = pygame.image.load("assets/useful images/knife_slash.png").convert_alpha()
 
     main_globals['special_attack_images'] = {
-        "katana": katana_attack
+        "katana": katana_attack,
+        "knife": knife_attack,
     }
 
     damage_mult = main_globals['damage_mult']
     cooldown_mult = main_globals['cooldown_mult']
 
     main_globals['weapon_stats'] = {
-        "sword": {"damage": 15 * damage_mult, "range": 50, "cooldown": 0.6 * cooldown_mult, 'chance': 0.4},
-        "axe": {"damage": 22 * damage_mult, "range": 75, "cooldown": 1 * cooldown_mult, 'chance': 0.4},
-        "book": {"damage": 25 * damage_mult, "range": 100, "cooldown": 2 * cooldown_mult, 'chance': 0.0},
-        "katana": {"damage": 9 * damage_mult, "range": 45, "cooldown": 0.7 * cooldown_mult, 'chance': 0.2}
+        "sword": {
+            "damage": 15 * damage_mult, 
+            "range": 50, 
+            "cooldown": 0.6 * cooldown_mult, 
+            'chance': 0.4,
+            'type': "melee",
+        },
+        "axe": {
+            "damage": 22 * damage_mult, 
+            "range": 75, 
+            "cooldown": 1 * cooldown_mult, 
+            'chance': 0.4,
+            'type': "melee",
+        },
+        "book": {
+            "damage": 40 * damage_mult, 
+            "range": 800,
+            "cooldown": 2 * cooldown_mult, 
+            'chance': 0.15,
+            'proj_speed': 60,
+            'gravity': 0,
+            'type': "ranged",
+            'pierce': 1,
+        },
+        "katana": {
+            "damage": 9 * damage_mult, 
+            "range": 45, 
+            "cooldown": 0.7 * cooldown_mult, 
+            'chance': 0.2,
+            'type': "special",
+        },
+        "gun": {
+            "damage": 8 * damage_mult, 
+            "range": 1000,
+            "cooldown": 0.3 * cooldown_mult, 
+            'chance': 0.15,
+            'proj_speed': 100,
+            'gravity': 0,
+            'type': "ranged",
+            'pierce': 2,
+        },
+        "knife": {
+            "damage": 6 * damage_mult, 
+            "range": 40,
+            "cooldown": 0.3 * cooldown_mult, 
+            'chance': 0.2,
+            'type': "special",
+        },
+    }
+
+    main_globals['projectile_images'] = {
+        
     }
 
     # crystals

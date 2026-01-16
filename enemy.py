@@ -105,6 +105,10 @@ def enemy(main_globals):
 
                 dx2 = self.x - other.x
                 dy2 = self.y - other.y
+
+                if abs(dx2) > self.size * 2 or abs(dy2) > self.size * 2:
+                    continue # if other is too far
+
                 dist = math.hypot(dx2, dy2)
                 min_dist = self.size // 1.6 # space between them
 

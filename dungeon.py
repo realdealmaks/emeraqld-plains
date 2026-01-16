@@ -10,10 +10,29 @@ def dungeon(main_globals):
     smallerfont = pygame.font.Font("assets/font/editundo.ttf", 16)
     font = pygame.font.Font("assets/font/editundo.ttf", 24)
 
+    def initialize_shop(main_globals):
+        if main_globals['shop_initialised']:
+            return  # already initialized
+
+        excluded_c = ['fuck', 'crystal', 'crystal_fragments']
+        available_c = [key for key in main_globals['items'].keys() if key not in excluded_c]
+
+        main_globals['article1'] = None
+        main_globals['article2'] = None
+        main_globals['article3'] = None
+
+        for article_key in ['article1', 'article2', 'article3']:
+            random_c = random.choice(available_c)
+            main_globals[article_key] = random_c
+
+        main_globals['shop_initialised'] = True
+
     def draw_dungeon(main_globals, player, is_paused, facing_left):
         screen = main_globals['screen']
         screen.fill((0, 0, 0))
+
         main_globals['draw_tiles'](main_globals) # moved up for faster prio
+
         camera_x = main_globals['camera_x']
         camera_y = main_globals['camera_y']
         camera_speed = main_globals['camera_speed']
@@ -57,16 +76,15 @@ def dungeon(main_globals):
         if not main_globals['its_11_pm_50_minutes_before_the_deadline_i_dont_even_care_anymore']:
             main_globals['its_11_pm_50_minutes_before_the_deadline_i_dont_even_care_anymore'] = random.choice(just_a_list)
 
-        if not any(88 in tile for tile in main_globals['tilemap']):
+        if not any(88 in tile for tile in main_globals['tilemap']): # if not in shop
             main_globals['musicswitcher'](main_globals, main_globals['its_11_pm_50_minutes_before_the_deadline_i_dont_even_care_anymore'])
-        else:
+        else: # if in shop
             main_globals['musicswitcher'](main_globals, 6)
 
-        for row_idx, row in enumerate(main_globals['tilemap']):
-            for col_idx, tile_type in enumerate(row):
-
-                if tile_type == 99: # makes player spawn here
-                    if main_globals['spawn_set'] == False:
+        if main_globals['spawn_set'] == False: # check spawn seperately because of shit order
+            for row_idx, row in enumerate(main_globals['tilemap']):
+                for col_idx, tile_type in enumerate(row):
+                    if tile_type == 99:  # spawn tile
                         ts = main_globals['tile_size'] + main_globals['tile_offset']
                         main_globals['spawn_x'] = col_idx * ts + (main_globals['tile_size'] - player_size) // 2
                         main_globals['spawn_y'] = row_idx * ts + (main_globals['tile_size'] - player_size) // 2
@@ -77,9 +95,23 @@ def dungeon(main_globals):
                             main_globals['player'].x = main_globals['spawn_x']
                             main_globals['player'].y = main_globals['spawn_y']
                         main_globals['spawn_set'] = True
-                    # print(main_globals['shop_initialised'])
+                        break
+                if main_globals['spawn_set']:
+                    break
 
-                elif tile_type == 2:
+        player_tile_x = (player.x + main_globals['player_size'] // 2) // ts
+        player_tile_y = (player.y + main_globals['player_size'] // 2) // ts
+
+        # check around the player tile
+        for dy, dx in [(0, -1), (-1, 0), (0, 0), (1, 0), (0, 1)]:
+            row_idx = player_tile_y + dy
+            col_idx = player_tile_x + dx
+
+            # out of bounds check
+            if 0 <= row_idx < len(tilemap) and 0 <= col_idx < len(tilemap[0]):
+                tile_type = tilemap[row_idx][col_idx]
+
+                if tile_type == 2:
                     screen.blit(main_globals['pedistal_image'], (col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_width() // 2, row_idx * ts - camera_y + main_globals['tile_size'] // 2 - main_globals['pedistal_image'].get_height() // 2 + 50))
 
                 elif tile_type == 88: # shop tile with literal yanderedev code # dont worry makus im here
@@ -103,18 +135,7 @@ def dungeon(main_globals):
 
                     # create items you can purchase
                     if not main_globals['shop_initialised']:
-                        main_globals['article1'], main_globals['article2'], main_globals['article3'] = None, None, None
-                        print('articles reset')
-                        for article_key in ['article1', 'article2', 'article3']:
-                            random_c = random.choice(available_c) # select it
-                            main_globals[article_key] = random_c
-                            article = main_globals[article_key] # get it
-                            print(f"article: {article}, random item: {random_c}")
-                        main_globals['shop_initialised'] = True
-                        print(main_globals['article1'], main_globals['article2'], main_globals['article3'])
-                    else:
-                        # print('shop already init')
-                        pass
+                        main_globals['initialize_shop'](main_globals)
 
                     # and blit them too
                     if main_globals['article2']: screen.blit(main_globals['items'][main_globals['article2']]['image'], (col_idx * ts - camera_x + main_globals['tile_size'] // 2 - main_globals['items'][main_globals['article2']]['image'].get_width() // 2, pedestal_y - 20))
@@ -219,6 +240,11 @@ def dungeon(main_globals):
                                 main_globals['shop_initialised'] = False
 
                 elif tile_type == 3: # enemy spawn tile
+                    tile_key = (row_idx, col_idx)
+                    if tile_key in main_globals['spawned_enemy_tiles']:
+                        continue # skip if already has enemies
+                    main_globals['spawned_enemy_tiles'].add(tile_key) # mark as spawned
+
                     ts = main_globals['tile_size'] + main_globals['tile_offset']
                     if main_globals['groups_spawned'] >= sum(i.count(3) for i in tilemap): # not dIh
                         pass
@@ -254,13 +280,19 @@ def dungeon(main_globals):
                                     break  # valid position found
                                 attempts += 1
 
-                        main_globals['enemy_groups'].append({
+                        tile_key = (col_idx, row_idx)
+                        if 'enemy_groups_by_tile' not in main_globals:
+                            main_globals['enemy_groups_by_tile'] = {}
+
+                        main_globals['enemy_groups_by_tile'][tile_key] = {
                             'tile_pos': (row_idx, col_idx),
                             'enemies': hemorrhoids_in_tile,
                             'active': True
-                        })
+                        }
                         print(f"spawned group {main_globals['groups_spawned']} on ({row_idx}, {col_idx}), ", end="")
                         main_globals['groups_spawned'] += 1
+
+                        main_globals['enemy_groups'].append(main_globals['enemy_groups_by_tile'][tile_key])
 
         # drawing things on tiles
 
@@ -278,17 +310,15 @@ def dungeon(main_globals):
                 screen.blit(main_globals['interact_image'], (draw_x, draw_y + weapon_image.get_height()))
                 main_globals['interact'](main_globals, player, weapon.x, weapon.y, lambda w=weapon: w.pickup(player))
 
-        # enemy groups
-        for group in main_globals['enemy_groups']:
-
-            gx, gy = group['tile_pos']
-            if (gy, gx) not in main_globals['active_tiles']: # skip if not in active tile
+        for tile_pos in main_globals['active_tiles']:
+            if tile_pos not in main_globals.get('enemy_groups_by_tile', {}):
                 continue
+
+            group = main_globals['enemy_groups_by_tile'][tile_pos]
 
             # check if ANY enemy in the group detects the player
             group_should_activate = False
             for enemy in group['enemies']:
-
                 # draw !
                 if enemy.active and enemy.active_counter > 0:
                     enemy.active_counter -= main_globals['dt'] * 60
@@ -296,12 +326,9 @@ def dungeon(main_globals):
                     main_globals['screen'].blit(text_surface, (enemy.x - main_globals['camera_x'], enemy.y - main_globals['camera_y'] - enemy.size // 2 - 8))
 
                 if not enemy.active and enemy.detect(player):
-                    for e in group['enemies']:
-                        e.active = True
                     group_should_activate = True
                     break
 
-            # if any enemy detects the player, activate the entire group
             if group_should_activate:
                 for enemy in group['enemies']:
                     enemy.active = True
@@ -327,8 +354,8 @@ def dungeon(main_globals):
                 if not enemy.alive: # skip if dead
                     continue
                 for slash in active_slashes: # check if slash hits enemy ( for real ts time )
-                    if pygame.Rect.colliderect(enemy.rect, slash['rect']):
-                        if enemy not in slash['hit_enemies']:
+                    if enemy not in slash['hit_enemies']:
+                        if pygame.Rect.colliderect(enemy.rect, slash['rect']):
                             current_weapon = player.weapons
                             damage = main_globals['weapon_stats'][current_weapon[0].name]['damage'] # or use weapon damage eh? # YES YES I KNOW!!
                             enemy.damaged(damage)
@@ -352,20 +379,26 @@ def dungeon(main_globals):
         for enemy in enemy_list:
             enemy.draw(enemy.type)
 
-        # draw special attacks
-        if 'active_special_attacks' in main_globals or 'active_special_children' in main_globals:
+        current_weapon = main_globals['player'].weapons[0] if main_globals['player'].weapons else None
+
+        if current_weapon and ('active_special_attacks' in main_globals or 'active_special_children' in main_globals):
             now = pygame.time.get_ticks()
+            weapon_name = current_weapon.name.lower()
 
             # update parents
             still_parents = []
             for special_attack in main_globals.get('active_special_attacks', []):
 
+                # determine image to draw
+                draw_image = main_globals['special_attack_images'].get(weapon_name, special_attack['image'])
+
                 # draw if visible
                 if special_attack.get('draw', True) and (special_attack['expiry'] == -1 or now < special_attack['expiry']):
-                    screen.blit(special_attack['image'], special_attack['rect'])
+                    screen.blit(draw_image, special_attack['rect'])
 
-                # spawn next child
+                # spawn next child ONLY if 'hits' exists and is greater than 0
                 if special_attack.get('hits', 0) > 0 and now >= special_attack.get('next_spawn', 0):
+                    # create child attack
                     if special_attack.get('flip_next', True):
                         child_image = special_attack.get('flipimage', special_attack['image'])
                         child_rect = special_attack.get('fliprect', special_attack['rect']).copy()
@@ -373,7 +406,6 @@ def dungeon(main_globals):
                         child_image = special_attack['image']
                         child_rect = special_attack['rect'].copy()
 
-                    # create child attack
                     child_attack = {
                         'image': child_image,
                         'rect': child_rect.copy(),
@@ -384,7 +416,7 @@ def dungeon(main_globals):
                     }
                     main_globals.setdefault('active_special_children', []).append(child_attack)
 
-                    # toggle for next spawn
+                    # toggle for next spawn and decrease hits
                     special_attack['flip_next'] = not special_attack.get('flip_next', True)
                     special_attack['hits'] -= 1
                     special_attack['next_spawn'] = now + special_attack.get('delay', 250)
@@ -408,14 +440,57 @@ def dungeon(main_globals):
             # check if special attack hits enemy
             for attack in main_globals.get('active_special_children', []):
                 for enemy in enemy_list:
-                    if not enemy.alive: # skip if dead
+                    if not enemy.alive:
                         continue
-                    if pygame.Rect.colliderect(enemy.rect, attack['rect']):
-                        if enemy not in attack['hit_enemies']:
-                            current_weapon = player.weapons
-                            damage = main_globals['weapon_stats'][current_weapon[0].name]['damage']
+                    if enemy not in attack['hit_enemies']:
+                        if pygame.Rect.colliderect(enemy.rect, attack['rect']):
+                            damage = main_globals['weapon_stats'][current_weapon.name]['damage']
                             enemy.damaged(damage)
                             attack['hit_enemies'].add(enemy)
+
+            # update projectiles
+            for proj in main_globals.get('active_projectiles', []):
+                proj.update(main_globals)
+
+            # remove dead projectiles
+            main_globals['active_projectiles'] = [p for p in main_globals.get('active_projectiles', []) if p.alive]
+
+            # draw projectiles
+            for proj in main_globals.get('active_projectiles', []):
+                proj.draw(main_globals['screen'], main_globals)
+
+            # check if projectiles hit enemies
+            for proj in main_globals.get('active_projectiles', []):
+                for enemy in main_globals.get('enemy_list', []):
+                    if not enemy.alive:
+                        continue # skip dead
+
+                    if enemy not in proj.hit_enemies:
+
+                        # hitbox rect by proj radius
+                        r = getattr(proj, 'radius', 8) # default to 8
+                        proj_rect = pygame.Rect(
+                            int(proj.x) - r,
+                            int(proj.y) - r,
+                            r * 2,
+                            r * 2
+                        )
+
+                        enemy_world_rect = pygame.Rect(
+                            enemy.x,
+                            enemy.y,
+                            enemy.rect.width,
+                            enemy.rect.height
+                        )
+
+                        if pygame.Rect.colliderect(enemy_world_rect, proj_rect):
+                            damage = proj.owner.damage
+                            enemy.damaged(damage)
+                            proj.hit_enemies.add(enemy)
+                            if proj.pierce > proj.pierced:
+                                proj.pierced += 1
+                            else:
+                                proj.alive = False
 
         # change player orientation? is it orientation? just change the way he is looking
         offset_x = (player_size * 3 - player_size) // 2
@@ -600,7 +675,9 @@ def dungeon(main_globals):
                 main_globals['mutation_state']['type'] = random.choice(["strong", "healthy"]) if main_globals['mutation_state']['type'] == 'none' else main_globals['mutation_state']['type']
 
     def remake_floor(): # remakes the floor
+        main_globals['auto_save'](main_globals)
         main_globals['active_tiles'] = []
+        main_globals['spawned_enemy_tiles'] = set()
         tilemap = main_globals['tilemap']
         rows = len(tilemap)
         cols = len(tilemap[0])

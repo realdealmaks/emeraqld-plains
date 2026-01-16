@@ -8,8 +8,7 @@ except ModuleNotFoundError as e:
     print(f"you are missing module {e.name} man")
 
 def cmd(main_globals):
-    def reset(main_globals):
-        main_globals['player'].health = 100
+    def reset(main_globals): # generally reset everything in game
         main_globals['player'].weapons = []
         main_globals['player'].inventory = {}
         main_globals['spawn_set'] = False
@@ -44,7 +43,8 @@ def cmd(main_globals):
                 "health": "amount",
                 "stage": "stage name",
                 "inventory": "add/remove, item name+amount",
-                "search": "search a value/entry in game"
+                "search": "search a value/entry in game",
+                "set": "variable value",
             },
             "regular commands": {
                 "rebuild": "rebuild floor",
@@ -180,6 +180,51 @@ def cmd(main_globals):
                         main_globals['game_stage'] = value
                         print(f"\nstage set to {value}")
 
+                    elif waiting == "set":
+                        parts = value.split(maxsplit=1)
+                        if len(parts) != 2:
+                            raise ValueError("usage: set <path> <value>")
+
+                        path, raw_val = parts
+
+                        # determine type
+                        if raw_val.lower() in ("true", "false"):
+                            new_val = raw_val.lower() == "true"
+                        else:
+                            try:
+                                new_val = int(raw_val)
+                            except ValueError:
+                                try:
+                                    new_val = float(raw_val)
+                                except ValueError:
+                                    new_val = raw_val.strip('"').strip("'")
+
+                        # set the value
+                        target = main_globals
+                        tokens = path.replace("[", ".[").split(".")
+
+                        for tok in tokens[:-1]:
+                            if tok.startswith("[") and tok.endswith("]"):
+                                target = target[int(tok[1:-1])]
+                            else:
+                                target = target[tok] if isinstance(target, dict) else getattr(target, tok)
+
+                        last = tokens[-1]
+
+                        if last.startswith("[") and last.endswith("]"):
+                            target[int(last[1:-1])] = new_val
+                        else:
+                            if isinstance(target, dict):
+                                target[last] = new_val
+                            else:
+                                setattr(target, last, new_val)
+
+                        print(f"\nset {path} = {new_val!r}")
+
+                        main_globals['waiting_for_input'] = None
+                        print("> ", end="", flush=True)
+                        return
+
                     elif waiting == "search":
                         query = value.lower()
                         matches = []
@@ -265,7 +310,7 @@ def cmd(main_globals):
                     print()
                 print("> ", end="", flush=True)
 
-            elif cmd_lower in ["weapon", "money", "health", "stage"]:
+            elif cmd_lower in ["weapon", "money", "health", "stage", "set"]:
                 main_globals['waiting_for_input'] = cmd_lower
                 prompt = {
                     "weapon": " >> name: ",
@@ -273,6 +318,7 @@ def cmd(main_globals):
                     "health": " >> amount: ",
                     "stage": " >> stage name: ",
                     "search": " >> name: ",
+                    "set": " >> variable value: ",
                 }[cmd_lower]
                 print(prompt, end="", flush=True)
 

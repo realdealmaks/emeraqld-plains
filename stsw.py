@@ -28,6 +28,9 @@ def stsw(main_globals):
                     else: # show texture progress
                         main_globals['draw_texturing_progress'](main_globals)
 
+                    if main_globals.get('draw_autosave_spinner'):
+                        main_globals['draw_autosave_spinner'](main_globals)
+
                 if main_globals['transition_active']: # transition to dungeon
                     main_globals['transition_to_dungeon'](main_globals, main_globals['screen'])
 

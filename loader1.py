@@ -129,6 +129,7 @@ def loader1(main_globals):
     main_globals['enemy_spawn_x'] = 0
     main_globals['enemy_spawn_y'] = 0
     main_globals['damages_takens'] = []
+    main_globals['spawned_enemy_tiles'] = set()
 
     # menu variables
     main_globals['menu_bg_x'] = main_globals['screen_w']
@@ -256,19 +257,19 @@ def loader1(main_globals):
         # health potions
         'small_potion': {
             'description': 'heals you a little (20)',
-            'function': lambda main_globals: main_globals['player'].effect('heal', 20),
+            'function': lambda main_globals: main_globals['player'].effect('heal', 20, True), # true for item
             'image': pygame.image.load("assets/models/items/consumables/potions/health/potion20.png").convert_alpha(),
             'price': 50
         },
         'medium_potion': {
             'description': 'heals you a bit (40)',
-            'function': lambda main_globals: main_globals['player'].effect('heal', 40),
+            'function': lambda main_globals: main_globals['player'].effect('heal', 40, True),
             'image': pygame.image.load("assets/models/items/consumables/potions/health/potion40.png").convert_alpha(),
             'price': 80
         },
         'large_potion': {
             'description': 'heals you a lot (60)',
-            'function': lambda main_globals: main_globals['player'].effect('heal', 60),
+            'function': lambda main_globals: main_globals['player'].effect('heal', 60, True),
             'image': pygame.image.load("assets/models/items/consumables/potions/health/potion60.png").convert_alpha(),
             'price': 100
         },
