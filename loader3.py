@@ -59,9 +59,25 @@ def loader3(main_globals):
                 draw_y = row_idx * ts - camera_y
                 screen.blit(text_surface, (draw_x, draw_y))
 
-    def auto_save(main_globals):
-        if main_globals.get('autosaving'):
-            return
+    def get_dominant_color(image): # get the dominant color from an image
+        if image is None:
+            return (255, 200, 100) # default
+
+        # scale down
+        small = pygame.transform.scale(image, (20, 20))
+
+        arr = pygame.surfarray.array3d(small)
+        # list of pixels
+        pixels = arr.reshape(-1, 3)
+
+        # count color occurrences
+        from collections import Counter
+        color_counts = Counter(map(tuple, pixels))
+
+        # ignore black, white, trans
+        for color, count in color_counts.most_common():
+            if sum(color) > 50 and sum(color) < 700:
+                return color
 
     def auto_save(main_globals):
         if main_globals.get('autosaving'):

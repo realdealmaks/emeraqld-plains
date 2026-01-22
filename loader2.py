@@ -228,7 +228,7 @@ def loader2(main_globals):
             "range": 800,
             "cooldown": 2 * cooldown_mult, 
             'chance': 0.15,
-            'proj_speed': 60,
+            'proj_speed': 40,
             'gravity': 0,
             'type': "ranged",
             'pierce': 1,
@@ -243,9 +243,9 @@ def loader2(main_globals):
         "gun": {
             "damage": 8 * damage_mult, 
             "range": 1000,
-            "cooldown": 0.3 * cooldown_mult, 
+            "cooldown": 0.15 * cooldown_mult, 
             'chance': 0.15,
-            'proj_speed': 100,
+            'proj_speed': 80,
             'gravity': 0,
             'type': "ranged",
             'pierce': 2,
@@ -260,7 +260,7 @@ def loader2(main_globals):
     }
 
     main_globals['projectile_images'] = {
-        
+        'gun': pygame.image.load("assets/random images/smoke.png").convert_alpha(),
     }
 
     # crystals

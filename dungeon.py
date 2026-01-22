@@ -616,21 +616,43 @@ def dungeon(main_globals):
                 enemy_ref = dmg['enemy_ref']
 
                 if enemy_ref.alive:
-                    x = enemy_ref.x - main_globals['camera_x']
-                    y = enemy_ref.y - main_globals['camera_y'] - 20 # 20 px above
+                    # use stored position
+                    if 'x' not in dmg:
+                        dmg['x'] = enemy_ref.x + random.randint(-15, 15) # random spread
+                        dmg['y'] = enemy_ref.y - 30
+                        dmg['vx'] = random.uniform(-30, 30) # horizontal drift
+                        dmg['vy'] = -120 # rise speed
 
-                    # rise
-                    lifetime = dmg.get('lifetime', 1.0) # seconds to expire
-                    dmg.setdefault('lifetime', lifetime)
-                    progress = 1.0 - dmg['timer'] / lifetime
-                    y -= progress * 30 # rise 30 px
+                    # update position
+                    dmg['x'] += dmg['vx'] * main_globals['dt']
+                    dmg['y'] += dmg['vy'] * main_globals['dt']
+                    dmg['vy'] += 80 * main_globals['dt'] # pull back down
+
+                    # position
+                    x = dmg['x'] - main_globals['camera_x']
+                    y = dmg['y'] - main_globals['camera_y']
 
                     # fade
+                    lifetime = dmg.get('lifetime', 1.0)
+                    dmg.setdefault('lifetime', lifetime)
                     alpha = max(0, min(255, int((dmg['timer'] / lifetime) * 255)))
 
-                    # text
-                    text_surface = smallfont.render(dmg['value'], True, (255, 40, 40))
+                    # crits
+                    is_crit = '!' in dmg['value']
+                    font_to_use = main_globals['font'] if is_crit else smallfont
+
+                    # color
+                    color = dmg.get('color', (255, 40, 40))
+
+                    # outline
+                    text_surface = font_to_use.render(dmg['value'], True, color)
                     text_surface.set_alpha(alpha)
+
+                    outline_surface = font_to_use.render(dmg['value'], True, (0, 0, 0))
+                    outline_surface.set_alpha(alpha)
+                    for ox, oy in [(-1, -1), (-1, 1), (1, -1), (1, 1)]:
+                        main_globals['screen'].blit(outline_surface, (x + ox, y + oy))
+
                     main_globals['screen'].blit(text_surface, (x, y))
 
                 # decrease timer

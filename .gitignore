@@ -209,3 +209,4 @@ __marimo__/
 data.json
 game_data.db
 test.py
+.vscode/settings.json

@@ -265,11 +265,14 @@ def weapons(main_globals):
             self.radius = radius
             self.pierce = pierce
             self.pierced = pierced
+            self.trail_positions = []
 
             if image:
                 self.image = pygame.transform.scale(image, (30, 30))
+                self.trail_color = main_globals['get_dominant_color'](image)
             else:
                 self.image = None
+                self.trail_color = main_globals['get_dominant_color'](None) # defaults to something
 
         def update(self, main_globals):
             dt = main_globals['dt']
@@ -292,7 +295,30 @@ def weapons(main_globals):
             if self.distance_travelled >= self.owner.range or self.lifetime <= 0:
                 self.alive = False
 
+            # update trail
+            self.trail_positions.append((self.x, self.y))
+            if len(self.trail_positions) > 8: # last 8 positions
+                self.trail_positions.pop(0)
+
         def draw(self, screen, main_globals):
+            if len(self.trail_positions) > 1:
+                for i in range(len(self.trail_positions) - 1):
+                    pos1 = self.trail_positions[i]
+                    pos2 = self.trail_positions[i + 1]
+
+                    # convert space
+                    x1 = int(pos1[0] - main_globals['camera_x'])
+                    y1 = int(pos1[1] - main_globals['camera_y'])
+                    x2 = int(pos2[0] - main_globals['camera_x'])
+                    y2 = int(pos2[1] - main_globals['camera_y'])
+
+                    # fade based on position in trail
+                    alpha_factor = i / len(self.trail_positions)
+
+                    # draw line segment
+                    width = max(1, int(5 * alpha_factor))
+                    pygame.draw.line(screen, self.trail_color, (x1, y1), (x2, y2), width)
+
             draw_x = int(self.x - main_globals['camera_x'])
             draw_y = int(self.y - main_globals['camera_y'])
 
@@ -301,7 +327,8 @@ def weapons(main_globals):
                 screen.blit(self.image, rect)
             else:
                 # draw a circle if no image
-                pygame.draw.circle(screen, (255, 200, 0), (draw_x, draw_y), self.radius)
+                pygame.draw.circle(screen, (255, 220, 120), (draw_x, draw_y), self.radius)
+                pygame.draw.circle(screen, (255, 200, 80), (draw_x, draw_y), self.radius // 2) # trail
 
     main_globals['spawn_weapons'] = spawn_weapons
     main_globals['Weapon'] = Weapon
