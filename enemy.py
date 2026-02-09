@@ -12,8 +12,10 @@ def enemy(main_globals):
             self.size = main_globals['enemy_size']
             if type == 0:
                 self.health = 40 + 5 * main_globals['enemy_hp_scaler']
+                self.max_health = self.health
             elif type == 1:
                 self.health = 60 + 5 * main_globals['enemy_hp_scaler']
+                self.max_health = self.health
             self.alive = True
             self.speed = 0.9
             self.type = type

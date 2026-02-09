@@ -287,7 +287,7 @@ def dungeon(main_globals):
                         main_globals['enemy_groups_by_tile'][tile_key] = {
                             'tile_pos': (row_idx, col_idx),
                             'enemies': hemorrhoids_in_tile,
-                            'active': True
+                            'active': False
                         }
                         print(f"spawned group {main_globals['groups_spawned']} on ({row_idx}, {col_idx}), ", end="")
                         main_globals['groups_spawned'] += 1
@@ -320,32 +320,47 @@ def dungeon(main_globals):
             group_should_activate = False
             for enemy in group['enemies']:
                 # draw !
-                if enemy.active and enemy.active_counter > 0:
+                if enemy.active and enemy.active_counter > 0 and enemy.alive:
                     enemy.active_counter -= main_globals['dt'] * 60
                     text_surface = main_globals['font'].render("!", True, (255, 70, 70))
                     main_globals['screen'].blit(text_surface, (enemy.x - main_globals['camera_x'], enemy.y - main_globals['camera_y'] - enemy.size // 2 - 8))
 
-                if not enemy.active and enemy.detect(player):
+                if not enemy.active and enemy.detect(player) and enemy.alive and not group_should_activate:
                     group_should_activate = True
                     break
+
+                #if enemy.health < enemy.max_health:
+                #    group_should_activate = True
+                #    break
 
             if group_should_activate:
                 for enemy in group['enemies']:
                     enemy.active = True
                 player.locked = True
+            elif all(enemy.health == 0 for enemy in group['enemies']):
+                player.locked = False
 
         # check if all enemies in a group are dead, and unlock player if so
-        for group in main_globals['enemy_groups']:
-            # if every enemy in this group is dead
-            if all(not enemy.alive for enemy in group['enemies']):
-                if group['active']:
-                    group['active'] = False
+        for group in main_globals['enemy_groups'][:]:
+            if all(not enemy.alive or enemy.health == 0 for enemy in group['enemies']):
+                # mark group cleared once
+                if group.get('cleared') is not True:
+                    group['cleared'] = True
                     main_globals['groups_cleared'] += 1
+
                     if main_globals['groups_cleared'] > main_globals['most_groups_cleared']:
                         main_globals['most_groups_cleared'] = main_globals['groups_cleared']
-                        main_globals['save'](main_globals, most_groups_cleared=main_globals['most_groups_cleared'])
-                    print(f"group at {group['tile_pos']} cleared, ", end="")
-                    player.locked = False # unlock player once group is cleared
+                        main_globals['save'](
+                            main_globals,
+                            most_groups_cleared=main_globals['most_groups_cleared']
+                        )
+
+                    player.locked = False
+
+                # remove group completely
+                tile_key = tuple(group['tile_pos'])
+                main_globals['enemy_groups_by_tile'].pop(tile_key, None)
+                main_globals['enemy_groups'].remove(group)
 
         # check if slash hits enemy
         if 'active_slashes' in main_globals and main_globals['active_slashes']:

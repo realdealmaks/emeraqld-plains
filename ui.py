@@ -674,25 +674,26 @@ def ui(main_globals):
             return
 
         # backlight
-        screen.blit(main_globals['weapon_light'], (screen_w // 2 - main_globals['weapon_frame'].get_width() // 2 + 35, screen_h // 2 - main_globals['weapon_frame'].get_height() // 2 + 30))
+        # screen.blit(main_globals['weapon_light'], (screen_w // 2 - main_globals['weapon_frame'].get_width() // 2 + 15, screen_h // 2 - main_globals['weapon_frame'].get_height() // 2 - 20))
+        # NOT NOW!!!
 
         # weapon
         weapon = main_globals['player'].weapons[0]
         weapon_image = main_globals['weapon_images'][weapon.name]
-        screen.blit(weapon_image, (screen_w // 2 - main_globals['weapon_frame'].get_width() // 2 + 35, screen_h // 2 - main_globals['weapon_frame'].get_height() // 2 + 30))
+        screen.blit(weapon_image, (screen_w // 2 - main_globals['weapon_frame'].get_width() // 2 + 25, screen_h // 2 - main_globals['weapon_frame'].get_height() // 2 + 30))
 
         # stats
         text = smallfont.render(weapon.name, True, (255, 255, 255))
-        screen.blit(text, (screen_w // 2 - text.get_width() // 2, screen_h // 2 - main_globals['weapon_frame'].get_height() // 2 + 20))
+        screen.blit(text, (screen_w // 2 - text.get_width() // 2 + 7, screen_h // 2 - main_globals['weapon_frame'].get_height() // 2 + 20))
 
-        text = smallfont.render(str(weapon.damage * main_globals['damage_mult']), True, (255, 255, 255))
-        screen.blit(text, (screen_w // 2 - text.get_width() // 2, screen_h // 2 - main_globals['weapon_frame'].get_height() // 2 + 50))
+        text = smallfont.render(f"dmg: {str(weapon.damage * main_globals['damage_mult'])}", True, (255, 255, 255))
+        screen.blit(text, (screen_w // 2 - text.get_width() // 2 + 30, screen_h // 2 - main_globals['weapon_frame'].get_height() // 2 + 50))
 
-        text = smallfont.render(str(weapon.range), True, (255, 255, 255))
-        screen.blit(text, (screen_w // 2 - text.get_width() // 2, screen_h // 2 - main_globals['weapon_frame'].get_height() // 2 + 80))
+        text = smallfont.render(f"range: {str(weapon.range)}", True, (255, 255, 255))
+        screen.blit(text, (screen_w // 2 - text.get_width() // 2 + 43, screen_h // 2 - main_globals['weapon_frame'].get_height() // 2 + 73)) # this one just doesn't wanna
 
-        text = smallfont.render(str(weapon.cooldown * main_globals['cooldown_mult']), True, (255, 255, 255))
-        screen.blit(text, (screen_w // 2 - text.get_width() // 2, screen_h // 2 - main_globals['weapon_frame'].get_height() // 2 + 110))
+        text = smallfont.render(f"cldwn: {str(weapon.cooldown * main_globals['cooldown_mult'])}", True, (255, 255, 255))
+        screen.blit(text, (screen_w // 2 - text.get_width() // 2 + 42, screen_h // 2 - main_globals['weapon_frame'].get_height() // 2 + 93))
 
     def new_mutation(main_globals, effect, state):
         screen = main_globals['screen']

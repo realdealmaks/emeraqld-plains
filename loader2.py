@@ -188,12 +188,12 @@ def loader2(main_globals):
     main_globals['active_projectiles'] = []
 
     main_globals['weapon_images'] = {
-        "sword": sword,
-        "axe": axe,
-        "book": book,
-        "katana": katana,
+        #"sword": sword,
+        #"axe": axe,
+        #"book": book,
+        #"katana": katana,
         "gun": gun,
-        "knife": sword,
+        #"knife": sword,
     }
 
     # special weapons attack image
