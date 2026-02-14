@@ -3,7 +3,7 @@
 # loader 3
 
 try:
-    import random, pygame, pymunk, types, threading
+    import random, pygame, pymunk, types
     from pygame import mixer as mx
     import numpy as np
 except ModuleNotFoundError as e:
@@ -80,21 +80,20 @@ def loader3(main_globals):
                 return color
 
     def auto_save(main_globals):
+        """Auto-save: save to JSON then copy to DB"""
         if main_globals.get('autosaving'):
             return
 
-        def save_task():
-            main_globals['autosaving'] = True
-            main_globals['spinner_active'] = True
-            main_globals['autosave_start_time'] = pygame.time.get_ticks()
+        main_globals['autosaving'] = True
+        main_globals['spinner_active'] = True
+        main_globals['autosave_start_time'] = pygame.time.get_ticks()
 
-            save_db("data.json", "game_data.db")
+        main_globals['save_game_state'](main_globals)
+        save_db("data.json", "game_data.db")
 
-            main_globals['autosave_finished'] = True
-            print("auto saved, ", end="")
-
-        main_globals['autosave_finished'] = False
-        threading.Thread(target=save_task, daemon=True).start()
+        main_globals['autosave_finished'] = True
+        main_globals['autosaving'] = False
+        print("auto saved, ", end="")
 
     def draw_autosave_spinner(main_globals):
         if 'loading_icon' not in main_globals:

@@ -305,3 +305,6 @@ shop is 75% done
 # 21 12 / m
 shop done
 shmuby do the thing plz
+
+# 14 feb 2026
+67 anyway made save reload and enemy not take damage if not in players tile (for gans) and stats in menu

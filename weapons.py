@@ -54,10 +54,10 @@ def weapons(main_globals):
         def attack(self, player, main_globals):
             if not self.can_attack():
                 remaining = round(self.cooldown - (time.time() - self.last_attack_time), 2)
-                print(f"{self.name} is on cooldown for {remaining} more seconds, ", end="")
+                # print(f"{self.name} is on cooldown for {remaining} more seconds, ", end="")
                 return
 
-            print(f"player attacked with {self.name}, ", end="")
+            # print(f"player attacked with {self.name}, ", end="")
             self.last_attack_time = time.time()
 
             player_cx = player.x + main_globals['player_size'] // 2

@@ -116,6 +116,7 @@ def superloader():
         ("enemy", "logic"),
         ("inputcontroller", "controller"),
         ("cmd", "tools"),
+        ("save_continue", "save system"),
     ]
     loading_steps = len(modules_to_load)
 

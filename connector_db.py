@@ -12,8 +12,8 @@ def save_db(json_filename="data.json", db_filename="game_data.db"):
     try:
         with open(json_filename, "r") as f:
             data = json.load(f)
-    except json.JSONDecodeError:
-        print(f"{json_filename} is not valid JSON. Migration aborted.")
+    except Exception as e:
+        print(f"error loading {json_filename}: {e}")
         return
 
     conn = sqlite3.connect(db_filename)
@@ -35,3 +35,42 @@ def save_db(json_filename="data.json", db_filename="game_data.db"):
     conn.commit()
 
     conn.close()
+
+def has_save_in_db(db_filename="game_data.db"):
+    if not os.path.exists(db_filename):
+        return False
+
+    try:
+        conn = sqlite3.connect(db_filename)
+        cursor = conn.cursor()
+
+        # check for save things
+        cursor.execute("""
+            SELECT key, value FROM game_data 
+            WHERE key IN ('last_health', 'last_wealth', 'last_inventory', 'last_position', 'last_weapons', 'last_tilemap_calls')
+        """)
+        rows = cursor.fetchall()
+        conn.close()
+
+        if not rows:
+            return False
+
+        # check for non default
+        for key, value in rows:
+            try:
+                val = json.loads(value)
+                if key == 'last_health' and val > 0:
+                    return True
+                if key == 'last_wealth' and val > 0:
+                    return True
+                if key == 'last_inventory' and len(val) > 0:
+                    return True
+                if key == 'last_position' and val != [0, 0]:
+                    return True
+            except:
+                pass
+
+        return False
+    except Exception as e:
+        print(f"error {e}")
+        return False

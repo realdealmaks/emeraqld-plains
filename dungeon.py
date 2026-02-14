@@ -480,6 +480,18 @@ def dungeon(main_globals):
                     if not enemy.alive:
                         continue # skip dead
 
+                    ts = main_globals['tile_size'] + main_globals['tile_offset']
+                    player_tile = (
+                        int((player.x + main_globals['player_size'] // 2) // ts),
+                        int((player.y + main_globals['player_size'] // 2) // ts)
+                    )
+                    enemy_tile = (
+                        int((enemy.x + main_globals['enemy_size'] // 2) // ts),
+                        int((enemy.y + main_globals['enemy_size'] // 2) // ts)
+                    )
+                    if player_tile != enemy_tile:
+                        continue # skip if not on player tile
+
                     if enemy not in proj.hit_enemies:
 
                         # hitbox rect by proj radius
@@ -691,7 +703,7 @@ def dungeon(main_globals):
             player.move(dx, dy)
             main_globals['draw_hud'](main_globals, player)
 
-            if main_globals['tutorial_floor']:
+            if main_globals['tutorial_floor'] and not main_globals['has_save_data']:
                 main_globals['tutorial_text'](main_globals)
 
         else: # if paused
@@ -712,7 +724,6 @@ def dungeon(main_globals):
                 main_globals['mutation_state']['type'] = random.choice(["strong", "healthy"]) if main_globals['mutation_state']['type'] == 'none' else main_globals['mutation_state']['type']
 
     def remake_floor(): # remakes the floor
-        main_globals['auto_save'](main_globals)
         main_globals['active_tiles'] = []
         main_globals['spawned_enemy_tiles'] = set()
         tilemap = main_globals['tilemap']
@@ -819,7 +830,7 @@ def dungeon(main_globals):
         num_branches = random.randint(0, 2) # how many
         branch_length_range = (1, 4) # how long
 
-        for _ in range(num_branches):
+        for i in range(num_branches):
             if not path_tiles:
                 break
             # pick a random tile in the path as branch start
@@ -828,7 +839,7 @@ def dungeon(main_globals):
             branch_length = random.randint(*branch_length_range)
             straight_count = 0
 
-            for _ in range(branch_length):
+            for i in range(branch_length):
                 if branch_dir == 'r':
                     step = random.choice([-1, 1])
                     bc += step
@@ -880,6 +891,7 @@ def dungeon(main_globals):
         for i in range(len(main_globals['tilemap'])):
             print(main_globals['tilemap'][i])
         main_globals['rebuild_walkable_mask'](main_globals)
+        main_globals['auto_save'](main_globals)
 
     def update_tile(main_globals, col_idx, row_idx, new_tile_type): # updates a specific tile
         # ex. update_tilemap(main_globals, 0, 0, 99)
@@ -894,7 +906,8 @@ def dungeon(main_globals):
             for i in range(len(main_globals['tilemap'])):
                 for j in range(len(main_globals['tilemap'][0])):
                     main_globals['tilemap'][i][j] = 0
-            main_globals['player'].respawn()
+            if not main_globals.get('loading_save', False):
+                main_globals['player'].respawn()
 
         main_globals['weapons_on_map'] = [ # remove all weapons that are not on the new tiles
         w for w in main_globals['weapons_on_map']

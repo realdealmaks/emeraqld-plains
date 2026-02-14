@@ -54,6 +54,8 @@ def ui(main_globals):
         hover_scale = 1.1 # how much to scale when hovered
         shrink_scale = 0.9 # scale opposing down
 
+        has_save = main_globals['has_save_data'](main_globals)
+
         main_globals.setdefault('mode1_scaled', main_globals['mode1img'])
         main_globals.setdefault('mode2_scaled', main_globals['mode2img'])
 
@@ -63,7 +65,7 @@ def ui(main_globals):
         button1 = main_globals['mode1button']
         button2 = main_globals['mode2button']
         hover1 = button1.collidepoint(mouse_pos)
-        hover2 = button2.collidepoint(mouse_pos)
+        hover2 = button2.collidepoint(mouse_pos) and has_save
 
         for key, value in [
             ('mode1_scale', 1.0),
@@ -142,15 +144,17 @@ def ui(main_globals):
         button1.topleft = (screen.get_width() // 4 - base_size[0] // 2, screen.get_height() // 2)
         color1 = (70, 70, 70) if hover1 else (40, 40, 40)
         pygame.draw.rect(screen, color1, button1, border_radius=8)
-        text_surf1 = main_globals['font'].render("1", True, (255, 255, 255))
+        text_surf1 = main_globals['font'].render("new game", True, (255, 255, 255))
         screen.blit(text_surf1, text_surf1.get_rect(center=button1.center))
 
         button2.width, button2.height = map(int, main_globals['mode2_btn_size'])
         button2.left = screen.get_width() * 3 // 4 - button2.width // 2
         button2.top = screen.get_height() // 2
         color2 = (70, 70, 70) if hover2 else (40, 40, 40)
+        if not main_globals['has_save_data'](main_globals): color2 = (20, 20, 20)
         pygame.draw.rect(screen, color2, button2, border_radius=8)
-        text_surf2 = main_globals['font'].render("2", True, (255, 255, 255))
+        continue_color = (255, 255, 255) if main_globals['has_save_data'](main_globals) else (180, 180, 180)
+        text_surf2 = main_globals['font'].render("continue", True, continue_color)
         screen.blit(text_surf2, text_surf2.get_rect(center=button2.center))
 
         # return
@@ -200,8 +204,12 @@ def ui(main_globals):
                     # main_globals['musicswitcher'](main_globals, 0)
                     main_globals['game_stage'] = "in dungeon"
                     mx.music.unpause()
-                elif selected_mode == 2: # send to yo mama hous
-                    pass
+                    print("new game")
+                elif selected_mode == 2: # continue save
+                    if main_globals['load_game_state'](main_globals):
+                        main_globals['game_stage'] = "in dungeon"
+                        mx.music.unpause()
+                        print("continue game")
 
         elif phase == "out":
             main_globals['transition_progress'] -= speed * dt
@@ -843,6 +851,12 @@ def ui(main_globals):
             text_rect = text_surf.get_rect(center=main_globals['bp_button'].center)
             screen.blit(text_surf, text_rect.topleft)
 
+            stats_color = (70, 70, 70) if main_globals['stats_button'].collidepoint(mouse_pos) else (40, 40, 40)
+            pygame.draw.rect(screen, stats_color, main_globals['stats_button'])
+            text_surf = main_globals['font'].render("Stats", True, (255, 255, 255))
+            text_rect = text_surf.get_rect(center=main_globals['stats_button'].center)
+            screen.blit(text_surf, text_rect.topleft)
+
     def draw_credits(main_globals, mouse_pos): # cursed with 1 fps
         screen = main_globals['screen']
         to_menu = main_globals['to_menu']
@@ -898,6 +912,37 @@ def ui(main_globals):
         liner_y += 100
         liner = pygame.Rect(50, liner_y, main_globals['screen'].get_width() / 2 - 100, 2)
         pygame.draw.rect(screen, (40, 40, 40), liner)
+
+    def draw_stats(main_globals):
+        screen = main_globals['screen']
+        mouse_pos = main_globals['mouse_pos']
+        screen.fill((20, 20, 20))
+
+        font_big = pygame.font.Font("assets/font/editundo.ttf", 48)
+        font = pygame.font.Font("assets/font/editundo.ttf", 32)
+
+        title = font_big.render("stats", True, (255, 255, 255))
+        screen.blit(title, (screen.get_width() // 2 - title.get_width() // 2, 50))
+
+        y_offset = 150
+        stats = [
+            ("floor", main_globals.get('best_floor', 0)),
+            ("massacres", main_globals.get('most_groups_cleared', 0)),
+            ("murders", main_globals.get('most_enemies_killed', 0)),
+            ("most jewish", f"{main_globals.get('richest_player', 0)} gold"),
+            ("skill issues", main_globals.get('total_deaths', 0)),
+        ]
+
+        for label, value in stats:
+            text = font.render(f"{label}: {value}", True, (200, 200, 200))
+            screen.blit(text, (200, y_offset))
+            y_offset += 60
+
+        to_menu = main_globals['to_menu']
+        to_menu_color = (70, 70, 70) if to_menu.collidepoint(mouse_pos) else (40, 40, 40)
+        pygame.draw.rect(screen, to_menu_color, to_menu)
+        img_rect = main_globals['return_image'].get_rect(center=to_menu.center)
+        screen.blit(main_globals['return_image'], img_rect.topleft)
 
     def draw_settings(main_globals, mouse_pos):
         screen = main_globals['screen']

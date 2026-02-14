@@ -16,6 +16,14 @@ def connector(main_globals):
             "most_enemies_killed": 0,
             "richest_player": 0,
             "total_deaths": 0,
+            # save
+            "last_floor": 0,
+            "last_position": (0, 0),
+            "last_health": 0,
+            "last_wealth": 0,
+            "last_inventory": {},
+            "last_weapons": [],
+            "last_tilemap_calls": [],
     }
 
     class Connector:

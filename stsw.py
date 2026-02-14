@@ -38,6 +38,9 @@ def stsw(main_globals):
                 main_globals['draw_settings'](main_globals, main_globals['mouse_pos'])
                 main_globals['musicswitcher'](main_globals, 4)
 
+            case "stats":
+                main_globals['draw_stats'](main_globals)
+
             case "dead":
                 main_globals['draw_dead'](main_globals, main_globals['mouse_pos'])
 

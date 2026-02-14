@@ -74,7 +74,7 @@ def inputcontroller(main_globals):
                         main_globals['transition_active'] = True
                         main_globals['transition_side'] = 'left'
                         main_globals['selected_mode'] = 1
-                    if main_globals['mode2button'].collidepoint(mouse_pos):
+                    if main_globals['mode2button'].collidepoint(mouse_pos) and main_globals['has_save_data'](main_globals):
                         main_globals['transition_active'] = True
                         main_globals['transition_side'] = 'right'
                         main_globals['selected_mode'] = 2
@@ -89,6 +89,8 @@ def inputcontroller(main_globals):
                         main_globals['game_stage'] = "in credits"
                     if main_globals['bp_button'].collidepoint(mouse_pos):
                         main_globals['game_stage'] = "in battle pass"
+                    if main_globals['stats_button'].collidepoint(mouse_pos):
+                        main_globals['game_stage'] = "stats"
 
                 # credits
                 if main_globals['game_stage'] == "in credits":
@@ -152,7 +154,9 @@ def inputcontroller(main_globals):
                                 elif name == 'weapon':
                                     main_globals['current_tab'] = 'weapon'
                                 elif name == 'quit':
-                                    pass
+                                    main_globals['running'] = False
+                                    pygame.quit()
+                                    print("quit")
 
                         # selecting inventory items
                         if main_globals['current_tab'] == 'inventory':

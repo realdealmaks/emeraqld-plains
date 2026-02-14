@@ -113,6 +113,8 @@ def loader1(main_globals):
                     calls.append(f"main_globals['update_tile'](main_globals, {c}, {r}, {val})")
         return calls
 
+    main_globals['generate_update_tile_calls'] = generate_update_tile_calls
+
     main_globals['default_tilemap_calls'] = generate_update_tile_calls(main_globals['tilemap'])
     main_globals['shop_tilemap_calls'] = generate_update_tile_calls(main_globals['shop_tilemap'])
 
@@ -190,6 +192,7 @@ def loader1(main_globals):
     main_globals['frame_slider'] = pygame.Rect(0, 0, 0, 0) # the thing you grab
     main_globals['resolution_slider'] = pygame.Rect(0, 0, 0, 0) # the thing you grab
     main_globals['apply_button'] = pygame.Rect(0, 0, 0, 0) # apply settings to json
+    main_globals['stats_button'] = pygame.Rect(screen_w // 2, screen_h // 2, 200, 100)
 
     # mode variables
     main_globals['mode1button'] = pygame.Rect(screen_w * 3 // 4 - 100, screen_h // 2, 200, 50) # left
