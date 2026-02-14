@@ -80,7 +80,6 @@ def loader3(main_globals):
                 return color
 
     def auto_save(main_globals):
-        """Auto-save: save to JSON then copy to DB"""
         if main_globals.get('autosaving'):
             return
 
