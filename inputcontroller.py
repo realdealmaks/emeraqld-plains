@@ -154,9 +154,13 @@ def inputcontroller(main_globals):
                                 elif name == 'weapon':
                                     main_globals['current_tab'] = 'weapon'
                                 elif name == 'quit':
+                                    main_globals['game_stage'] = "in menu"
+                                    main_globals['reset'](main_globals)
+                                    """
                                     main_globals['running'] = False
                                     pygame.quit()
                                     print("quit")
+                                    """
 
                         # selecting inventory items
                         if main_globals['current_tab'] == 'inventory':
